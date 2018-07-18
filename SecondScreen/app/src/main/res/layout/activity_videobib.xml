@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Here insert video-player-bib-content for selecting videos -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/textViewVideoBib"
+            android:layout_width="219dp"
+            android:layout_height="125dp"
+            android:gravity="center"
+            android:text="YOUTUBE VIDEO PLAYER BIBLIOTHEK"
+            android:textSize="30sp"
+            tools:background="@android:color/holo_red_light" />
+
+        <Button
+            android:id="@+id/buttonVideoBibNext"
+            android:layout_width="223dp"
+            android:layout_height="92dp"
+            android:text="Weiter zu Information Activity"
+            tools:layout_editor_absoluteX="85dp"
+            tools:layout_editor_absoluteY="205dp" />
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

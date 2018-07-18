@@ -1,25 +1,24 @@
 package com.wildLive.secondScreen;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Button;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+public class VideoBibActivity extends AppCompatActivity {
 
     // **************************************************************************
-    // here insert code for guide-screen for connecting devices (start screen!)
+    // here insert video-player-bib-content for selecting videos
 
-    private Button buttonMainNext;      // button for switching to next activity (temporary!)
+    private Button buttonVideoBibNext;      // button for switching to next activity (temporary!)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // setting view (xml-layout) on creating app
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_videobib);
         // registering button listener
         addListenerOnButton();
     }
@@ -27,13 +26,13 @@ public class MainActivity extends AppCompatActivity {
     public void addListenerOnButton() {
         final Context context = this;
         // registering button and button-behaviour by on-clicking
-        buttonMainNext = (Button) findViewById(R.id.buttonMainNext);
-        buttonMainNext.setOnClickListener(new OnClickListener() {
+        buttonVideoBibNext = (Button) findViewById(R.id.buttonVideoBibNext);
+        buttonVideoBibNext.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
                 // switching to next activity on button click
-                Intent intent = new Intent(context, VideoBibActivity.class);
+                Intent intent = new Intent(context, InformationActivity.class);
                 startActivity(intent);
             }
         });
