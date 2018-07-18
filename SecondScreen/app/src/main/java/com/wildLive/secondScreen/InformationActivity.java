@@ -10,19 +10,32 @@ import android.widget.TextView;
 
 public class InformationActivity extends AppCompatActivity {
 
-    // **************************************************************************
-    // here insert information content for specific video
-
-
-    private Button buttonInformationNext;      // button for switching to next activity (temporary!)
+    private Button buttonInformationNext;       // button for switching to next activity (temporary!)
+    private TextView wikiContent;               // text view for showing wiki-requested content
+    private String searchTerm = "Kaiserpinguin";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // setting view (xml-layout) on creating app
+        // setting view (xml-layout) for information activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_information);
+
         // registering button listener
         addListenerOnButton();
+        // integrating requested wiki-information for user view
+        integrateInformation();
+    }
+
+    public void integrateInformation() {
+        // calling url-request and getting wiki content via async task
+        new WikiRequestHandler(new WikiRequestHandler.AsyncResponse() {
+            @Override
+            public void processFinished(String output) {
+                // loading responded information in text view
+                wikiContent = (TextView) findViewById(R.id.currentWikiInfo);
+                wikiContent.setText(output);
+            }
+        }).execute(searchTerm);
     }
 
     public void addListenerOnButton() {
@@ -38,5 +51,4 @@ public class InformationActivity extends AppCompatActivity {
             }
         });
     }
-    // **************************************************************************
 }

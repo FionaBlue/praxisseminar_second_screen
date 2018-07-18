@@ -28,8 +28,24 @@
             android:layout_width="223dp"
             android:layout_height="102dp"
             android:text="Weiter zu Quiz Activity"
+            android:gravity="center"
             tools:layout_editor_absoluteX="111dp"
             tools:layout_editor_absoluteY="225dp" />
+
+        <TextView
+            android:id="@+id/searchTerm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Suchwort >> Kaiserpinguin"
+            android:textColor="@android:color/holo_red_light" />
+
+        <TextView
+            android:id="@+id/currentWikiInfo"
+            android:layout_width="match_parent"
+            android:layout_height="247dp"
+            android:gravity="center"
+            android:text="WIKIPEDIA CONTENT INFORMATIONEN" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
