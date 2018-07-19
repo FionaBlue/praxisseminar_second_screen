@@ -1,6 +1,7 @@
 package com.wildLive.secondScreen;
 
 import android.os.AsyncTask;
+import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -50,13 +51,20 @@ public class WikiRequestHandler extends AsyncTask<String, Void, String> {
             HttpURLConnection currentUrlConnection = (HttpURLConnection) new URL(wikiApiJsonUrl).openConnection();
 
             // getting content (text stream) from wiki-web-service-api via http-request for that url
-            BufferedReader inputDataReader = new BufferedReader(new InputStreamReader(currentUrlConnection.getInputStream()));
+            BufferedReader inputDataReader = new BufferedReader(new InputStreamReader(currentUrlConnection.getInputStream(), "ISO-8859-1"));
 
             // collecting and combining all lines of input stream
             String requestResponse = inputDataReader.lines().collect(Collectors.joining());
 
             // closing input stream after retrieving all information
             inputDataReader.close();
+
+            try {
+                // generating json object from string input stream (utf-8 decoding from html iso-8859-1)
+                JSONObject json = new JSONObject(requestResponse);
+                requestResponse = json.toString();
+            } catch (Exception e) {}
+
             return requestResponse;
 
         } catch (Exception e) {
