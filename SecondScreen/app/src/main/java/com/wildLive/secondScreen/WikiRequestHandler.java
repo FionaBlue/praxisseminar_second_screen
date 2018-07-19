@@ -1,11 +1,14 @@
 package com.wildLive.secondScreen;
 
 import android.os.AsyncTask;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.stream.Collectors;
 
 public class WikiRequestHandler extends AsyncTask<String, Void, String> {
@@ -17,6 +20,7 @@ public class WikiRequestHandler extends AsyncTask<String, Void, String> {
     // https://developer.android.com/reference/java/io/BufferedReader
     // https://developer.android.com/reference/android/os/AsyncTask
     // https://stackoverflow.com/questions/12575068/how-to-get-the-result-of-onpostexecute-to-main-activity-because-asynctask-is-a
+    // https://stackoverflow.com/questions/9151619/how-to-iterate-over-a-jsonobject
 
     private Exception e;
     public AsyncResponse responseHandler = null;                    // global interface (for correct response-data usage in information activity)
@@ -59,18 +63,56 @@ public class WikiRequestHandler extends AsyncTask<String, Void, String> {
             // closing input stream after retrieving all information
             inputDataReader.close();
 
+            // defining elements (by keys) to extract from text stream
+            String titleString = "";
+            String extractString = "";
+
             try {
                 // generating json object from string input stream (utf-8 decoding from html iso-8859-1)
                 JSONObject json = new JSONObject(requestResponse);
-                requestResponse = json.toString();
+
+                // scanning json document structure for specific elements
+                titleString = parseJsonStructure(json, "title");
+                extractString = parseJsonStructure(json, "extract");
             } catch (Exception e) {}
 
-            return requestResponse;
+            // forming string to view for user in information activity
+            String viewContentString = titleString + "\n\n" + extractString;
+            return viewContentString;
 
         } catch (Exception e) {
             this.e = e;
             return null;
         }
+    }
+
+    private String parseJsonStructure(JSONObject json, String searchTerm) {
+        String searchTermResult = "Der Begriff konnte nicht gefunden werden.";
+
+        // getting key values of wiki-json on specific level (e.g. level#1 = batchcomplete, query; level#2 = pages; ...)
+        Iterator<?> levelJsonNodes = json.keys();
+
+        // iterating through specific json object level
+        while (levelJsonNodes.hasNext()) {
+            String jsonNodeKey = (String) levelJsonNodes.next();
+
+            // checking if actual json-node-key equals searched term
+            if (jsonNodeKey.equals(searchTerm)) {
+                try {
+                    // getting value of json object by key
+                    searchTermResult = json.get(jsonNodeKey).toString();
+                } catch (JSONException e) { throw new RuntimeException(e); }
+            }
+
+            try {
+                // extracting the unhandled rest of the json-object
+                if (json.get(jsonNodeKey) instanceof JSONObject) {
+                    // iterating through other unhandled levels of json-structure to search for search term
+                    return parseJsonStructure((JSONObject) json.get(jsonNodeKey), searchTerm);
+                }
+            } catch (JSONException e) { throw new RuntimeException(e); }
+        }
+        return searchTermResult;
     }
 
     protected void onPostExecute(String result) {
