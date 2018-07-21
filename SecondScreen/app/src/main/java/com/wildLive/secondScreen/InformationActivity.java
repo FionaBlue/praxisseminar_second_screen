@@ -11,16 +11,22 @@ import android.widget.TextView;
 
 public class InformationActivity extends AppCompatActivity {
 
-    private Button buttonInformationNext;       // button for switching to next activity (temporary!)
-    private TextView wikiContent;               // text view for showing wiki-requested content
     private String searchTerm = "Kaiserpinguin";
-    private ImageView wikiImage;
+    private TextView wikiContentTitle;          // text view for showing wiki-requested title content
+    private TextView wikiContentExtract;        // text view for showing wiki-requested extract content
+    private ImageView wikiImage;                // image view for showing wiki-requested image content
+    private Button buttonInformationNext;       // button for switching to next activity (temporary!)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // setting view (xml-layout) for information activity
         super.onCreate(savedInstanceState);
+        // registering layout and layout-components
         setContentView(R.layout.activity_information);
+        wikiImage = (ImageView) findViewById(R.id.wikiImage);
+        wikiContentTitle = (TextView) findViewById(R.id.currentWikiTitle);
+        wikiContentExtract = (TextView) findViewById(R.id.currentWikiExtract);
+        buttonInformationNext = (Button) findViewById(R.id.buttonInformationNext);
 
         // registering button listener
         addListenerOnButton();
@@ -35,11 +41,10 @@ public class InformationActivity extends AppCompatActivity {
             public void processFinished(Object output) {
                 WikiRequestHandler.WikiContentElements contentOutput = (WikiRequestHandler.WikiContentElements) output;
                 // loading responded information in text view
-                wikiContent = (TextView) findViewById(R.id.currentWikiInfo);
-                wikiContent.setText(contentOutput.wikiContentTitle + "\n\n" + contentOutput.wikiContentExtract);
+                wikiContentTitle.setText(contentOutput.wikiContentTitle);
+                wikiContentExtract.setText(contentOutput.wikiContentExtract);
 
                 // loading responded image in image view (temporary: local image)
-                wikiImage = (ImageView) findViewById(R.id.wikiImage);
                 wikiImage.setImageResource(R.drawable.wiki_kaiserpinguin);
             }
         }).execute(searchTerm);
@@ -48,7 +53,6 @@ public class InformationActivity extends AppCompatActivity {
     public void addListenerOnButton() {
         final Context context = this;
         // registering button and button-behaviour by on-clicking
-        buttonInformationNext = (Button) findViewById(R.id.buttonInformationNext);
         buttonInformationNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
