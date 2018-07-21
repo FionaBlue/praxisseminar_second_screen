@@ -1,5 +1,6 @@
 package com.wildLive.secondScreen;
 
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 
 import org.json.JSONException;
@@ -11,7 +12,7 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
-public class WikiRequestHandler extends AsyncTask<String, Void, String> {
+public class WikiRequestHandler extends AsyncTask<String, Void, Object> {
 
     // src:
     // ********
@@ -32,11 +33,11 @@ public class WikiRequestHandler extends AsyncTask<String, Void, String> {
 
     // registering interface
     public interface AsyncResponse {
-        void processFinished(String output);
+        void processFinished(Object output);
     }
 
     @Override
-    protected String doInBackground(String... params) {
+    protected Object doInBackground(String... params) {
 
         // url-parameters for http-requesting
         String endpoint = "https://de.wikipedia.org/w/api.php";     // homepage for mediawiki web service api
@@ -69,21 +70,32 @@ public class WikiRequestHandler extends AsyncTask<String, Void, String> {
 
             try {
                 // generating json object from string input stream (utf-8 decoding from html iso-8859-1)
-                JSONObject json = new JSONObject(requestResponse);
+                JSONObject wikiJson = new JSONObject(requestResponse);
 
                 // scanning json document structure for specific elements
-                titleString = parseJsonStructure(json, "title");
-                extractString = parseJsonStructure(json, "extract");
+                titleString = parseJsonStructure(wikiJson, "title");
+                extractString = parseJsonStructure(wikiJson, "extract");
             } catch (Exception e) {}
 
             // forming string to view for user in information activity
-            String viewContentString = titleString + "\n\n" + extractString;
-            return viewContentString;
+            WikiContentElements wikiContent = new WikiContentElements();
+            wikiContent.wikiContentTitle = titleString;
+            wikiContent.wikiContentExtract = extractString;
+            wikiContent.wikiContentImage = null;
+
+            return wikiContent;
 
         } catch (Exception e) {
             this.e = e;
             return null;
         }
+    }
+
+    // packing object for sending all compressed content information back to information activity
+    public class WikiContentElements {
+        String wikiContentTitle;
+        String wikiContentExtract;
+        Drawable wikiContentImage;
     }
 
     private String parseJsonStructure(JSONObject json, String searchTerm) {
@@ -115,7 +127,7 @@ public class WikiRequestHandler extends AsyncTask<String, Void, String> {
         return searchTermResult;
     }
 
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(Object result) {
         // calling defined interface in information activity
         responseHandler.processFinished(result);
     }

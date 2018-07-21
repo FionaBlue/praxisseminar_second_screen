@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -15,13 +16,24 @@
         android:gravity="center">
 
         <TextView
-            android:id="@+id/textViewInformation"
-            android:layout_width="219dp"
-            android:layout_height="125dp"
+            android:id="@+id/searchTerm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="META INFORMATION SCREEN"
-            android:textSize="30sp"
-            tools:background="@android:color/holo_blue_light" />
+            android:text="Suchwort >> Kaiserpinguin"
+            android:textColor="@android:color/holo_red_light" />
+
+        <ImageView
+            android:id="@+id/wikiImage"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/currentWikiInfo"
+            android:layout_width="match_parent"
+            android:layout_height="247dp"
+            android:gravity="center"
+            android:text="WIKIPEDIA CONTENT INFORMATIONEN" />
 
         <Button
             android:id="@+id/buttonInformationNext"
@@ -31,21 +43,6 @@
             android:gravity="center"
             tools:layout_editor_absoluteX="111dp"
             tools:layout_editor_absoluteY="225dp" />
-
-        <TextView
-            android:id="@+id/searchTerm"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Suchwort >> Kaiserpinguin"
-            android:textColor="@android:color/holo_red_light" />
-
-        <TextView
-            android:id="@+id/currentWikiInfo"
-            android:layout_width="match_parent"
-            android:layout_height="247dp"
-            android:gravity="center"
-            android:text="WIKIPEDIA CONTENT INFORMATIONEN" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
