@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -26,6 +27,8 @@ public class InformationActivity extends AppCompatActivity {
         wikiImage = (ImageView) findViewById(R.id.wikiImage);
         wikiContentTitle = (TextView) findViewById(R.id.currentWikiTitle);
         wikiContentExtract = (TextView) findViewById(R.id.currentWikiExtract);
+        // making extract content scrollable
+        wikiContentExtract.setMovementMethod(new ScrollingMovementMethod());
         buttonInformationNext = (Button) findViewById(R.id.buttonInformationNext);
 
         // registering button listener
