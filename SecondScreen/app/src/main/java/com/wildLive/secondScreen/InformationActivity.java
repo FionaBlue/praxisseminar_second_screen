@@ -25,6 +25,7 @@ public class InformationActivity extends AppCompatActivity {
     // ********
     // https://www.codeproject.com/Articles/1152595/Android-Horizontal-ListView-Tutorial
     // https://www.youtube.com/watch?v=94rCjYxvzEE
+    // https://stackoverflow.com/questions/26682277/how-do-i-get-the-position-selected-in-a-recyclerview
 
     public List<ContentElement> contentElements = new ArrayList<>();    // dynamical array for content information
     RecyclerView recyclerListView;                                      // providing option for horizontal list view (= recyclerView)
@@ -71,7 +72,7 @@ public class InformationActivity extends AppCompatActivity {
     public void registerContentInformation() {
         // appending all initial content information (here temporary defining information)
         contentElements.add(new ContentElement("Kaiserpinguin","", "", true, R.drawable.wiki_kaiserpinguin, R.drawable.wiki_kaiserpinguin));
-        contentElements.add(new ContentElement("Delphin", "","", false, R.drawable.wiki_delphin, R.drawable.wiki_delphin));
+        contentElements.add(new ContentElement("Delfine", "","", false, R.drawable.wiki_delphin, R.drawable.wiki_delphin));
         contentElements.add(new ContentElement("Wanderameisen", "","", false, R.drawable.wiki_wanderameisen, R.drawable.wiki_wanderameisen));
         contentElements.add(new ContentElement("Wanderfalke", "","", false, R.drawable.wiki_wanderfalke, R.drawable.wiki_wanderfalke));
         contentElements.add(new ContentElement("Zebra", "", "", false, R.drawable.wiki_zebra, R.drawable.wiki_zebra));
@@ -130,25 +131,27 @@ public class InformationActivity extends AppCompatActivity {
         }
         @Override
         public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+            final int position = i;
             // all widgets and data will be attached to each individual list view item
             viewHolder.timelineItem.setImageResource(contentElements.get(i).timelineTriggerImage);
+            // registering onclick-listener for content switching
+            viewHolder.timelineItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    integrateInformation(contentElements.get(position).title, contentElements.get(position).extract, contentElements.get(position).wikiImage);
+                }
+            });
         }
         @Override
         public int getItemCount() {
             return contentElements.size();
         }
         // view holder for performance issues with recyclerView (only visible items are handled)
-        public class ViewHolder extends RecyclerView.ViewHolder {
+        public class ViewHolder extends RecyclerView.ViewHolder { //implements View.OnClickListener {
             public CircleImageView timelineItem;
-            public ViewHolder(@NonNull View itemView) {
+            public ViewHolder(@NonNull final View itemView) {
                 super(itemView);
                 timelineItem = itemView.findViewById(R.id.timelineItem);
-                timelineItem.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // System.out.println("onImageClick()");
-                    }
-                });
             }
         }
     }
