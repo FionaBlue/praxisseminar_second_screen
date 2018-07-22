@@ -1,0 +1,20 @@
+/*
+
+Background - MAP
+
+src: https://stackoverflow.com/questions/19925075/fit-website-background-image-to-screen-size*/
+body {
+    background-image: url("../img/Karte.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#TestButtonYouTube {
+    display:block;
+    margin: 0 auto;
+    background-color: red;
+}
+
+.hidden {
+    display: none;
+}
