@@ -10,15 +10,15 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- wiki content trigger timeline (video trigger-points) -->
-        <TextView
-            android:id="@+id/textView"
+        <!-- wiki content trigger timeline (video trigger-points), holding horizontal list view items -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/timeline"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:gravity="center"
             android:layout_weight="0.15"
-            android:textColor="#7F7FFF"
-            android:text="TIMELINE" />
+            android:padding="15dp"
+            android:orientation="horizontal"/>
 
         <!-- specific wiki content (card view) -->
         <android.support.v7.widget.CardView
