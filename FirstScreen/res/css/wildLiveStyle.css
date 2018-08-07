@@ -4,7 +4,10 @@ Background - MAP
 
 src: https://stackoverflow.com/questions/19925075/fit-website-background-image-to-screen-size*/
 body {
-    background-image: url("../img/Karte.jpg");
+ 
+    width: 100%;
+    height: 400px;
+    background-image: url("../img/Antarktis_map.jpg");
     background-repeat: no-repeat;
     background-size: cover;
 }
