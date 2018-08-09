@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
+import android.view.Menu;
 import android.widget.Button;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // registering button listener
         addListenerOnButton();
+    }
+
+    public boolean onCreateOptionsMenu (Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     public void addListenerOnButton() {

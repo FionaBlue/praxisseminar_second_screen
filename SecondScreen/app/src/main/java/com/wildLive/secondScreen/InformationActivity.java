@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -51,6 +52,11 @@ public class InformationActivity extends AppCompatActivity {
 
         // registering button listener
         addListenerOnButton();
+    }
+
+    public boolean onCreateOptionsMenu (Menu menu) {
+        getMenuInflater().inflate(R.menu.information, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void registerLayoutComponents() {

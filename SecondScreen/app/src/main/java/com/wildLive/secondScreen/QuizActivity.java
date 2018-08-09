@@ -2,6 +2,7 @@ package com.wildLive.secondScreen;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -31,6 +32,11 @@ public class QuizActivity extends AppCompatActivity {
         createButtonListeners();
         updateQuestion();
 
+    }
+
+    public boolean onCreateOptionsMenu (Menu menu) {
+        getMenuInflater().inflate(R.menu.quiz, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     public void initiateElements(){

@@ -1,0 +1,18 @@
+<!--https://www.youtube.com/watch?v=s3lwukvMb3s-->
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:context=".QuizActivity">
+
+    <item
+        android:id="@+id/action_cast_quiz"
+        android:icon="@drawable/ic_cast_white_24dp"
+        android:title="@string/cast_button"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_cast_connected_quiz"
+        android:icon="@drawable/ic_cast_connected_white_24dp"
+        android:title="@string/cast_connected_button"
+        app:showAsAction="always"/>
+</menu>

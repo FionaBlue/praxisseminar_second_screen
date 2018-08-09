@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">WildLive</string>
+    <string name="cast_button">CastButton</string>
+    <string name="cast_connected_button">CastConnectedButton</string>
 </resources>
