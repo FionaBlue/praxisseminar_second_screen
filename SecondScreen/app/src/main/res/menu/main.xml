@@ -8,11 +8,13 @@
         android:id="@+id/action_cast_main"
         android:icon="@drawable/ic_cast_white_24dp"
         android:title="@string/cast_button"
-        app:showAsAction="always"/>
+        app:showAsAction="always"
+        android:visible="true"/>
 
     <item
         android:id="@+id/action_cast_connected_main"
         android:icon="@drawable/ic_cast_connected_white_24dp"
         android:title="@string/cast_connected_button"
-        app:showAsAction="always"/>
+        app:showAsAction="always"
+        android:visible="false"/>
 </menu>
