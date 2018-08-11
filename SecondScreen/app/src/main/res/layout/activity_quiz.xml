@@ -19,7 +19,7 @@
         >
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/thumbnail"
@@ -28,6 +28,15 @@
                 android:layout_alignParentTop="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/quiz_header" />
+
+            <Button
+                android:id="@+id/closeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="X"
+                android:textAlignment="center"
+                />
 
             <TextView
                 android:id="@+id/question"
@@ -39,63 +48,63 @@
                 android:text="Hier sollte eine Frage stehen"
                 android:textColor="#222"
                 android:textStyle="bold"
-                android:textSize="22dp"
+                android:textSize="18dp"
                 />
 
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="500px"
-                android:layout_weight="0.6"
-                android:orientation="horizontal"
-                android:layout_marginTop="150dp">
+            <Button
+                android:id="@+id/buttonA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/question"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="10dp"
+                android:text="A"
+                android:background="@android:color/holo_blue_dark"/>
 
-                <Button
-                    android:id="@+id/buttonA"
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.6"
-                    android:layout_margin="3dp"
-                    android:text="A"
-                    android:background="@android:color/holo_blue_dark"/>
-
-                <Button
-                    android:id="@+id/buttonB"
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.6"
-                    android:layout_margin="3dp"
-                    android:text="B"
-                    android:background="@android:color/holo_blue_dark"/>
-
-            </LinearLayout>
+            <Button
+                android:id="@+id/buttonB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/buttonA"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="10dp"
+                android:text="B"
+                android:background="@android:color/holo_blue_dark"/>
 
 
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="500px"
-                android:layout_weight="0.6"
-                android:orientation="horizontal"
-                android:layout_marginTop="350dp" >
+            <Button
+                android:id="@+id/buttonC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/buttonB"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="10dp"
+                android:text="C"
+                android:background="@android:color/holo_blue_dark"/>
 
-                <Button
-                    android:id="@+id/buttonC"
-                    android:layout_width="0px"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="0.6"
-                    android:layout_margin="3dp"
-                    android:text="C"
-                    android:background="@android:color/holo_blue_dark"/>
+            <Button
+                android:id="@+id/buttonD"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/buttonC"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="10dp"
+                android:text="D"
+                android:background="@android:color/holo_blue_dark"/>
 
-                <Button
-                    android:id="@+id/buttonD"
-                    android:layout_width="0px"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="0.6"
-                    android:layout_margin="3dp"
-                    android:text="D"
-                    android:background="@android:color/holo_blue_dark"/>
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/score"
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="0"
+                android:background="@android:color/holo_blue_dark"
+                android:textColor="#222"
+                android:textStyle="bold"
+                android:textSize="22dp"
+                android:textAlignment="center"
+                />
 
         </RelativeLayout>
 

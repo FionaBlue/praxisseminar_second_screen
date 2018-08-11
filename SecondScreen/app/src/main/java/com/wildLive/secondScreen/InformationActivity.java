@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class InformationActivity extends AppCompatActivity {
     private TextView wikiContentTitle;                                  // text view for showing wiki-requested title content
     private TextView wikiContentExtract;                                // text view for showing wiki-requested extract content
     private ImageView wikiContentImage;                                 // image view for showing wiki-requested image content
-    private Button buttonInformationNext;                               // button for switching to next activity (temporary!)
+    private ImageButton buttonInformationNext;                               // button for switching to next activity (temporary!)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +67,7 @@ public class InformationActivity extends AppCompatActivity {
         wikiContentTitle = (TextView) findViewById(R.id.currentWikiTitle);
         wikiContentExtract = (TextView) findViewById(R.id.currentWikiExtract);
         wikiContentExtract.setMovementMethod(new ScrollingMovementMethod());        // making extract content scrollable
-        buttonInformationNext = (Button) findViewById(R.id.buttonInformationNext);
+        buttonInformationNext = (ImageButton) findViewById(R.id.buttonInformationNext);
 
         // registering list view (recyclerView) with custom array adapter
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);   // setting orientation to horizontal!
@@ -120,6 +121,9 @@ public class InformationActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
                 // switching to next activity on button click
+                //marker must be set inactive if no ad is shown, after ad started and the
+                //quiz is being closed, the marker must be set active so the user can start
+                //the quiz again and continue the quiz
                 Intent intent = new Intent(context, QuizActivity.class);
                 startActivity(intent);
             }

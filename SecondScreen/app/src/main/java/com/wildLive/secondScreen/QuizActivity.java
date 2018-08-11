@@ -2,6 +2,7 @@ package com.wildLive.secondScreen;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -16,7 +17,10 @@ public class QuizActivity extends AppCompatActivity {
     private Button buttonC;
     private Button buttonD;
 
+    private Button closeButton;
+
     private TextView question;
+    private TextView scoretext;
 
     private String answer;
     private int score = 0;
@@ -27,6 +31,15 @@ public class QuizActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
+
+        //DisplayMetrics dm = new DisplayMetrics();
+        //getWindowManager().getDefaultDisplay().getMetrics(dm);
+
+        //int width = dm.widthPixels;
+        //int height = dm.heightPixels;
+
+        //getWindow().setLayout((int)(width*.8),(int)(height*.6));
+
         questionLibrary = new QuestionLibrary(QuizActivity.this);
         initiateElements();
         createButtonListeners();
@@ -45,10 +58,23 @@ public class QuizActivity extends AppCompatActivity {
         buttonC = (Button) findViewById(R.id.buttonC);
         buttonD = (Button) findViewById(R.id.buttonD);
 
+        closeButton = (Button) findViewById(R.id.closeButton);
+
         question = (TextView) findViewById(R.id.question);
+        scoretext = (TextView) findViewById(R.id.score);
     }
 
     public void createButtonListeners(){
+        closeButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                //if ad did not finish yet, enable wildlivefox.png at InformationActivityLayout
+                // remember last question so the user doesnt have to start again with the first question
+                finish();
+            }
+
+        });
+
         buttonA.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -115,6 +141,7 @@ public class QuizActivity extends AppCompatActivity {
                 if (buttonD.getText().toString().trim().equals(answer.trim())){
                     score = score+1;
                     updateScore(score);
+
                     updateQuestion();
 
                     //optional
@@ -159,6 +186,7 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void updateScore(int point) {
+        scoretext.setText(String.valueOf(point));
         System.out.println("" + point);
     }
 }

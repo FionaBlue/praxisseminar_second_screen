@@ -92,13 +92,15 @@
                         android:text="ARTIKEL LESEN"
                         android:layout_height="wrap_content" />
 
-                    <Button
+                    <ImageButton
                         android:id="@+id/buttonInformationNext"
-                        android:letterSpacing="0.2"
-                        android:textColor="#7F7FFF"
+                        android:src="@drawable/quiz_marker"
+                        android:background="@null"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="QUIZ" />
+                        android:scaleType="fitCenter"
+                        />
+
                 </LinearLayout>
 
 
