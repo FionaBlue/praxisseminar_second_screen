@@ -1,5 +1,6 @@
 package com.wildLive.secondScreen;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -32,6 +33,13 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
+        SharedPreferences sp = getSharedPreferences("quizdata", MODE_PRIVATE);
+        score = sp.getInt("score", 0);
+        questionNumber = sp.getInt("questionNumber", 0);
+
+        Toast.makeText(QuizActivity.this, "LOADQUIZDATA - Score: "+score+" QuestionNumber: "+questionNumber, Toast.LENGTH_SHORT).show();
+
+
         //DisplayMetrics dm = new DisplayMetrics();
         //getWindowManager().getDefaultDisplay().getMetrics(dm);
 
@@ -44,7 +52,25 @@ public class QuizActivity extends AppCompatActivity {
         initiateElements();
         createButtonListeners();
         updateQuestion();
+        updateScore(score);
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        saveQuizData();
+    }
+
+    private void saveQuizData(){
+        SharedPreferences sp = getSharedPreferences("quizdata", MODE_PRIVATE);
+        SharedPreferences.Editor edit = sp.edit();
+        edit.putInt("score",score);
+
+        Toast.makeText(QuizActivity.this, "SAVEQUIZDATA - Score: "+score+" QuestionNumber: "+questionNumber, Toast.LENGTH_SHORT).show();
+
+        edit.putInt("questionNumber",questionNumber);
+        edit.apply();
     }
 
     public boolean onCreateOptionsMenu (Menu menu) {
@@ -82,14 +108,18 @@ public class QuizActivity extends AppCompatActivity {
                 if (buttonA.getText().toString().trim().equals(answer.trim())){
                     score = score+1;
                     updateScore(score);
+                    incrementQuestion();
                     updateQuestion();
+
 
                     //optional
                     Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
+                    incrementQuestion();
                     updateQuestion();
+
                 }
             }
 
@@ -103,14 +133,18 @@ public class QuizActivity extends AppCompatActivity {
                 if (buttonB.getText().toString().trim().equals(answer.trim())){
                     score = score+1;
                     updateScore(score);
+                    incrementQuestion();
                     updateQuestion();
+
 
                     //optional
                     Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
+                    incrementQuestion();
                     updateQuestion();
+
                 }
             }
 
@@ -122,14 +156,18 @@ public class QuizActivity extends AppCompatActivity {
                 if (buttonC.getText().toString().trim().equals(answer.trim())){
                     score = score+1;
                     updateScore(score);
+                    incrementQuestion();
                     updateQuestion();
+
 
                     //optional
                     Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
+                    incrementQuestion();
                     updateQuestion();
+
                 }
             }
 
@@ -142,14 +180,18 @@ public class QuizActivity extends AppCompatActivity {
                     score = score+1;
                     updateScore(score);
 
+                    incrementQuestion();
                     updateQuestion();
+
 
                     //optional
                     Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
+                    incrementQuestion();
                     updateQuestion();
+
                 }
             }
 
@@ -157,7 +199,20 @@ public class QuizActivity extends AppCompatActivity {
 
     }
 
+    private void incrementQuestion(){
+
+        if(questionNumber < questionLibrary.getNumberOfQuestions()-1 ) {
+
+            questionNumber++;
+        }
+        else{
+            questionNumber = 0;
+        }
+    }
+
     private void updateQuestion(){
+
+        Toast.makeText(QuizActivity.this, "CurrentQuestionNumber: "+questionNumber, Toast.LENGTH_SHORT).show();
 
         question.setText(questionLibrary.getQuestion(questionNumber));
 
@@ -168,20 +223,6 @@ public class QuizActivity extends AppCompatActivity {
 
         answer = questionLibrary.getCorrectAnswer(questionNumber);
 
-        System.out.println("Answer: "+answer);
-        System.out.println("Choice A: "+buttonA.getText());
-        System.out.println("Choice B: "+buttonB.getText());
-        System.out.println("Choice C: "+buttonC.getText());
-        System.out.println("Choice D: "+buttonD.getText());
-        System.out.println("Number of questions: "+questionLibrary.getNumberOfQuestions()+" Question Number: "+questionNumber+" Score: "+score);
-
-        if(questionNumber < questionLibrary.getNumberOfQuestions()-1 ) {
-
-            questionNumber++;
-        }
-        else{
-            questionNumber = 0;
-        }
 
     }
 
