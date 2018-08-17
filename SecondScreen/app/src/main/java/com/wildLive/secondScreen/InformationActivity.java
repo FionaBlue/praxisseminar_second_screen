@@ -35,21 +35,21 @@ public class InformationActivity extends AppCompatActivity {
     private TextView wikiContentTitle;                                  // text view for showing wiki-requested title content
     private TextView wikiContentExtract;                                // text view for showing wiki-requested extract content
     private ImageView wikiContentImage;                                 // image view for showing wiki-requested image content
-    private ImageButton buttonInformationNext;                               // button for switching to next activity (temporary!)
+    private ImageButton buttonInformationNext;                          // button for switching to next activity (temporary!)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // setting view (xml-layout) for information activity
         super.onCreate(savedInstanceState);
 
-        // setting layout components after all information was loaded (especially for adapter list view!)
-        registerLayoutComponents();
-
         // registering array with initial content information
         registerContentInformation();
 
         // getting all content information from wiki api
         getContentInformationFromWiki();
+
+        // setting layout components after all information was loaded (especially for adapter list view!)
+        registerLayoutComponents();
 
         // registering button listener
         addListenerOnButton();
@@ -132,29 +132,20 @@ public class InformationActivity extends AppCompatActivity {
 
     // custom adapter for binding list view data
     public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
+
+        public List<CircleImageView> triggerPointList = new ArrayList<>();
+
+        @Override
+        public int getItemCount() {
+            return contentElements.size();
+        }
         @NonNull
         @Override
+        // view holder will be created for each item in recycler-view
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             // binding the layout file - each individual layout will be inflated/filled
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.timeline_item, viewGroup, false);
             return new ViewHolder(view);
-        }
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-            final int position = i;
-            // all widgets and data will be attached to each individual list view item
-            viewHolder.timelineItem.setImageResource(contentElements.get(i).timelineTriggerImage);
-            // registering onclick-listener for content switching
-            viewHolder.timelineItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    integrateInformation(contentElements.get(position).title, contentElements.get(position).extract, contentElements.get(position).wikiImage);
-                }
-            });
-        }
-        @Override
-        public int getItemCount() {
-            return contentElements.size();
         }
         // view holder for performance issues with recyclerView (only visible items are handled)
         public class ViewHolder extends RecyclerView.ViewHolder { //implements View.OnClickListener {
@@ -162,7 +153,44 @@ public class InformationActivity extends AppCompatActivity {
             public ViewHolder(@NonNull final View itemView) {
                 super(itemView);
                 timelineItem = itemView.findViewById(R.id.timelineItem);
+                triggerPointList.add(timelineItem);
+
+                // setting first trigger point highlighting
+                if (triggerPointList.size() == 1) {
+                    setItemActivationState(0);
+                }
             }
+        }
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+            final int position = i;
+            // all widgets and data will be attached to each individual list view item
+            triggerPointList.get(i).setImageResource(contentElements.get(i).timelineTriggerImage);
+            // registering onclick-listener for content switching
+            triggerPointList.get(i).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // loading information data for specific, clicked trigger point
+                    integrateInformation(contentElements.get(position).title, contentElements.get(position).extract, contentElements.get(position).wikiImage);
+
+                    // setting highlighting for current clicked trigger point
+                    setItemActivationState(position);
+                }
+            });
+        }
+        private void setItemActivationState(int position) {
+            // scanning timeline-item-list and setting back activation state and highlighting of previously activated
+            for (int i = 0; i < getItemCount(); i++) {
+                contentElements.get(i).isActive = false;
+            }
+            for (int j = 0; j < triggerPointList.size(); j++) {
+                if (triggerPointList.get(j) != null) {
+                    triggerPointList.get(j).setBorderWidth(0);
+                }
+            }
+            // setting activation state of current trigger point
+            contentElements.get(position).isActive = true;
+            triggerPointList.get(position).setBorderWidth(10);
         }
     }
 
