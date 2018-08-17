@@ -2,6 +2,8 @@ package com.wildLive.secondScreen;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +30,7 @@ public class InformationActivity extends AppCompatActivity {
     // https://www.codeproject.com/Articles/1152595/Android-Horizontal-ListView-Tutorial
     // https://www.youtube.com/watch?v=94rCjYxvzEE
     // https://stackoverflow.com/questions/26682277/how-do-i-get-the-position-selected-in-a-recyclerview
+    // https://stackoverflow.com/questions/30340591/changing-an-imageview-to-black-and-white
 
     public List<ContentElement> contentElements = new ArrayList<>();    // dynamical array for content information
     RecyclerView recyclerListView;                                      // providing option for horizontal list view (= recyclerView)
@@ -132,7 +135,6 @@ public class InformationActivity extends AppCompatActivity {
 
     // custom adapter for binding list view data
     public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
-
         public List<CircleImageView> triggerPointList = new ArrayList<>();
 
         @Override
@@ -150,9 +152,18 @@ public class InformationActivity extends AppCompatActivity {
         // view holder for performance issues with recyclerView (only visible items are handled)
         public class ViewHolder extends RecyclerView.ViewHolder { //implements View.OnClickListener {
             public CircleImageView timelineItem;
+            public View timelineItemDivider;
+
             public ViewHolder(@NonNull final View itemView) {
                 super(itemView);
+                // defining trigger-point-image and setting saturation to gray-scale
                 timelineItem = itemView.findViewById(R.id.timelineItem);
+                setTriggerPointSaturation(timelineItem, 0);
+
+                // defining trigger-point-divider
+                timelineItemDivider = itemView.findViewById(R.id.timelineItemDivider);
+
+                // adding each trigger point (one ViewHolder holds one trigger point) to list for further processing
                 triggerPointList.add(timelineItem);
 
                 // setting first trigger point highlighting
@@ -164,8 +175,10 @@ public class InformationActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
             final int position = i;
+
             // all widgets and data will be attached to each individual list view item
             triggerPointList.get(i).setImageResource(contentElements.get(i).timelineTriggerImage);
+
             // registering onclick-listener for content switching
             triggerPointList.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -177,6 +190,11 @@ public class InformationActivity extends AppCompatActivity {
                     setItemActivationState(position);
                 }
             });
+
+            // setting divider invisible for last trigger point item
+            if (position == contentElements.size()-1) {
+                viewHolder.timelineItemDivider.setVisibility(View.INVISIBLE);
+            }
         }
         private void setItemActivationState(int position) {
             // scanning timeline-item-list and setting back activation state and highlighting of previously activated
@@ -185,12 +203,19 @@ public class InformationActivity extends AppCompatActivity {
             }
             for (int j = 0; j < triggerPointList.size(); j++) {
                 if (triggerPointList.get(j) != null) {
-                    triggerPointList.get(j).setBorderWidth(0);
+                    setTriggerPointSaturation(triggerPointList.get(j), 0);
                 }
             }
             // setting activation state of current trigger point
             contentElements.get(position).isActive = true;
-            triggerPointList.get(position).setBorderWidth(10);
+            setTriggerPointSaturation(triggerPointList.get(position), 1);
+        }
+        // setting saturation value for images
+        private void setTriggerPointSaturation(CircleImageView triggerPoint, int saturation) {
+            ColorMatrix matrix = new ColorMatrix();
+            matrix.setSaturation(saturation);
+            ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+            triggerPoint.setColorFilter(filter);
         }
     }
 
