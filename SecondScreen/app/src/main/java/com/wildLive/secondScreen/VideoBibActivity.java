@@ -24,7 +24,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbnailView.OnInitializedListener {
 
@@ -46,6 +49,9 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
 
     private ImageView chevron_right;
     private ImageView chevron_left;
+
+    private TextView continentTitle;
+    private LinkedHashMap continents;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +76,9 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
                 //Here you will receive the result fired from async class
                 //of onPostExecute(result) method.
                 System.out.println("Main " + output);
+                continentTitle = (TextView)findViewById(R.id.continent);
+                updateContinentTitle(output, 0);
+                continents = output;
             }
         }).execute();
 
@@ -83,6 +92,21 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
         return super.onCreateOptionsMenu(menu);
     }
 
+    private void updateContinentTitle(LinkedHashMap map, Integer index) {
+        continentTitle.setText((String) getContinentByIndex(map, index));
+        //get continent-Videos here
+    }
+
+    //https://stackoverflow.com/questions/5237101/is-it-possible-to-get-element-from-hashmap-by-its-position/5237147
+    //http://www.tutorialspoint.com/java/java_linkedhashmap_class.htm
+    //https://gist.github.com/tejainece/d32cba84b747c0b2e7df
+    private String getContinentByIndex(LinkedHashMap map, int index){
+        Set entrySet = map.entrySet();
+        Map.Entry theEntry = (Map.Entry) entrySet.toArray()[index];
+        System.out.println("entry" + theEntry);
+        return (String) theEntry.getKey();
+    }
+
     private void addListenerOnChevrons() {
         chevron_left = (ImageView)findViewById(R.id.category_chevron_left);
         chevron_left.setOnClickListener(new View.OnClickListener() {
@@ -91,6 +115,17 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
                 //last continent
                 Toast.makeText(getApplicationContext(),
                         "LAST", Toast.LENGTH_SHORT).show();
+
+                Integer continentIndex = (Integer) getContinentIndex(continents, (String) continentTitle.getText());
+
+                System.out.println("ci" + continentIndex + " " + "cs" + continents.size());
+                if (continentIndex - 1 < 0) {
+                    String lastContinent = getContinentByIndex(continents, continents.size() -1);
+                    continentTitle.setText(lastContinent);
+                } else {
+                    String lastContinent = getContinentByIndex(continents, continentIndex -1);
+                    continentTitle.setText(lastContinent);
+                }
             }
         });
 
@@ -101,8 +136,24 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
                 //next continent
                 Toast.makeText(getApplicationContext(),
                         "NEXT", Toast.LENGTH_SHORT).show();
+
+                Integer continentIndex = (Integer) getContinentIndex(continents, (String) continentTitle.getText());
+                if (continentIndex + 1 > continents.size()-1) {
+                    String nextContinent = getContinentByIndex(continents, 0);
+                    continentTitle.setText(nextContinent);
+                } else {
+                    String nextContinent = getContinentByIndex(continents, continentIndex+1);
+                    continentTitle.setText(nextContinent);
+                }
             }
         });
+    }
+
+    //https://stackoverflow.com/questions/10387290/how-to-get-position-of-key-value-in-linkedhashmap-using-its-key
+    private Integer getContinentIndex(LinkedHashMap map, String continent) {
+        Integer index;
+        index = new ArrayList<String>(map.keySet()).indexOf(continent);
+        return index;
     }
 
     @Override

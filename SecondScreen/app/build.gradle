@@ -32,4 +32,5 @@ dependencies {
     implementation files('libs/gson-2.2.2.jar')
     implementation files('libs/signalr-client-sdk-android.jar')
     implementation files('libs/signalr-client-sdk.jar')
+    implementation 'com.google.apis:google-api-services-youtube:v3-rev181-1.22.0'
 }
