@@ -2,16 +2,29 @@ package com.wildLive.secondScreen;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailView;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.LinkedHashMap;
 
 public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbnailView.OnInitializedListener {
 
@@ -49,6 +62,17 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
         // registering button listener
         addListenerOnThumbnails(thumbnailView1);
         addListenerOnThumbnails(thumbnailView2);
+
+        GetPlaylists asyncTask = (GetPlaylists) new GetPlaylists(new GetPlaylists.AsyncResponse(){
+
+            @Override
+            public void processFinish(LinkedHashMap output){
+                //Here you will receive the result fired from async class
+                //of onPostExecute(result) method.
+                System.out.println("Main " + output);
+            }
+        }).execute();
+
 
         //chevron handling
         addListenerOnChevrons();
@@ -134,4 +158,67 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
         });
     }
     // **************************************************************************
+
+    private static class GetPlaylists extends AsyncTask<String, Void, LinkedHashMap> {
+
+        public AsyncResponse delegate = null;
+        private Exception exception;
+        private String PLAYLISTS_REQUEST = "https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=UC2ETsCbgegY8iqQFwS9Xi4w&key=AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI&maxResults=50";
+
+        public GetPlaylists(AsyncResponse delegate){
+            this.delegate = delegate;
+        }
+
+        public interface AsyncResponse {
+            void processFinish(LinkedHashMap output);
+        }
+
+        protected LinkedHashMap doInBackground(String... string) {
+
+            LinkedHashMap<String, String> playlistRondell = new LinkedHashMap<String, String>();
+
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpGet httpget = new HttpGet(PLAYLISTS_REQUEST);
+            org.apache.http.HttpResponse response = null;
+
+            try {
+                response = httpclient.execute(httpget);
+            } catch (Exception e) {
+                this.exception = e;
+            }
+            String responseAsString;
+            JSONObject responseAsJSONObject = null;
+            JSONArray playlistsArray;
+
+            try {
+                responseAsString = EntityUtils.toString(response.getEntity());
+                try {
+                    responseAsJSONObject = new JSONObject(responseAsString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //System.out.println(responseAsJSONObject);
+            try {
+                playlistsArray = responseAsJSONObject.getJSONArray("items");
+
+                for (int i=0; i<playlistsArray.length(); i++){
+                    JSONObject playlist = playlistsArray.getJSONObject(i);
+                    //System.out.println(playlist);
+                    JSONObject snippet = playlist.getJSONObject("snippet");
+                    playlistRondell.put(snippet.getString("title"), playlist.getString("id"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            //System.out.println(playlistRondell);
+            return playlistRondell;
+        }
+
+        protected void onPostExecute(LinkedHashMap result) {
+            delegate.processFinish(result);
+        }
+    }
 }
