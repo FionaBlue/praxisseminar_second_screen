@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
@@ -30,6 +31,9 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
     private YouTubeThumbnailView thumbnailView2;
     private YouTubeThumbnailLoader youTubeThumbnailLoader;
 
+    private ImageView chevron_right;
+    private ImageView chevron_left;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // setting view (xml-layout) on creating app
@@ -45,11 +49,36 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
         // registering button listener
         addListenerOnThumbnails(thumbnailView1);
         addListenerOnThumbnails(thumbnailView2);
+
+        //chevron handling
+        addListenerOnChevrons();
     }
 
     public boolean onCreateOptionsMenu (Menu menu) {
         getMenuInflater().inflate(R.menu.videobib, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void addListenerOnChevrons() {
+        chevron_left = (ImageView)findViewById(R.id.category_chevron_left);
+        chevron_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //last continent
+                Toast.makeText(getApplicationContext(),
+                        "LAST", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        chevron_right = (ImageView)findViewById(R.id.category_chevron_right);
+        chevron_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //next continent
+                Toast.makeText(getApplicationContext(),
+                        "NEXT", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
