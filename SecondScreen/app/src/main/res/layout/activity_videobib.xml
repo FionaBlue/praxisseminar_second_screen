@@ -9,18 +9,51 @@
     android:padding="3dip">
 
     <TableRow
+        android:id="@+id/category_rotary"
         android:layout_width="match_parent"
-        android:layout_height="40dip"
-        android:background="@color/colorAntarktis">
-        <TextView
+        android:layout_height="40dip">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/continent"
-            android:text="Antarktis"
-            android:textAlignment="center"
-            android:textColor="@color/colorWhite"
-            android:textSize="30sp"/>
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/category_chevron_left"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_chevron_left_grey_24dp" />
+
+            <android.support.v7.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                card_view:cardBackgroundColor="@color/colorAntarktis"
+                card_view:cardCornerRadius="15dp">
+
+                <TextView
+                    android:id="@+id/continent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Antarktis"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="30sp" />
+
+            </android.support.v7.widget.CardView>
+
+
+            <ImageView
+                android:id="@+id/category_chevron_right"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_chevron_right_grey_24dp" />
+
+        </LinearLayout>
     </TableRow>
+
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
