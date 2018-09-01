@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,20 +40,21 @@ public class InformationActivity extends AppCompatActivity {
     private TextView wikiContentExtract;                                // text view for showing wiki-requested extract content
     private ImageView wikiContentImage;                                 // image view for showing wiki-requested image content
     private ImageButton buttonInformationNext;                          // button for switching to next activity (temporary!)
+    private ProgressBar progressBar;                                    // progress loader which waits for information content to be loaded
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // setting view (xml-layout) for information activity
         super.onCreate(savedInstanceState);
 
+        // setting layout components after all information was loaded (especially for adapter list view!)
+        registerLayoutComponents();
+
         // registering array with initial content information
         registerContentInformation();
 
         // getting all content information from wiki api
         getContentInformationFromWiki();
-
-        // setting layout components after all information was loaded (especially for adapter list view!)
-        registerLayoutComponents();
 
         // registering button listener
         addListenerOnButton();
@@ -64,8 +66,14 @@ public class InformationActivity extends AppCompatActivity {
     }
 
     private void registerLayoutComponents() {
-        // registering layout and layout-components
+        // defining actual layout group
         setContentView(R.layout.activity_information);
+
+        // registering and starting progress bar loader that waits for wiki information content to be loaded
+        progressBar = (ProgressBar) findViewById(R.id.informationLoader);
+        progressBar.setVisibility(View.VISIBLE);
+
+        // registering layout and layout-components
         wikiContentImage = (ImageView) findViewById(R.id.wikiImage);
         wikiContentTitle = (TextView) findViewById(R.id.currentWikiTitle);
         wikiContentExtract = (TextView) findViewById(R.id.currentWikiExtract);
@@ -103,6 +111,12 @@ public class InformationActivity extends AppCompatActivity {
                     // loading responded information and local image in card view elements
                     if (wikiElement.isActive == true) {
                         integrateInformation(wikiElement.title, wikiElement.extract, wikiElement.wikiImage);
+                    }
+
+                    // checking if last content element information was retrieved, than stopping progress bar and refresh adapter
+                    if (wikiElement == contentElements.get(contentElements.size() - 1)) {
+                        adapter.notifyDataSetChanged();
+                        progressBar.setVisibility(View.GONE);
                     }
                 }
             }).execute(wikiElement.identifier);

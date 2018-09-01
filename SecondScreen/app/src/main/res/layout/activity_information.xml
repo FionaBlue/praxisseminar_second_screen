@@ -118,5 +118,13 @@
             android:textColor="#7F7FFF"
             android:text="VIDEO REMOTE CONTROLLER" />
 
+        <!-- progress bar that waits for content to be loaded -->
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="100dp"
+            android:layout_gravity="center"
+            android:id="@+id/informationLoader"/>
+
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
