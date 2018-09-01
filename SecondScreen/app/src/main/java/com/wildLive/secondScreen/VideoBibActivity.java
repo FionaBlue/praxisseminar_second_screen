@@ -2,11 +2,14 @@ package com.wildLive.secondScreen;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -98,9 +101,54 @@ public class VideoBibActivity extends AppCompatActivity {
     private void updateContinentTitle(LinkedHashMap map, Integer index) {
         continentTitle.setText((String) getContinentByIndex(map, index));
         String continentName = (String) continentTitle.getText();
+        setContientColor(continentName);
         String continentID = (String) map.get(continentName);
         arrayOfVideos.clear();
         getContinentVideos(continentID);
+    }
+
+    //https://stackoverflow.com/questions/32409964/get-color-resource-as-string/32410035
+    private void setContientColor(String continent) {
+        System.out.println("Continent " + continent);
+        CardView continentCard = (CardView) continentTitle.getParent();
+        int continentColor;
+        switch(continent) {
+            case "Arktis":
+                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorArktis)));
+                continentCard.setCardBackgroundColor(continentColor);
+                break;
+            case "Antarktis":
+                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAntarktis)));
+                continentCard.setCardBackgroundColor(continentColor);
+                break;
+            case "Afrika":
+                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAfrika)));
+                continentCard.setCardBackgroundColor(continentColor);
+                break;
+            case "Australien":
+                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAustralien)));
+                continentCard.setCardBackgroundColor(continentColor);
+                break;
+            case "Südamerika":
+                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorSüdamerika)));
+                continentCard.setCardBackgroundColor(continentColor);
+                break;
+            case "Nordamerika":
+                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorNordamerika)));
+                continentCard.setCardBackgroundColor(continentColor);
+                break;
+            case "Europa":
+                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorEuropa)));
+                continentCard.setCardBackgroundColor(continentColor);
+                break;
+            case "Asien":
+                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAsien)));
+                continentCard.setCardBackgroundColor(continentColor);
+                break;
+
+            default:
+                System.out.println("SWITCH ERROR" + continent);
+        }
     }
 
     private void getContinentVideos(String continent) {
@@ -165,11 +213,13 @@ public class VideoBibActivity extends AppCompatActivity {
                 if (continentIndex - 1 < 0) {
                     String lastContinent = getContinentByIndex(continents, continents.size() -1);
                     continentTitle.setText(lastContinent);
+                    setContientColor(lastContinent);
                     resetVideoView();
                     getContinentVideos((String) continents.get(lastContinent));
                 } else {
                     String lastContinent = getContinentByIndex(continents, continentIndex -1);
                     continentTitle.setText(lastContinent);
+                    setContientColor(lastContinent);
                     resetVideoView();
                     getContinentVideos((String) continents.get(lastContinent));
                 }
@@ -191,11 +241,13 @@ public class VideoBibActivity extends AppCompatActivity {
                 if (continentIndex + 1 > continents.size()-1) {
                     String nextContinent = getContinentByIndex(continents, 0);
                     continentTitle.setText(nextContinent);
+                    setContientColor(nextContinent);
                     resetVideoView();
                     getContinentVideos((String) continents.get(nextContinent));
                 } else {
                     String nextContinent = getContinentByIndex(continents, continentIndex+1);
                     continentTitle.setText(nextContinent);
+                    setContientColor(nextContinent);
                     resetVideoView();
                     getContinentVideos((String) continents.get(nextContinent));
                 }
