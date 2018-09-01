@@ -11,7 +11,8 @@
     <TableRow
         android:id="@+id/category_rotary"
         android:layout_width="match_parent"
-        android:layout_height="40dip">
+        android:layout_height="40dip"
+        android:layout_marginBottom="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"

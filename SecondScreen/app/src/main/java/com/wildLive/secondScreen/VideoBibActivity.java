@@ -3,6 +3,7 @@ package com.wildLive.secondScreen;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -217,6 +218,7 @@ public class VideoBibActivity extends AppCompatActivity {
             TextView videoTitle;
             TextView videoLength;
             YouTubeThumbnailView videoThumbnail;
+            ProgressBar videoLoad;
         }
 
         public VideoListAdapter(Context context, ArrayList<VideoDataModel> videoDataModels) {
@@ -233,6 +235,7 @@ public class VideoBibActivity extends AppCompatActivity {
                 videoViewHolder.videoTitle = (TextView) convertView.findViewById(R.id.titleView);
                 videoViewHolder.videoLength = (TextView) convertView.findViewById(R.id.lengthView);
                 videoViewHolder.videoThumbnail = (YouTubeThumbnailView) convertView.findViewById(R.id.thumbnailView);
+                videoViewHolder.videoLoad = (ProgressBar) convertView.findViewById(R.id.thumbnailLoad);
                 convertView.setTag(videoViewHolder);
             } else {
                 videoViewHolder = (VideoViewHolder) convertView.getTag();
@@ -249,6 +252,8 @@ public class VideoBibActivity extends AppCompatActivity {
                 @Override
                 public void processFinish(Drawable output) {
                     videoViewHolder.videoThumbnail.setImageDrawable(output);
+                    videoViewHolder.videoLoad.setVisibility(View.GONE);
+                    videoViewHolder.videoThumbnail.setVisibility(View.VISIBLE);
                 }
             }).execute(urlRequest);
             addListenerOnImages(videoViewHolder.videoThumbnail);
