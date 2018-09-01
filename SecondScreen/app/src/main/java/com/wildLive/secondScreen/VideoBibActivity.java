@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +62,8 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
     private TextView continentTitle;
     private LinkedHashMap continents;
 
+    private ProgressBar progressBar;
+
     ArrayList<VideoDataModel> arrayOfVideos = new ArrayList<>();
 
     @Override
@@ -68,6 +71,7 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
         // setting view (xml-layout) on creating app
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videobib);
+        progressBar = findViewById(R.id.load_videos);
         thumbnailView1 = (YouTubeThumbnailView)findViewById(R.id.thumbnailview1);
         thumbnailView1.initialize(DEVELOPER_KEY, this);
         thumbnailView1.setTag(R.id.videoId, "Nbrx5tFJzyQ");
@@ -106,6 +110,7 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
         arrayOfVideos.clear();
         LinkedHashMap emptyMap = new LinkedHashMap();
         setVideoList(emptyMap);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     private void updateContinentTitle(LinkedHashMap map, Integer index) {
@@ -144,6 +149,7 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
         ListView videoListView = (ListView) findViewById(R.id.videoList);
         videoListView.setAdapter(videoListAdapter);
         //https://stackoverflow.com/questions/18708955/invisible-components-still-take-up-space
+        progressBar.setVisibility(View.GONE);
     }
 
     //https://stackoverflow.com/questions/5237101/is-it-possible-to-get-element-from-hashmap-by-its-position/5237147

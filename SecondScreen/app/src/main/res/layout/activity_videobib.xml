@@ -54,6 +54,12 @@
         </LinearLayout>
     </TableRow>
 
+    <ProgressBar
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:id="@+id/load_videos"/>
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
