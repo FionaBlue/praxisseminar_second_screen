@@ -2,12 +2,17 @@ package com.wildLive.secondScreen;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,8 +29,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,6 +60,8 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
 
     private TextView continentTitle;
     private LinkedHashMap continents;
+
+    ArrayList<VideoDataModel> arrayOfVideos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,9 +102,48 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
         return super.onCreateOptionsMenu(menu);
     }
 
+    private void resetVideoView(){
+        arrayOfVideos.clear();
+        LinkedHashMap emptyMap = new LinkedHashMap();
+        setVideoList(emptyMap);
+    }
+
     private void updateContinentTitle(LinkedHashMap map, Integer index) {
         continentTitle.setText((String) getContinentByIndex(map, index));
-        //get continent-Videos here
+        String continentName = (String) continentTitle.getText();
+        String continentID = (String) map.get(continentName);
+        arrayOfVideos.clear();
+        getContinentVideos(continentID);
+    }
+
+    private void getContinentVideos(String continent) {
+        GetVideos videoAsyncTask = (GetVideos) new GetVideos(new GetVideos.AsyncResponse(){
+
+            @Override
+            public void processFinish(LinkedHashMap output){
+                //Here you will receive the result fired from async class
+                //of onPostExecute(result) method.
+                System.out.println("Videos " + output);
+                setVideoList(output);
+            }
+        }).execute(continent);
+    }
+
+    private void setVideoList(LinkedHashMap map){
+
+        List videotitles = new ArrayList(map.keySet());
+        System.out.println("VT " + videotitles.toString());
+
+        for (int i=0; i<videotitles.size(); i++){
+            String actualTitle = videotitles.get(i).toString();
+            VideoDataModel newVideoData = new VideoDataModel(actualTitle, map.get(actualTitle).toString(), "0:00");
+            arrayOfVideos.add(newVideoData);
+        }
+
+        VideoListAdapter videoListAdapter = new VideoListAdapter(this, arrayOfVideos);
+        ListView videoListView = (ListView) findViewById(R.id.videoList);
+        videoListView.setAdapter(videoListAdapter);
+        //https://stackoverflow.com/questions/18708955/invisible-components-still-take-up-space
     }
 
     //https://stackoverflow.com/questions/5237101/is-it-possible-to-get-element-from-hashmap-by-its-position/5237147
@@ -122,9 +171,13 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
                 if (continentIndex - 1 < 0) {
                     String lastContinent = getContinentByIndex(continents, continents.size() -1);
                     continentTitle.setText(lastContinent);
+                    resetVideoView();
+                    getContinentVideos((String) continents.get(lastContinent));
                 } else {
                     String lastContinent = getContinentByIndex(continents, continentIndex -1);
                     continentTitle.setText(lastContinent);
+                    resetVideoView();
+                    getContinentVideos((String) continents.get(lastContinent));
                 }
             }
         });
@@ -141,9 +194,13 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
                 if (continentIndex + 1 > continents.size()-1) {
                     String nextContinent = getContinentByIndex(continents, 0);
                     continentTitle.setText(nextContinent);
+                    resetVideoView();
+                    getContinentVideos((String) continents.get(nextContinent));
                 } else {
                     String nextContinent = getContinentByIndex(continents, continentIndex+1);
                     continentTitle.setText(nextContinent);
+                    resetVideoView();
+                    getContinentVideos((String) continents.get(nextContinent));
                 }
             }
         });
@@ -208,6 +265,178 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
             }
         });
     }
+
+    // **************************************************************************
+    //https://guides.codepath.com/android/Using-an-ArrayAdapter-with-ListView
+    //https://stackoverflow.com/questions/35606368/java-lang-illegalstateexception-not-connected-call-connect-youtube-api
+
+    public class VideoListAdapter extends ArrayAdapter<VideoDataModel> {
+
+        public static final String DEVELOPER_KEY = "AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI";
+        public boolean loadThumbnail = true;
+        private String PRE_REQUEST = "https://i.ytimg.com/vi/";
+        private String POST_REQUEST = "/mqdefault.jpg";
+
+        private class VideoViewHolder {
+            TextView videoTitle;
+            TextView videoLength;
+            YouTubeThumbnailView videoThumbnail;
+        }
+
+        public VideoListAdapter(Context context, ArrayList<VideoDataModel> videoDataModels) {
+            super(context, R.layout.videolist_item, videoDataModels);
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent){
+            VideoDataModel videoDataModel = getItem(position);
+            final VideoViewHolder videoViewHolder;
+            if (convertView == null) {
+                videoViewHolder = new VideoViewHolder();
+                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.videolist_item, parent, false);
+
+                videoViewHolder.videoTitle = (TextView) convertView.findViewById(R.id.titleView);
+                videoViewHolder.videoLength = (TextView) convertView.findViewById(R.id.lengthView);
+                videoViewHolder.videoThumbnail = (YouTubeThumbnailView) convertView.findViewById(R.id.thumbnailView);
+                convertView.setTag(videoViewHolder);
+            } else {
+                videoViewHolder = (VideoViewHolder) convertView.getTag();
+            }
+            videoViewHolder.videoTitle.setText(videoDataModel.videoTitle);
+            videoViewHolder.videoLength.setText(videoDataModel.videoLength);
+            videoViewHolder.videoThumbnail.setTag(videoDataModel.videoID);
+            System.out.println("TAG " + videoViewHolder.videoThumbnail.getTag().toString());
+            System.out.println("thumbnails" + videoDataModel.videoID);
+            //GetThumbnails asyncTask = (GetThumbnails) new GetThumbnails().execute(videoViewHolder.videoThumbnail);
+            String urlRequest = PRE_REQUEST + videoDataModel.videoID + POST_REQUEST;
+            GetImage imageAsyncTask = (GetImage) new GetImage(new GetImage.AsyncResponse(){
+
+                @Override
+                public void processFinish(Drawable output) {
+                    videoViewHolder.videoThumbnail.setImageDrawable(output);
+                }
+            }).execute(urlRequest);
+            return convertView;
+        }
+    }
+
+    // **************************************************************************
+    //https://stackoverflow.com/questions/6407324/how-to-display-image-from-url-on-android
+    private static class GetImage extends AsyncTask<String, Void, Drawable> {
+
+        private String inputURL;
+        private AsyncResponse delegate;
+
+        public GetImage(AsyncResponse delegate){
+            this.delegate = delegate;
+        }
+
+        public interface AsyncResponse {
+            void processFinish(Drawable output);
+        }
+
+        protected void onPostExecute (Drawable result) {
+            delegate.processFinish(result);
+        }
+
+
+        @Override
+        protected Drawable doInBackground(String... params) {
+            inputURL = params[0];
+            InputStream is = null;
+            try {
+                is = (InputStream) new URL(inputURL).getContent();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Drawable d = Drawable.createFromStream(is, "Thumbnail");
+            return d;
+        }
+    }
+
+    // **************************************************************************
+
+    public class VideoDataModel {
+        String videoTitle;
+        String videoID;
+        String videoLength;
+
+        public VideoDataModel(String videoTitle, String videoID, String videoLength) {
+            this.videoTitle = videoTitle;
+            this.videoID = videoID;
+            this.videoLength = videoLength;
+        }
+    }
+
+    // **************************************************************************
+    //https://stackoverflow.com/questions/17549042/android-asynctask-passing-a-single-string
+    private static class GetVideos extends AsyncTask<String, Void, LinkedHashMap> {
+        public AsyncResponse delegate = null;
+        private Exception exception;
+        private String PLAYLIST_REQUEST = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50";
+        private String PLAYLIST_PREFIX = "&playlistId=";
+        private String DEVELOPERKEY = "&key=AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI";
+        private String TEST_REQUEST = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=PLrEmzVduftH1S9XyRT5F9AZNt9ZzopwE5&key=AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI";
+
+        public GetVideos(AsyncResponse delegate){
+            this.delegate = delegate;
+        }
+
+        public interface AsyncResponse {
+            void processFinish(LinkedHashMap output);
+        }
+
+        protected void onPostExecute (LinkedHashMap result) {
+            delegate.processFinish(result);
+        }
+
+        @Override
+        protected LinkedHashMap doInBackground(String... params) {
+
+            LinkedHashMap <String, String> playlistVideos = new LinkedHashMap<>();
+
+            HttpClient httpclient = new DefaultHttpClient();
+            String playlistID = params[0];
+            //System.out.println("playlistID" + playlistID);
+            HttpGet httpget = new HttpGet(PLAYLIST_REQUEST + PLAYLIST_PREFIX + playlistID + DEVELOPERKEY);
+            org.apache.http.HttpResponse response = null;
+            try {
+                response = httpclient.execute(httpget);
+            } catch (Exception e) {
+                this.exception = e;
+            }
+            String responseAsString;
+            JSONObject responseAsJSONObject = null;
+            JSONArray playlistVideosArray;
+
+            try {
+                responseAsString = EntityUtils.toString(response.getEntity());
+                //System.out.println(responseAsString);
+                try {
+                    responseAsJSONObject = new JSONObject(responseAsString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                playlistVideosArray = responseAsJSONObject.getJSONArray("items");
+                //System.out.println(playlistVideosArray);
+                for (int i=0; i<playlistVideosArray.length(); i++){
+                    JSONObject video = playlistVideosArray.getJSONObject(i);
+                    //System.out.println(video);
+                    JSONObject snippet = video.getJSONObject("snippet");
+                    JSONObject resourceId = snippet.getJSONObject("resourceId");
+                    playlistVideos.put(snippet.getString("title"), resourceId.getString("videoId"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            //System.out.println("PV" + playlistVideos);
+            return playlistVideos;
+        }
+    }
+
     // **************************************************************************
 
     private static class GetPlaylists extends AsyncTask<String, Void, LinkedHashMap> {
