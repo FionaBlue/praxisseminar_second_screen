@@ -77,12 +77,10 @@ public class VideoBibActivity extends AppCompatActivity {
                 continentTitle = (TextView)findViewById(R.id.continent);
                 updateContinentTitle(output, 0);
                 continents = output;
+                //chevron handling
+                addListenerOnChevrons();
             }
         }).execute();
-
-
-        //chevron handling
-        addListenerOnChevrons();
     }
 
     public boolean onCreateOptionsMenu (Menu menu) {
@@ -114,6 +112,9 @@ public class VideoBibActivity extends AppCompatActivity {
                 //of onPostExecute(result) method.
                 System.out.println("Videos " + output);
                 setVideoList(output);
+
+                chevron_right.setClickable(true);
+                chevron_left.setClickable(true);
             }
         }).execute(continent);
     }
@@ -155,6 +156,9 @@ public class VideoBibActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),
                         "LAST", Toast.LENGTH_SHORT).show();
 
+                chevron_left.setClickable(false);
+                chevron_right.setClickable(false);
+
                 Integer continentIndex = (Integer) getContinentIndex(continents, (String) continentTitle.getText());
 
                 System.out.println("ci" + continentIndex + " " + "cs" + continents.size());
@@ -179,6 +183,9 @@ public class VideoBibActivity extends AppCompatActivity {
                 //next continent
                 Toast.makeText(getApplicationContext(),
                         "NEXT", Toast.LENGTH_SHORT).show();
+
+                chevron_left.setClickable(false);
+                chevron_right.setClickable(false);
 
                 Integer continentIndex = (Integer) getContinentIndex(continents, (String) continentTitle.getText());
                 if (continentIndex + 1 > continents.size()-1) {
