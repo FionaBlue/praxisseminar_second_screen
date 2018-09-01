@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbnailView.OnInitializedListener {
+public class VideoBibActivity extends AppCompatActivity {
 
     // **************************************************************************
     // here insert video-player-bib-content for selecting videos
@@ -48,13 +48,6 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
     //http://android-coding.blogspot.com/2013/04/display-youtubethumbnailview-of-youtube.html
     //https://stackoverflow.com/questions/37253796/youtube-playlist-to-listview-in-android-studio#
     //https://stackoverflow.com/questions/34371461/how-to-load-youtube-thumbnails-in-a-recyclerview-using-youtube-api
-
-    public static final String DEVELOPER_KEY = "AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI";
-    private static final String PLAYLIST_ID = "PLrEmzVduftH2M2tt4GVOTz8DoVkTZwFqg";
-
-    private YouTubeThumbnailView thumbnailView1;
-    private YouTubeThumbnailView thumbnailView2;
-    private YouTubeThumbnailLoader youTubeThumbnailLoader;
 
     private ImageView chevron_right;
     private ImageView chevron_left;
@@ -72,16 +65,6 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videobib);
         progressBar = findViewById(R.id.load_videos);
-        thumbnailView1 = (YouTubeThumbnailView)findViewById(R.id.thumbnailview1);
-        thumbnailView1.initialize(DEVELOPER_KEY, this);
-        thumbnailView1.setTag(R.id.videoId, "Nbrx5tFJzyQ");
-
-        thumbnailView2 = (YouTubeThumbnailView)findViewById(R.id.thumbnailview2);
-        thumbnailView2.initialize(DEVELOPER_KEY, this);
-        thumbnailView2.setTag(R.id.videoId, "b5Kk_qe8f4g");
-        // registering button listener
-        addListenerOnThumbnails(thumbnailView1);
-        addListenerOnThumbnails(thumbnailView2);
 
         GetPlaylists asyncTask = (GetPlaylists) new GetPlaylists(new GetPlaylists.AsyncResponse(){
 
@@ -219,59 +202,6 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
         return index;
     }
 
-    @Override
-    public void onInitializationFailure(YouTubeThumbnailView thumbnailView,
-                                        YouTubeInitializationResult errorReason) {
-
-        String errorMessage =
-                String.format("onInitializationFailure (%1$s)",
-                        errorReason.toString());
-        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onInitializationSuccess(YouTubeThumbnailView thumbnailView,
-                                        YouTubeThumbnailLoader thumbnailLoader) {
-
-        Toast.makeText(getApplicationContext(),
-                "onInitializationSuccess", Toast.LENGTH_SHORT).show();
-
-        youTubeThumbnailLoader = thumbnailLoader;
-        thumbnailLoader.setOnThumbnailLoadedListener(new ThumbnailListener());
-        youTubeThumbnailLoader.setVideo((String) thumbnailView.getTag(R.id.videoId));
-    }
-
-    private final class ThumbnailListener implements
-            YouTubeThumbnailLoader.OnThumbnailLoadedListener {
-
-        @Override
-        public void onThumbnailLoaded(YouTubeThumbnailView thumbnail, String videoId) {
-            Toast.makeText(getApplicationContext(),
-                    "onThumbnailLoaded", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onThumbnailError(YouTubeThumbnailView thumbnail,
-                                     YouTubeThumbnailLoader.ErrorReason reason) {
-            Toast.makeText(getApplicationContext(),
-                    "onThumbnailError", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void addListenerOnThumbnails(YouTubeThumbnailView thumbnailView) {
-        final Context context = this;
-        // registering button and button-behaviour by on-clicking
-        thumbnailView.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                // switching to next activity on button click
-                Intent intent = new Intent(context, InformationActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
-
     // **************************************************************************
     //https://guides.codepath.com/android/Using-an-ArrayAdapter-with-ListView
     //https://stackoverflow.com/questions/35606368/java-lang-illegalstateexception-not-connected-call-connect-youtube-api
@@ -321,7 +251,22 @@ public class VideoBibActivity extends AppCompatActivity implements YouTubeThumbn
                     videoViewHolder.videoThumbnail.setImageDrawable(output);
                 }
             }).execute(urlRequest);
+            addListenerOnImages(videoViewHolder.videoThumbnail);
             return convertView;
+        }
+
+        private void addListenerOnImages(YouTubeThumbnailView thumbnailView) {
+            final Context context = getApplicationContext();
+            // registering button and button-behaviour by on-clicking
+            thumbnailView.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View arg0) {
+                    // switching to next activity on button click
+                    Intent intent = new Intent(context, InformationActivity.class);
+                    startActivity(intent);
+                }
+            });
         }
     }
 
