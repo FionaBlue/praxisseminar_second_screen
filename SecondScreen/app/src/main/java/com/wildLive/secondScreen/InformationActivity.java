@@ -208,9 +208,10 @@ public class InformationActivity extends AppCompatActivity {
             // adding each trigger point (one ViewHolder holds one trigger point) to list for further processing
             triggerPointList.add(viewHolder.timelineItem);
 
-            // setting first trigger point highlighting
+            // setting first trigger point highlighting and invisible left-arrow
             if (triggerPointList.size() == 1) {
                 setItemActivationState(0);
+                arrowLeft.setVisibility(View.INVISIBLE);
             }
 
             // all widgets and data will be attached to each individual list view item
@@ -225,6 +226,18 @@ public class InformationActivity extends AppCompatActivity {
 
                     // setting highlighting for current clicked trigger point
                     setItemActivationState(position);
+
+                    // activating/deactivating timeline arrows (on border reached)
+                    if (position == 0) {
+                        arrowLeft.setVisibility(View.INVISIBLE);
+                        arrowRight.setVisibility(View.VISIBLE);
+                    } else if (position == getItemCount()-1) {
+                        arrowRight.setVisibility(View.INVISIBLE);
+                        arrowLeft.setVisibility(View.VISIBLE);
+                    } else {
+                        arrowLeft.setVisibility(View.VISIBLE);
+                        arrowRight.setVisibility(View.VISIBLE);
+                    }
                 }
             });
 
