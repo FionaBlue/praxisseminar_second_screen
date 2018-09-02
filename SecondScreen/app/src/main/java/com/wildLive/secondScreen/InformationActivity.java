@@ -41,6 +41,7 @@ public class InformationActivity extends AppCompatActivity {
     private ImageView wikiContentImage;                                 // image view for showing wiki-requested image content
     private ImageButton buttonInformationNext;                          // button for switching to next activity (temporary!)
     private ProgressBar progressBar;                                    // progress loader which waits for information content to be loaded
+    private ImageView arrowLeft, arrowRight;                            // arrows/chevrons for switching to next/previous timeline point
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +57,8 @@ public class InformationActivity extends AppCompatActivity {
         // getting all content information from wiki api
         getContentInformationFromWiki();
 
-        // registering button listener
-        addListenerOnButton();
+        // registering ui component listener
+        addListenersOnUiComponents();
     }
 
     public boolean onCreateOptionsMenu (Menu menu) {
@@ -80,7 +81,10 @@ public class InformationActivity extends AppCompatActivity {
         wikiContentExtract.setMovementMethod(new ScrollingMovementMethod());        // making extract content scrollable
         buttonInformationNext = (ImageButton) findViewById(R.id.buttonInformationNext);
 
-        // registering list view (recyclerView) with custom array adapter
+        // registering list view (recyclerView) with arrows/chevrons and custom array adapter
+        arrowLeft = (ImageView) findViewById(R.id.timelineChevronLeft);
+        arrowRight = (ImageView) findViewById(R.id.timelineChevronRight);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);   // setting orientation to horizontal!
         recyclerListView = (RecyclerView) findViewById(R.id.timeline);
         recyclerListView.setLayoutManager(layoutManager);
@@ -93,7 +97,9 @@ public class InformationActivity extends AppCompatActivity {
         contentElements.add(new ContentElement("Delfine", "","", false, R.drawable.wiki_delphin, R.drawable.wiki_delphin));
         contentElements.add(new ContentElement("Wanderameisen", "","", false, R.drawable.wiki_wanderameisen, R.drawable.wiki_wanderameisen));
         contentElements.add(new ContentElement("Wanderfalke", "","", false, R.drawable.wiki_wanderfalke, R.drawable.wiki_wanderfalke));
+        contentElements.add(new ContentElement("Monarchfalter", "", "", false, R.drawable.wiki_monarchfalter, R.drawable.wiki_monarchfalter));
         contentElements.add(new ContentElement("Zebra", "", "", false, R.drawable.wiki_zebra, R.drawable.wiki_zebra));
+        contentElements.add(new ContentElement("Krokodile", "", "", false, R.drawable.wiki_krokodile, R.drawable.wiki_krokodile));
     }
 
     private void getContentInformationFromWiki() {
@@ -115,8 +121,9 @@ public class InformationActivity extends AppCompatActivity {
 
                     // checking if last content element information was retrieved, than stopping progress bar and refresh adapter
                     if (wikiElement == contentElements.get(contentElements.size() - 1)) {
-                        adapter.notifyDataSetChanged();
-                        progressBar.setVisibility(View.GONE);
+                        adapter.triggerPointList.clear();           // clearing list of trigger points for rearranging
+                        adapter.notifyDataSetChanged();             // updating recycler-view-data (else nothing will show up after progress-bar loaded)
+                        progressBar.setVisibility(View.GONE);       // deactivating progress-loader
                     }
                 }
             }).execute(wikiElement.identifier);
@@ -131,7 +138,7 @@ public class InformationActivity extends AppCompatActivity {
         wikiContentImage.setImageResource(wikiImage);
     }
 
-    public void addListenerOnButton() {
+    public void addListenersOnUiComponents() {
         final Context context = this;
         // registering button and button-behaviour by on-clicking
         buttonInformationNext.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +150,22 @@ public class InformationActivity extends AppCompatActivity {
                 //the quiz again and continue the quiz
                 Intent intent = new Intent(context, QuizActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        // registering arrow-behaviour by on-clicking
+        arrowLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                // switching to previous timeline item
+                adapter.switchTriggerPoint(-1);
+            }
+        });
+        arrowRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                // switching to next timeline item
+                adapter.switchTriggerPoint(+1);
             }
         });
     }
@@ -176,19 +199,19 @@ public class InformationActivity extends AppCompatActivity {
 
                 // defining trigger-point-divider
                 timelineItemDivider = itemView.findViewById(R.id.timelineItemDivider);
-
-                // adding each trigger point (one ViewHolder holds one trigger point) to list for further processing
-                triggerPointList.add(timelineItem);
-
-                // setting first trigger point highlighting
-                if (triggerPointList.size() == 1) {
-                    setItemActivationState(0);
-                }
             }
         }
         @Override
         public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
             final int position = i;
+
+            // adding each trigger point (one ViewHolder holds one trigger point) to list for further processing
+            triggerPointList.add(viewHolder.timelineItem);
+
+            // setting first trigger point highlighting
+            if (triggerPointList.size() == 1) {
+                setItemActivationState(0);
+            }
 
             // all widgets and data will be attached to each individual list view item
             triggerPointList.get(i).setImageResource(contentElements.get(i).timelineTriggerImage);
@@ -224,12 +247,31 @@ public class InformationActivity extends AppCompatActivity {
             contentElements.get(position).isActive = true;
             setTriggerPointSaturation(triggerPointList.get(position), 1);
         }
+        private int getItemActivationState() {
+            int activatedPosition = -1;
+            for (int i = 0; i < getItemCount(); i++) {
+                if (contentElements.get(i).isActive == true) {
+                    activatedPosition = i;
+                }
+            }
+            return activatedPosition;
+        }
         // setting saturation value for images
         private void setTriggerPointSaturation(CircleImageView triggerPoint, int saturation) {
             ColorMatrix matrix = new ColorMatrix();
             matrix.setSaturation(saturation);
             ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
             triggerPoint.setColorFilter(filter);
+        }
+        // switching trigger point after arrow (left or right) was clicked
+        private void switchTriggerPoint(int direction) {
+            // getting position of previous or next trigger point
+            int switchedToTriggerPoint = getItemActivationState() + direction;
+
+            // checking if previous or next trigger point is in range
+            if ((switchedToTriggerPoint >= 0) && (switchedToTriggerPoint <= getItemCount()-1)) {
+                triggerPointList.get(switchedToTriggerPoint).callOnClick();
+            }
         }
     }
 

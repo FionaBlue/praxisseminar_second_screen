@@ -10,15 +10,40 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- wiki content trigger timeline (video trigger-points), holding horizontal list view items -->
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/timeline"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:gravity="center"
             android:layout_weight="0.15"
-            android:padding="15dp"
-            android:orientation="horizontal"/>
+            android:orientation="horizontal">
+
+            <!-- arrow/chevron left -->
+            <ImageView
+                android:id="@+id/timelineChevronLeft"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_chevron_left_grey_24dp" />
+
+            <!-- wiki content trigger timeline (video trigger-points), holding horizontal list view items -->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/timeline"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_weight="0.8"
+                android:padding="15dp"
+                android:orientation="horizontal"/>
+
+            <!-- arrow/chevron right -->
+            <ImageView
+                android:id="@+id/timelineChevronRight"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_chevron_right_grey_24dp" />
+        </LinearLayout>
 
         <!-- specific wiki content (card view) -->
         <android.support.v7.widget.CardView
@@ -107,27 +132,13 @@
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
-        <!-- video controller (play, pause, etc.)
-        <TextView
-            android:id="@+id/remoteController"
+        <!-- video controller (play, pause, etc.) -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.10"
-            android:gravity="center"
             android:background="#212121"
-            android:textColor="#7F7FFF"
-            android:text="VIDEO REMOTE CONTROLLER" /> -->
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.10"
-            app:cardBackgroundColor="#212121">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+            android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/video_replay"
@@ -164,9 +175,7 @@
                     android:src="@drawable/ic_volume_up_white_24dp"
                     android:layout_weight="0.2"
                     android:layout_gravity="center"/>
-            </LinearLayout>
-
-        </android.support.v7.widget.CardView>
+        </LinearLayout>
 
         <!-- progress bar that waits for content to be loaded -->
         <ProgressBar
