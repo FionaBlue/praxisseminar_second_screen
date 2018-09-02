@@ -270,6 +270,8 @@ public class InformationActivity extends AppCompatActivity {
 
             // checking if previous or next trigger point is in range
             if ((switchedToTriggerPoint >= 0) && (switchedToTriggerPoint <= getItemCount()-1)) {
+                recyclerListView.smoothScrollBy(direction*200, 0);
+                recyclerListView.smoothScrollToPosition(switchedToTriggerPoint);
                 triggerPointList.get(switchedToTriggerPoint).callOnClick();
             }
         }
