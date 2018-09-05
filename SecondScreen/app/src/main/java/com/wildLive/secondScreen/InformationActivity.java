@@ -20,6 +20,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +49,8 @@ public class InformationActivity extends AppCompatActivity {
     private ProgressBar progressBar;                                    // progress loader which waits for information content to be loaded
     private ImageView arrowLeft, arrowRight;                            // arrows/chevrons for switching to next/previous timeline point
 
+    private StorageReference firebaseImageStorage;                      // firebase reference for cloud storage (for images)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // setting view (xml-layout) for information activity
@@ -52,6 +58,9 @@ public class InformationActivity extends AppCompatActivity {
 
         // setting layout components after all information was loaded (especially for adapter list view!)
         registerLayoutComponents();
+
+        // registering image-database instance
+        firebaseImageStorage = FirebaseStorage.getInstance().getReference();
 
         // registering array with initial content information
         registerContentInformation();
