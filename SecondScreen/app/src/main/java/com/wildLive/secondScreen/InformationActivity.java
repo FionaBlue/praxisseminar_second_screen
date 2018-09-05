@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +41,7 @@ public class InformationActivity extends AppCompatActivity {
     private TextView wikiContentExtract;                                // text view for showing wiki-requested extract content
     private ImageView wikiContentImage;                                 // image view for showing wiki-requested image content
     private ImageButton buttonInformationNext;                          // button for switching to next activity (temporary!)
+    private Button buttonReadArticle;                                   // button for opening up article in new external web browser
     private ProgressBar progressBar;                                    // progress loader which waits for information content to be loaded
     private ImageView arrowLeft, arrowRight;                            // arrows/chevrons for switching to next/previous timeline point
 
@@ -80,6 +82,7 @@ public class InformationActivity extends AppCompatActivity {
         wikiContentExtract = (TextView) findViewById(R.id.currentWikiExtract);
         wikiContentExtract.setMovementMethod(new ScrollingMovementMethod());        // making extract content scrollable
         buttonInformationNext = (ImageButton) findViewById(R.id.buttonInformationNext);
+        buttonReadArticle = (Button) findViewById(R.id.buttonReadArticle);
 
         // registering list view (recyclerView) with arrows/chevrons and custom array adapter
         arrowLeft = (ImageView) findViewById(R.id.timelineChevronLeft);
@@ -93,13 +96,13 @@ public class InformationActivity extends AppCompatActivity {
 
     public void registerContentInformation() {
         // appending all initial content information (here temporary defining information)
-        contentElements.add(new ContentElement("Kaiserpinguin","", "", true, R.drawable.wiki_kaiserpinguin, R.drawable.wiki_kaiserpinguin));
-        contentElements.add(new ContentElement("Delfine", "","", false, R.drawable.wiki_delphin, R.drawable.wiki_delphin));
-        contentElements.add(new ContentElement("Wanderameisen", "","", false, R.drawable.wiki_wanderameisen, R.drawable.wiki_wanderameisen));
-        contentElements.add(new ContentElement("Wanderfalke", "","", false, R.drawable.wiki_wanderfalke, R.drawable.wiki_wanderfalke));
-        contentElements.add(new ContentElement("Monarchfalter", "", "", false, R.drawable.wiki_monarchfalter, R.drawable.wiki_monarchfalter));
-        contentElements.add(new ContentElement("Zebra", "", "", false, R.drawable.wiki_zebra, R.drawable.wiki_zebra));
-        contentElements.add(new ContentElement("Krokodile", "", "", false, R.drawable.wiki_krokodile, R.drawable.wiki_krokodile));
+        contentElements.add(new ContentElement("Kaiserpinguin","", "", true, R.drawable.wiki_kaiserpinguin, R.drawable.wiki_kaiserpinguin, ""));
+        contentElements.add(new ContentElement("Delfine", "","", false, R.drawable.wiki_delphin, R.drawable.wiki_delphin, ""));
+        contentElements.add(new ContentElement("Wanderameisen", "","", false, R.drawable.wiki_wanderameisen, R.drawable.wiki_wanderameisen, ""));
+        contentElements.add(new ContentElement("Wanderfalke", "","", false, R.drawable.wiki_wanderfalke, R.drawable.wiki_wanderfalke, ""));
+        contentElements.add(new ContentElement("Monarchfalter", "", "", false, R.drawable.wiki_monarchfalter, R.drawable.wiki_monarchfalter, ""));
+        contentElements.add(new ContentElement("Zebra", "", "", false, R.drawable.wiki_zebra, R.drawable.wiki_zebra, ""));
+        contentElements.add(new ContentElement("Krokodile", "", "", false, R.drawable.wiki_krokodile, R.drawable.wiki_krokodile, ""));
     }
 
     private void getContentInformationFromWiki() {
@@ -113,6 +116,7 @@ public class InformationActivity extends AppCompatActivity {
                     // refreshing all retrieved information in array list
                     wikiElement.title = contentOutput.wikiContentTitle;
                     wikiElement.extract = contentOutput.wikiContentExtract;
+                    wikiElement.extArticle = contentOutput.wikiContentArticle;
 
                     // loading responded information and local image in card view elements
                     if (wikiElement.isActive == true) {
@@ -166,6 +170,17 @@ public class InformationActivity extends AppCompatActivity {
             public void onClick(View arg0) {
                 // switching to next timeline item
                 adapter.switchTriggerPoint(+1);
+            }
+        });
+
+        // registering button for switching to external web browser (for reading further information, article)
+        buttonReadArticle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String currentArticleHttps = contentElements.get(adapter.getItemActivationState()).extArticle;
+                // opening up new external browser with current wikipedia link
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentArticleHttps));
+                startActivity(browserIntent);
             }
         });
     }
@@ -298,15 +313,17 @@ public class InformationActivity extends AppCompatActivity {
         Boolean isActive;
         int timelineTriggerImage;    // path to temporary locally stored timeline-point-image
         int wikiImage;               // path to temporary locally stored wiki image
+        String extArticle;
 
         // constructor
-        public ContentElement(String identifier, String title, String extract, Boolean isActive, int timelineTriggerImage, int wikiImage) {
+        public ContentElement(String identifier, String title, String extract, Boolean isActive, int timelineTriggerImage, int wikiImage, String extArticle) {
             this.identifier = identifier;
             this.title = title;
             this.extract = extract;
             this.isActive = isActive;
             this.timelineTriggerImage = timelineTriggerImage;
             this.wikiImage = wikiImage;
+            this.extArticle = extArticle;
         }
     }
 }

@@ -82,6 +82,7 @@ public class WikiRequestHandler extends AsyncTask<String, Void, Object> {
             wikiContent.wikiContentTitle = titleString;
             wikiContent.wikiContentExtract = extractString;
             wikiContent.wikiContentImage = null;
+            wikiContent.wikiContentArticle = "https://de.wikipedia.org/wiki/" + titleString;
 
             return wikiContent;
 
@@ -96,6 +97,7 @@ public class WikiRequestHandler extends AsyncTask<String, Void, Object> {
         String wikiContentTitle;
         String wikiContentExtract;
         Drawable wikiContentImage;
+        String wikiContentArticle;
     }
 
     private String parseJsonStructure(JSONObject json, String searchTerm) {
