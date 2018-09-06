@@ -319,7 +319,7 @@ public class VideoBibActivity extends AppCompatActivity {
             return convertView;
         }
 
-        private void addListenerOnImages(YouTubeThumbnailView thumbnailView) {
+        private void addListenerOnImages(final YouTubeThumbnailView thumbnailView) {
             final Context context = getApplicationContext();
             // registering button and button-behaviour by on-clicking
             thumbnailView.setOnClickListener(new View.OnClickListener() {
@@ -328,6 +328,9 @@ public class VideoBibActivity extends AppCompatActivity {
                 public void onClick(View arg0) {
                     // switching to next activity on button click
                     Intent intent = new Intent(context, InformationActivity.class);
+                    String videoID = new String(thumbnailView.getTag().toString());
+                    intent.putExtra("videoID", videoID);
+                    System.out.println("VideoBib VideoID " + videoID);
                     startActivity(intent);
                 }
             });

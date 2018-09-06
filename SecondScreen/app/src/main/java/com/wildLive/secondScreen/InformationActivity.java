@@ -51,6 +51,8 @@ public class InformationActivity extends AppCompatActivity {
 
     private StorageReference firebaseImageStorage;                      // firebase reference for cloud storage (for images)
 
+    private String videoId = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // setting view (xml-layout) for information activity
@@ -70,6 +72,11 @@ public class InformationActivity extends AppCompatActivity {
 
         // registering ui component listener
         addListenersOnUiComponents();
+
+        //getting selected VideoID from VideoBibActivity
+        Bundle extras = getIntent().getExtras();
+        videoId = extras.getString("videoID");
+        System.out.println("VideoID through intent: " + videoId);
     }
 
     public boolean onCreateOptionsMenu (Menu menu) {
