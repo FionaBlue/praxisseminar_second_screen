@@ -18,6 +18,8 @@ $('#message').focus();
 // starting the connection
 $.connection.hub.start().done(function () {
     console.log("Now connected");
+    document.getElementById("castConnectedButton").classList.remove("hidden");
+    document.getElementById("castNotConnectedButton").classList.add("hidden");
     
     // generating session connection
     chat.server.joinSession($('#displayname').val());
@@ -41,6 +43,9 @@ $.connection.hub.start().done(function () {
     });
     $('#disconnect').click(function () {
         chat.server.leaveSession($('#displayname').val());
+        console.log("Now disconnected");
+        document.getElementById("castNotConnectedButton").classList.remove("hidden");
+        document.getElementById("castConnectedButton").classList.add("hidden");
     });
 
 }).fail(function() {
