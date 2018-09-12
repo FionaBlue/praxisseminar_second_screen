@@ -68,15 +68,17 @@ public class SignalRClient {
         @Override
         protected Void doInBackground(Void... voids) {
             // checking for state as long as not reconnecting (error)
-            while (isReconnecting == false) {
+            if (isReconnecting == false) {
                 if (_connection.getState().toString() == "Reconnecting") {
                     isReconnecting = true;
+                } else {
+                    isReconnecting = false;
                 }
             }
             return null;
         }
         protected void onPostExecute(Void voids) {
-            mainActivity.handleReconnection();
+            new ReconnectHandler().execute();
         }
     }
 

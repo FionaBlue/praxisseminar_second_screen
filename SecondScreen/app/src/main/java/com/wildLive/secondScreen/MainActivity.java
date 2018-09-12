@@ -123,6 +123,8 @@ public class MainActivity extends AppCompatActivity implements DialogHandler.OnI
                 // switching to next activity on button click
                 Intent intent = new Intent(context, VideoBibActivity.class);
                 startActivity(intent);
+                WildLive app = (WildLive) getApplication();
+                app.setSRClient(SRClient);
             }
         });
     }

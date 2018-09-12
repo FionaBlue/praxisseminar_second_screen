@@ -62,6 +62,7 @@ public class VideoBibActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     ArrayList<VideoDataModel> arrayOfVideos = new ArrayList<>();
+    private SignalRClient srClient = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,10 @@ public class VideoBibActivity extends AppCompatActivity {
                 addListenerOnChevrons();
             }
         }).execute();
+
+        WildLive app = (WildLive) getApplication();
+        srClient = app.getSRClient();
+        System.out.println("VideoBib Client " + srClient);
     }
 
     public boolean onCreateOptionsMenu (Menu menu) {

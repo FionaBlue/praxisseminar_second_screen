@@ -52,6 +52,7 @@ public class InformationActivity extends AppCompatActivity {
     private StorageReference firebaseImageStorage;                      // firebase reference for cloud storage (for images)
 
     private String videoId = "";
+    private SignalRClient sRClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +73,9 @@ public class InformationActivity extends AppCompatActivity {
 
         // registering ui component listener
         addListenersOnUiComponents();
+
+        WildLive app = (WildLive)getApplication();
+        sRClient = app.getSRClient();
 
         //getting selected VideoID from VideoBibActivity
         Bundle extras = getIntent().getExtras();
