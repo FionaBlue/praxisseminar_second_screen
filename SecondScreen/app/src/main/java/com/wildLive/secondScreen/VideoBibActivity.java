@@ -121,38 +121,71 @@ public class VideoBibActivity extends AppCompatActivity {
             case "Arktis":
                 continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorArktis)));
                 continentCard.setCardBackgroundColor(continentColor);
+                System.out.println("Arktis Client " + srClient);
+                if(srClient != null){
+                    System.out.println("Arktis Client if " + srClient);
+                    srClient.sendMsg(continent);
+                    System.out.println("Arktis message sent?");
+                }
                 break;
             case "Antarktis":
                 continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAntarktis)));
                 continentCard.setCardBackgroundColor(continentColor);
+                if(srClient != null){
+                    srClient.sendMsg(continent);
+                }
                 break;
             case "Afrika":
                 continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAfrika)));
                 continentCard.setCardBackgroundColor(continentColor);
+                if(srClient != null){
+                    srClient.sendMsg(continent);
+                }
                 break;
             case "Australien":
                 continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAustralien)));
                 continentCard.setCardBackgroundColor(continentColor);
+                System.out.println("SRClient" + srClient.toString());
+                if(srClient != null){
+                    srClient.sendMsg(continent);
+                }
                 break;
             case "Südamerika":
                 continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorSüdamerika)));
                 continentCard.setCardBackgroundColor(continentColor);
+                if(srClient != null){
+                    srClient.sendMsg(continent);
+                }
                 break;
             case "Nordamerika":
                 continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorNordamerika)));
                 continentCard.setCardBackgroundColor(continentColor);
+                if(srClient != null){
+                    srClient.sendMsg(continent);
+                }
                 break;
             case "Europa":
                 continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorEuropa)));
                 continentCard.setCardBackgroundColor(continentColor);
+                if(srClient != null){
+                    srClient.sendMsg(continent);
+                }
                 break;
             case "Asien":
                 continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAsien)));
                 continentCard.setCardBackgroundColor(continentColor);
+                if(srClient != null){
+                    srClient.sendMsg(continent);
+                }
                 break;
 
             default:
-                System.out.println("SWITCH ERROR" + continent);
+                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorMainBlue)));
+                continentCard.setCardBackgroundColor(continentColor);
+                if(srClient != null){
+                    srClient.sendMsg("Default");
+                }
+                break;
         }
     }
 
@@ -183,7 +216,7 @@ public class VideoBibActivity extends AppCompatActivity {
             arrayOfVideos.add(newVideoData);
         }
 
-        VideoListAdapter videoListAdapter = new VideoListAdapter(this, arrayOfVideos);
+        VideoListAdapter videoListAdapter = new VideoListAdapter(this, arrayOfVideos, srClient);
         ListView videoListView = (ListView) findViewById(R.id.videoList);
         videoListView.setAdapter(videoListAdapter);
         //https://stackoverflow.com/questions/18708955/invisible-components-still-take-up-space
@@ -273,6 +306,7 @@ public class VideoBibActivity extends AppCompatActivity {
 
     public class VideoListAdapter extends ArrayAdapter<VideoDataModel> {
 
+        private final SignalRClient signalRClient;
         public static final String DEVELOPER_KEY = "AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI";
         public boolean loadThumbnail = true;
         private String PRE_REQUEST = "https://i.ytimg.com/vi/";
@@ -285,8 +319,9 @@ public class VideoBibActivity extends AppCompatActivity {
             ProgressBar videoLoad;
         }
 
-        public VideoListAdapter(Context context, ArrayList<VideoDataModel> videoDataModels) {
+        public VideoListAdapter(Context context, ArrayList<VideoDataModel> videoDataModels, SignalRClient sRClient) {
             super(context, R.layout.videolist_item, videoDataModels);
+            this.signalRClient = sRClient;
         }
 
         public View getView(int position, View convertView, ViewGroup parent){
@@ -332,6 +367,15 @@ public class VideoBibActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View arg0) {
                     // switching to next activity on button click
+                    if(srClient != null) {
+                        signalRClient.sendMsg("play" + thumbnailView.getTag().toString());
+                        // switching to next activity on button click
+                        Intent intent = new Intent(context, InformationActivity.class);
+                        intent.putExtra("VideoID", thumbnailView.getTag().toString());
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(context, "No Connection!", Toast.LENGTH_LONG).show();
+                    }
                     Intent intent = new Intent(context, InformationActivity.class);
                     String videoID = new String(thumbnailView.getTag().toString());
                     intent.putExtra("videoID", videoID);

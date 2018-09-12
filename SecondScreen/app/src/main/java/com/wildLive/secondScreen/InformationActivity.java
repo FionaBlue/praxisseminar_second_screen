@@ -54,6 +54,13 @@ public class InformationActivity extends AppCompatActivity {
     private String videoId = "";
     private SignalRClient sRClient;
 
+    private ImageView playIcon;
+    private ImageView pauseIcon;
+    private ImageView forwardIcon;
+    private ImageView backwardIcon;
+    private ImageView volumeUpIcon;
+    private ImageView volumeDownIcon;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // setting view (xml-layout) for information activity
@@ -74,8 +81,12 @@ public class InformationActivity extends AppCompatActivity {
         // registering ui component listener
         addListenersOnUiComponents();
 
+        //registering icon listener
+        addListenerOnIcons();
+
         WildLive app = (WildLive)getApplication();
         sRClient = app.getSRClient();
+        System.out.println("Information Client " + sRClient);
 
         //getting selected VideoID from VideoBibActivity
         Bundle extras = getIntent().getExtras();
@@ -201,6 +212,67 @@ public class InformationActivity extends AppCompatActivity {
                 // opening up new external browser with current wikipedia link
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentArticleHttps));
                 startActivity(browserIntent);
+            }
+        });
+    }
+
+    private void addListenerOnIcons() {
+        playIcon = findViewById(R.id.video_play);
+        playIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playIcon.setVisibility(View.GONE);
+                pauseIcon.setVisibility(View.VISIBLE);
+                if(sRClient != null){
+                    sRClient.sendMsg("icon play");
+                }
+            }
+        });
+        pauseIcon = findViewById(R.id.video_pause);
+        pauseIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pauseIcon.setVisibility(View.GONE);
+                playIcon.setVisibility(View.VISIBLE);
+                if(sRClient != null){
+                    sRClient.sendMsg("icon pause");
+                }
+            }
+        });
+        forwardIcon = findViewById(R.id.video_forward);
+        forwardIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(sRClient != null){
+                    sRClient.sendMsg("icon forward");
+                }
+            }
+        });
+        backwardIcon = findViewById(R.id.video_replay);
+        backwardIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(sRClient != null){
+                    sRClient.sendMsg("icon backward");
+                }
+            }
+        });
+        volumeUpIcon = findViewById(R.id.video_volumeUp);
+        volumeUpIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(sRClient != null){
+                    sRClient.sendMsg("icon volumeUp");
+                }
+            }
+        });
+        volumeDownIcon = findViewById(R.id.video_volumeDown);
+        volumeDownIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(sRClient != null){
+                    sRClient.sendMsg("icon volumeDown");
+                }
             }
         });
     }
