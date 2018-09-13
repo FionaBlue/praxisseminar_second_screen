@@ -368,7 +368,7 @@ public class VideoBibActivity extends AppCompatActivity {
                 public void onClick(View arg0) {
                     // switching to next activity on button click
                     if(srClient != null) {
-                        signalRClient.sendMsg("play" + thumbnailView.getTag().toString());
+                        signalRClient.sendMsg("playVideo" + thumbnailView.getTag().toString());
                         // switching to next activity on button click
                         Intent intent = new Intent(context, InformationActivity.class);
                         intent.putExtra("VideoID", thumbnailView.getTag().toString());
