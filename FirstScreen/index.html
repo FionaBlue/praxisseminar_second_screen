@@ -22,36 +22,119 @@
         </header>
 
         <main>
-            <button id="TestButtonYouTube">YouTubeVideo</button>
+            <div class="templateBinding">
+            </div>
+    
+            <script type="text/template" id="Weltkarte">
+                <!-- text input box for signalR connection id -->
+                <div class="container">
+                    <input type="text" id="message" />
+                    <input type="button" id="sendmessage" value="Send" />
+                    <input type="button" id="disconnect" value="Disconnect" />
+                    <input type="hidden" id="displayname" />
+                    <ul id="discussion"></ul>
+                </div>
 
-            <!--https://developers.google.com/youtube/iframe_api_reference?hl=de -->
-            <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
-            <div class="hidden" id="player"></div>
-            
-            <!-- text input box for signalR connection id -->
-            <div class="container">
-                <input type="text" id="message" />
-                <input type="button" id="sendmessage" value="Send" />
-                <input type="button" id="disconnect" value="Disconnect" />
-                <input type="hidden" id="displayname" />
-                <ul id="discussion"></ul>
-            </div>
-            
-            <!-- icons src: https://material.io/tools/icons/?style=baseline -->
-            <div class="castButton" id="castNotConnectedButton">
-                <img src="res/img/baseline_cast_white_48dp.png">
-            </div>
-            <div class="castButton hidden" id="castConnectedButton">
-                <img src="res/img/baseline_cast_connected_white_48dp.png">
-            </div>
+                <!--Quiz-Score-->
+                <div class="quizScoreStar">
+                    <img id="quizStar" src="res/img/star.png">
+                    <div id="quizScore">24</div>
+                </div>
 
+                <!--Additional Data-->
+                <div class="playerViewRow" id="additionalData">
+
+                    <!--CastButton-->
+                    <!-- icons src: https://material.io/tools/icons/?style=baseline -->
+                    <div class="castButton" id="castNotConnectedButton">
+                        <img src="res/img/baseline_cast_white_48dp.png">
+                    </div>
+                    <div class="castButton hidden" id="castConnectedButton">
+                        <img src="res/img/baseline_cast_connected_white_48dp.png">
+                    </div>
+
+                    <!--Guide, see OnboardingGuide on Second Screen-->
+                    <div class="guide" id="onBoardingGuide">
+                        <img id="foxGuide" src="res/img/img_onboarding1.png">
+                    </div>
+                    
+                        <!--
+                            TODO:
+                            Personen online
+                            App-Lade-Info
+                            Wetterinfos
+                        -->
+                </div>
+            </script>
+    
+            <script type="text/template" id="VideoPlayer">
+                <!--https://developers.google.com/youtube/iframe_api_reference?hl=de -->
+                <!--The <iframe> (and video player) will replace this <div> tag. -->
+                <div class="playerViewRow" id="videoFrame">
+                    <div id="player"></div>
+                </div>
+
+                <!--Quiz-Score-->
+                <div class="quizScoreStar">
+                    <img id="quizStar" src="res/img/star.png">
+                    <div id="quizScore">24</div>
+                </div>
+
+                <!--Additional Data-->
+                <div class="playerViewRow" id="additionalData">
+
+                    <!--CastButton-->
+                    <div class="castButton" id="castNotConnectedButton">
+                        <img src="res/img/baseline_cast_white_48dp.png">
+                    </div>
+                    <div class="castButton hidden" id="castConnectedButton">
+                        <img src="res/img/baseline_cast_connected_white_48dp.png">
+                    </div>
+
+                    <!--Fortschrittsanzeige Metadaten-->
+                    <div class="metadataInfoProgress" id="infoProgress">
+                        <img class="metaImg" src="res/img/wiki_kaiserpinguin.jpg">
+                        <img class="metaImg" src="res/img/wiki_delphin.jpg">
+                        <img class="metaImg" src="res/img/wiki_wanderameisen.jpg">
+                        <img class="metaImg" src="res/img/wiki_wanderfalke.jpg">
+                        <img class="metaImg" src="res/img/wiki_monarchfalter.jpg">
+                        <img class="metaImg" src="res/img/wiki_zebra.jpg">
+                        <img class="metaImg" src="res/img/wiki_krokodile.jpg">
+                    </div>
+
+                    <!--
+                        TODO:
+                        Personen online
+                    -->
+
+                </div>
+            </script>
+
+            <!--<script>
+                // 2. This code loads the IFrame Player API code asynchronously.
+                var tag;
+                tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                var firstScriptTag;
+                firstScriptTag = document.getElementsByTagName('script')[0];
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            </script>-->
+
+            <script src="http://www.youtube.com/player_api"></script>
+
+            <script src="js/WildLiveApp.js"></script>
             <script src="js/YouTubeExampleCode.js"></script>
+            <script src="js/MessageHandler.js"></script>
             
             <!-- binding signalR behaviour (consider this order!) -->
             <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
             <script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.1.min.js"></script>
             <script src="http://pk029-audi-2nds.tvapp-server.de/SecondScreen/hubs"></script> <!-- temporary website url -->
-            <script src="js/SignalRConnection.js"></script>
+            <script src="js/SignalRConnection.js"></script>            
+
+            <script>
+                WildLiveApp.init();
+            </script>
             
         </main>
 
