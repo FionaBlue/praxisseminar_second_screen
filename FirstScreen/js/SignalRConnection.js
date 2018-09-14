@@ -69,29 +69,26 @@ chat.client.receiveMessage = function (message) {
     else if (encodedMsg == "Afrika"){
         document.body.style.backgroundImage = "url('res/img/Afrika_map.jpg')";
     }
-    else if (encodedMsg == "Arabien"){
-        document.body.style.backgroundImage = "url('res/img/Arabien_map.jpg')";
-    }
     else if (encodedMsg == "Asien"){
         document.body.style.backgroundImage = "url('res/img/Asien_map.jpg')";
     }
     else if (encodedMsg == "Europa"){
         document.body.style.backgroundImage = "url('res/img/Europa_map.jpg')";
     }
-    else if (encodedMsg == "Indien"){
-        document.body.style.backgroundImage = "url('res/img/Indien_map.jpg')";
-    }
     else if (encodedMsg == "Nordamerika"){
         document.body.style.backgroundImage = "url('res/img/Nordamerika_map.jpg')";
     }
-    else if (encodedMsg == "Ozeanien"){
+    else if (encodedMsg == "Australien"){
         document.body.style.backgroundImage = "url('res/img/Ozeanien_map.jpg')";
     }
-    else if (encodedMsg == "Russland"){
-        document.body.style.backgroundImage = "url('res/img/Russland_map.jpg')";
+    else if (encodedMsg == "Arktis"){
+        document.body.style.backgroundImage = "url('res/img/Arktis_map.jpg')";
     }
     else if (encodedMsg == "Südamerika"){
         document.body.style.backgroundImage = "url('res/img/Südamerika_map.jpg')";
+    }
+    else if (encodedMsg == "Default"){
+        document.body.style.backgroundImage = "url('res/img/Default_map.jpg')";
     }
 }
 // -----------------------------------------------------------------

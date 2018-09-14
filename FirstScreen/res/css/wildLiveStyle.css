@@ -4,7 +4,7 @@ Background - MAP
 
 src: https://stackoverflow.com/questions/19925075/fit-website-background-image-to-screen-size*/
 body {
-    background: url("../img/Antarktis_map.jpg") no-repeat center center fixed; 
+    background: url("../img/Default_map.jpg") no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
