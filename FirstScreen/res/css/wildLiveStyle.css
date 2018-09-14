@@ -1,8 +1,72 @@
 /*
 
-Background - MAP
+Template - Weltkarte
 
-src: https://stackoverflow.com/questions/19925075/fit-website-background-image-to-screen-size*/
+*/
+
+.container {
+    background-color: white;
+    padding: 20px;
+    margin: 20px;
+}
+
+#foxGuide {
+    float: right;
+    width: auto;
+    height: 200px;
+    right: 0%;
+}
+
+/*
+Template - Videoplayer
+
+https://stackoverflow.com/questions/22433616/how-can-i-align-youtube-embedded-video-in-the-center-in-bootstrap
+https://stackoverflow.com/questions/18331716/css-position-with-percent
+https://stackoverflow.com/questions/5703552/css-center-text-horizontally-and-vertically-inside-a-div-block
+http://webkrauts.de/artikel/2012/css3-flexbox-abloesung-fuer-float-layouts
+*/
+
+#player {
+    position: absolute;
+    margin: auto;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+.playerViewRow {
+    position: absolute;
+    width: 100%
+}
+
+#videoFrame {
+    top: 0%;
+}
+
+.metadataInfoProgress {
+    flex-basis: 200%;
+    text-align: center;
+}
+
+.metaImg {
+    width: auto;
+    height: 100px;
+    border-radius: 50%;
+    margin-left: 1%;
+    flex-wrap: nowrap;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+/*
+
+Both Templates
+
+src: https://stackoverflow.com/questions/19925075/fit-website-background-image-to-screen-size
+https://stackoverflow.com/questions/22429003/how-to-right-align-flex-item
+*/
+
 body {
     background: url("../img/Default_map.jpg") no-repeat center center fixed; 
   -webkit-background-size: cover;
@@ -11,18 +75,41 @@ body {
   background-size: cover;
 }
 
-#TestButtonYouTube {
-    display:block;
-    margin: 0 auto;
-    background-color: red;
-}
-
 .hidden {
     display: none;
 }
 
-.container {
-    background-color: white;
-    padding: 20px;
-    margin: 20px;
+#additionalData {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    align-items: flex-end;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.castButton {
+    flex-basis: 10%;
+}
+
+.quizScoreStar {
+    float: right;
+}
+
+#quizStar {
+    position: absolute;
+    top: 0%;   
+    width: 10%;
+    height: auto;
+    right: 0%;
+    float: right;
+}
+
+#quizScore {
+    color: mediumslateblue;
+    font-size: 25pt;
+    position: absolute;
+    text-align: center;
+    top: 8%;
+    left: 94%;
 }
