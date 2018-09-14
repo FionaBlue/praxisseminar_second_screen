@@ -1,8 +1,6 @@
 package com.wildLive.secondScreen;
 
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.BufferedReader;
@@ -24,7 +22,7 @@ public class WikiRequestHandler extends AsyncTask<String, Void, Object> {
     // https://stackoverflow.com/questions/9151619/how-to-iterate-over-a-jsonobject
 
     private Exception e;
-    public AsyncResponse responseHandler = null;                    // global interface (for correct response-data usage in information activity)
+    public AsyncResponse responseHandler = null; // global interface (for correct response-data usage in information activity)
 
     // constructor
     public WikiRequestHandler(AsyncResponse respHandler) {
@@ -81,7 +79,6 @@ public class WikiRequestHandler extends AsyncTask<String, Void, Object> {
             WikiContentElements wikiContent = new WikiContentElements();
             wikiContent.wikiContentTitle = titleString;
             wikiContent.wikiContentExtract = extractString;
-            wikiContent.wikiContentImage = null;
             wikiContent.wikiContentArticle = "https://de.wikipedia.org/wiki/" + titleString;
 
             return wikiContent;
@@ -96,7 +93,6 @@ public class WikiRequestHandler extends AsyncTask<String, Void, Object> {
     public class WikiContentElements {
         String wikiContentTitle;
         String wikiContentExtract;
-        Drawable wikiContentImage;
         String wikiContentArticle;
     }
 

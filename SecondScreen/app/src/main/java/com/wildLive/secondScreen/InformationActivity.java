@@ -2,6 +2,7 @@ package com.wildLive.secondScreen;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.net.Uri;
@@ -21,6 +22,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -48,55 +52,51 @@ public class InformationActivity extends AppCompatActivity {
     private Button buttonReadArticle;                                   // button for opening up article in new external web browser
     private ProgressBar progressBar;                                    // progress loader which waits for information content to be loaded
     private ImageView arrowLeft, arrowRight;                            // arrows/chevrons for switching to next/previous timeline point
+    // icons for controlling current video
+    private ImageView playIcon, pauseIcon, forwardIcon, backwardIcon, volumeUpIcon, volumeDownIcon;
 
-    private StorageReference firebaseImageStorage;                      // firebase reference for cloud storage (for images)
+    // transferred data (video-id, signalR-client)
+    private String videoId = "Nbrx5tFJzyQ";                             // id of currently loaded video (for retrieving specific information)
+    private SignalRClient sRClient;                                     // signalR-client for communication between devices (first screen/second screen)
 
-    private String videoId = "";
-    private SignalRClient sRClient;
-
-    private ImageView playIcon;
-    private ImageView pauseIcon;
-    private ImageView forwardIcon;
-    private ImageView backwardIcon;
-    private ImageView volumeUpIcon;
-    private ImageView volumeDownIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // setting view (xml-layout) for information activity
         super.onCreate(savedInstanceState);
 
+        // getting selected video-id from previous activity (via registered tag)
+        //registerCurrentVideoId();
+
+        // getting signalR-client from application (so, preventing newly instantiating new signalR-client)
+        getSRClient();
+
         // setting layout components after all information was loaded (especially for adapter list view!)
         registerLayoutComponents();
 
-        // registering image-database instance
-        firebaseImageStorage = FirebaseStorage.getInstance().getReference();
-
-        // registering array with initial content information
-        registerContentInformation();
-
-        // getting all content information from wiki api
-        getContentInformationFromWiki();
+        // getting all content information (from firebase and wikipedia afterwards)
+        getInformationContent();
 
         // registering ui component listener
         addListenersOnUiComponents();
-
-        //registering icon listener
-        addListenerOnIcons();
-
-        WildLive app = (WildLive)getApplication();
-        sRClient = app.getSRClient();
-        System.out.println("Information Client " + sRClient);
-
-        //getting selected VideoID from VideoBibActivity
-        Bundle extras = getIntent().getExtras();
-        videoId = extras.getString("videoID");
-        System.out.println("VideoID through intent: " + videoId);
     }
 
     public boolean onCreateOptionsMenu (Menu menu) {
         getMenuInflater().inflate(R.menu.information, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void registerCurrentVideoId() {
+        // getting selected video-id (registered tag/key) from previous activity via intent-extras
+        Bundle extras = getIntent().getExtras();
+        videoId = extras.getString("videoID");
+        System.out.println("VideoID through intent: " + videoId);
+    }
+
+    private void getSRClient() {
+        WildLive app = (WildLive)getApplication();
+        sRClient = app.getSRClient();
+        System.out.println("Information Client " + sRClient);
     }
 
     private void registerLayoutComponents() {
@@ -115,6 +115,14 @@ public class InformationActivity extends AppCompatActivity {
         buttonInformationNext = (ImageButton) findViewById(R.id.buttonInformationNext);
         buttonReadArticle = (Button) findViewById(R.id.buttonReadArticle);
 
+        // registering icons for video-control-function
+        playIcon = findViewById(R.id.video_play);
+        pauseIcon = findViewById(R.id.video_pause);
+        forwardIcon = findViewById(R.id.video_forward);
+        backwardIcon = findViewById(R.id.video_replay);
+        volumeUpIcon = findViewById(R.id.video_volumeUp);
+        volumeDownIcon = findViewById(R.id.video_volumeDown);
+
         // registering list view (recyclerView) with arrows/chevrons and custom array adapter
         arrowLeft = (ImageView) findViewById(R.id.timelineChevronLeft);
         arrowRight = (ImageView) findViewById(R.id.timelineChevronRight);
@@ -125,15 +133,26 @@ public class InformationActivity extends AppCompatActivity {
         recyclerListView.setAdapter(adapter);   // binding data from separate timeline-item layout to activity layout via adapter
     }
 
-    public void registerContentInformation() {
-        // appending all initial content information (here temporary defining information)
-        contentElements.add(new ContentElement("Kaiserpinguin","", "", true, R.drawable.wiki_kaiserpinguin, R.drawable.wiki_kaiserpinguin, ""));
-        contentElements.add(new ContentElement("Delfine", "","", false, R.drawable.wiki_delphin, R.drawable.wiki_delphin, ""));
-        contentElements.add(new ContentElement("Wanderameisen", "","", false, R.drawable.wiki_wanderameisen, R.drawable.wiki_wanderameisen, ""));
-        contentElements.add(new ContentElement("Wanderfalke", "","", false, R.drawable.wiki_wanderfalke, R.drawable.wiki_wanderfalke, ""));
-        contentElements.add(new ContentElement("Monarchfalter", "", "", false, R.drawable.wiki_monarchfalter, R.drawable.wiki_monarchfalter, ""));
-        contentElements.add(new ContentElement("Zebra", "", "", false, R.drawable.wiki_zebra, R.drawable.wiki_zebra, ""));
-        contentElements.add(new ContentElement("Krokodile", "", "", false, R.drawable.wiki_krokodile, R.drawable.wiki_krokodile, ""));
+    private void getInformationContent() {
+        DatabaseHandler databaseHandler = new DatabaseHandler(getApplicationContext(), new DatabaseHandler.AsyncResponse() {
+            @Override
+            public void processFinished(ArrayList<DatabaseHandler.VideoTriggerPoint> output) {
+                for (DatabaseHandler.VideoTriggerPoint currItem : output) {
+                    // adding new item filled with retrieved database content (wikipedia-content will be loaded later on)
+                    contentElements.add(new ContentElement(currItem.triggerPointTitle,"", "", (currItem.triggerPointId == 0) ? true : false, "", currItem.triggerPointImageUrl, currItem.triggerPointTimestamp, currItem.triggerPointBitmap));
+                }
+                getContentInformationFromWiki();
+            }
+        });
+        // setting entry point for getting all information (image-storage-link, title, timestamp) from firebase database
+        databaseHandler.setDatabaseReference(FirebaseDatabase.getInstance().getReference("video/" + videoId + "/trigger_point"));
+        // setting entry point for getting image file (title.jpg) from firebase storage
+        databaseHandler.setStorageReference(FirebaseStorage.getInstance().getReference("video/" + videoId + "/images"));
+        // setting category (video vs. quiz) for handling different firebase structures
+        databaseHandler.setDataCategory(DatabaseHandler.DataCategory.VIDEO);
+
+        // starting parallel process for retrieving database-data (asynctask)
+        databaseHandler.execute();
     }
 
     private void getContentInformationFromWiki() {
@@ -151,7 +170,7 @@ public class InformationActivity extends AppCompatActivity {
 
                     // loading responded information and local image in card view elements
                     if (wikiElement.isActive == true) {
-                        integrateInformation(wikiElement.title, wikiElement.extract, wikiElement.wikiImage);
+                        integrateInformation(wikiElement.title, wikiElement.extract, wikiElement.imageBitmap);
                     }
 
                     // checking if last content element information was retrieved, than stopping progress bar and refresh adapter
@@ -165,12 +184,12 @@ public class InformationActivity extends AppCompatActivity {
         }
     }
 
-    public void integrateInformation(String wikiTitle, String wikiExtract, int wikiImage) {
+    public void integrateInformation(String wikiTitle, String wikiExtract, Bitmap imageBitmap) {
         // loading responded information in card view elements
         wikiContentTitle.setText(wikiTitle);
         wikiContentExtract.setText(wikiExtract);
-        // loading responded image in image view (temporary: local image)
-        wikiContentImage.setImageResource(wikiImage);
+        // loading responded image in image view (from retrieved database bitmap)
+        wikiContentImage.setImageBitmap(imageBitmap);
     }
 
     public void addListenersOnUiComponents() {
@@ -191,17 +210,13 @@ public class InformationActivity extends AppCompatActivity {
         // registering arrow-behaviour by on-clicking
         arrowLeft.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View arg0) {
-                // switching to previous timeline item
-                adapter.switchTriggerPoint(-1);
-            }
+            // switching to previous timeline item
+            public void onClick(View arg0) { adapter.switchTriggerPoint(-1); }
         });
         arrowRight.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View arg0) {
-                // switching to next timeline item
-                adapter.switchTriggerPoint(+1);
-            }
+            // switching to next timeline item
+            public void onClick(View arg0) { adapter.switchTriggerPoint(+1); }
         });
 
         // registering button for switching to external web browser (for reading further information, article)
@@ -214,77 +229,45 @@ public class InformationActivity extends AppCompatActivity {
                 startActivity(browserIntent);
             }
         });
-    }
 
-    private void addListenerOnIcons() {
-        playIcon = findViewById(R.id.video_play);
         playIcon.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                playIcon.setVisibility(View.GONE);
-                pauseIcon.setVisibility(View.VISIBLE);
-                if(sRClient != null){
-                    sRClient.sendMsg("icon play");
-                }
-            }
+            public void onClick(View view) { playIcon.setVisibility(View.GONE); pauseIcon.setVisibility(View.VISIBLE); if(sRClient != null){ sRClient.sendMsg("icon play"); }}
         });
-        pauseIcon = findViewById(R.id.video_pause);
         pauseIcon.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                pauseIcon.setVisibility(View.GONE);
-                playIcon.setVisibility(View.VISIBLE);
-                if(sRClient != null){
-                    sRClient.sendMsg("icon pause");
-                }
-            }
+            public void onClick(View view) { pauseIcon.setVisibility(View.GONE); playIcon.setVisibility(View.VISIBLE); if(sRClient != null){ sRClient.sendMsg("icon pause"); }}
         });
-        forwardIcon = findViewById(R.id.video_forward);
         forwardIcon.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                if(sRClient != null){
-                    sRClient.sendMsg("icon forward");
-                }
-            }
+            public void onClick(View view) { if(sRClient != null){ sRClient.sendMsg("icon forward"); }}
         });
-        backwardIcon = findViewById(R.id.video_replay);
         backwardIcon.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                if(sRClient != null){
-                    sRClient.sendMsg("icon backward");
-                }
-            }
+            public void onClick(View view) { if(sRClient != null){ sRClient.sendMsg("icon backward"); }}
         });
-        volumeUpIcon = findViewById(R.id.video_volumeUp);
         volumeUpIcon.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                if(sRClient != null){
-                    sRClient.sendMsg("icon volumeUp");
-                }
-            }
+            public void onClick(View view) { if(sRClient != null){ sRClient.sendMsg("icon volumeUp"); }}
         });
-        volumeDownIcon = findViewById(R.id.video_volumeDown);
         volumeDownIcon.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                if(sRClient != null){
-                    sRClient.sendMsg("icon volumeDown");
-                }
-            }
+            public void onClick(View view) { if(sRClient != null){ sRClient.sendMsg("icon volumeDown"); }}
         });
     }
 
     // custom adapter for binding list view data
     public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
-        public List<CircleImageView> triggerPointList = new ArrayList<>();
+        public List<CircleImageView> triggerPointList = new ArrayList<>();      // list of registered trigger-points for handling highlighting
+        private List<Integer> prevPositions = new ArrayList<>();                // list for handling trigger-point registration
+        public int prevPosition;                                                // previous item for setting back highlighting
 
         @Override
+        // defining recycler-view item count
         public int getItemCount() {
             return contentElements.size();
         }
+
         @NonNull
         @Override
         // view holder will be created for each item in recycler-view
@@ -293,13 +276,15 @@ public class InformationActivity extends AppCompatActivity {
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.timeline_item, viewGroup, false);
             return new ViewHolder(view);
         }
+
         // view holder for performance issues with recyclerView (only visible items are handled)
-        public class ViewHolder extends RecyclerView.ViewHolder { //implements View.OnClickListener {
-            public CircleImageView timelineItem;
-            public View timelineItemDivider;
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public CircleImageView timelineItem;        // substitute for circled item image
+            public View timelineItemDivider;            // substitute for dotted divider
 
             public ViewHolder(@NonNull final View itemView) {
                 super(itemView);
+
                 // defining trigger-point-image and setting saturation to gray-scale
                 timelineItem = itemView.findViewById(R.id.timelineItem);
                 setTriggerPointSaturation(timelineItem, 0);
@@ -308,43 +293,42 @@ public class InformationActivity extends AppCompatActivity {
                 timelineItemDivider = itemView.findViewById(R.id.timelineItemDivider);
             }
         }
+
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+        // preventing loop of paired-objects
+        public int getItemViewType(int position) {
+            // https://stackoverflow.com/questions/48845814/recycler-view-adapter-looping-objects-in-pairs
+            return position;
+        }
+
+        @Override
+        // binding each view holder (timeline-item substitutes)
+        public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
             final int position = i;
 
-            // adding each trigger point (one ViewHolder holds one trigger point) to list for further processing
-            triggerPointList.add(viewHolder.timelineItem);
+            // checking if position was already registered for adding timeline-items to list
+            if ((position < getItemCount()) && (prevPositions.contains(position) == false)) {
+                triggerPointList.add(viewHolder.timelineItem);
+                prevPositions.add(position);
 
-            // setting first trigger point highlighting and invisible left-arrow
-            if (triggerPointList.size() == 1) {
-                setItemActivationState(0);
-                arrowLeft.setVisibility(View.INVISIBLE);
+                // handling first timeline-item in list
+                if (triggerPointList.size() == 1) {
+                    // setting activated highlighting for first item in timeline-item-list
+                    prevPosition = 0;
+                    setItemActivationState(prevPosition);
+
+                    // setting arrow for scrolling left invisible to emphasize possible scroll-direction
+                    arrowLeft.setVisibility(View.INVISIBLE);
+                }
             }
+            // setting image for current timeline-item
+            viewHolder.timelineItem.setImageBitmap(contentElements.get(position).imageBitmap);
 
-            // all widgets and data will be attached to each individual list view item
-            triggerPointList.get(i).setImageResource(contentElements.get(i).timelineTriggerImage);
-
-            // registering onclick-listener for content switching
-            triggerPointList.get(i).setOnClickListener(new View.OnClickListener() {
+            // handling on-click behaviour (loading information and setting highlighting for timeline-item)
+            viewHolder.timelineItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // loading information data for specific, clicked trigger point
-                    integrateInformation(contentElements.get(position).title, contentElements.get(position).extract, contentElements.get(position).wikiImage);
-
-                    // setting highlighting for current clicked trigger point
-                    setItemActivationState(position);
-
-                    // activating/deactivating timeline arrows (on border reached)
-                    if (position == 0) {
-                        arrowLeft.setVisibility(View.INVISIBLE);
-                        arrowRight.setVisibility(View.VISIBLE);
-                    } else if (position == getItemCount()-1) {
-                        arrowRight.setVisibility(View.INVISIBLE);
-                        arrowLeft.setVisibility(View.VISIBLE);
-                    } else {
-                        arrowLeft.setVisibility(View.VISIBLE);
-                        arrowRight.setVisibility(View.VISIBLE);
-                    }
+                    onItemClicked(position);
                 }
             });
 
@@ -353,20 +337,38 @@ public class InformationActivity extends AppCompatActivity {
                 viewHolder.timelineItemDivider.setVisibility(View.INVISIBLE);
             }
         }
+
+        private void onItemClicked(int position) {
+            // loading information data for specific, clicked trigger point
+            integrateInformation(contentElements.get(position).title, contentElements.get(position).extract, contentElements.get(position).imageBitmap);
+
+            // setting highlighting for current clicked trigger point
+            setItemActivationState(position);
+            prevPosition = position;
+
+            // activating/deactivating timeline arrows (on border reached) for emphasizing possible scroll-directions
+            if (position == 0) {
+                arrowLeft.setVisibility(View.INVISIBLE);
+                arrowRight.setVisibility(View.VISIBLE);
+            } else if (position == getItemCount()-1) {
+                arrowRight.setVisibility(View.INVISIBLE);
+                arrowLeft.setVisibility(View.VISIBLE);
+            } else {
+                arrowLeft.setVisibility(View.VISIBLE);
+                arrowRight.setVisibility(View.VISIBLE);
+            }
+        }
+
         private void setItemActivationState(int position) {
-            // scanning timeline-item-list and setting back activation state and highlighting of previously activated
-            for (int i = 0; i < getItemCount(); i++) {
-                contentElements.get(i).isActive = false;
-            }
-            for (int j = 0; j < triggerPointList.size(); j++) {
-                if (triggerPointList.get(j) != null) {
-                    setTriggerPointSaturation(triggerPointList.get(j), 0);
-                }
-            }
-            // setting activation state of current trigger point
+            // changing activation state
+            contentElements.get(prevPosition).isActive = false;
             contentElements.get(position).isActive = true;
+
+            // setting highlighting
+            setTriggerPointSaturation(triggerPointList.get(prevPosition), 0);
             setTriggerPointSaturation(triggerPointList.get(position), 1);
         }
+
         private int getItemActivationState() {
             int activatedPosition = -1;
             for (int i = 0; i < getItemCount(); i++) {
@@ -376,6 +378,7 @@ public class InformationActivity extends AppCompatActivity {
             }
             return activatedPosition;
         }
+
         // setting saturation value for images
         private void setTriggerPointSaturation(CircleImageView triggerPoint, int saturation) {
             ColorMatrix matrix = new ColorMatrix();
@@ -383,16 +386,20 @@ public class InformationActivity extends AppCompatActivity {
             ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
             triggerPoint.setColorFilter(filter);
         }
+
         // switching trigger point after arrow (left or right) was clicked
         private void switchTriggerPoint(int direction) {
             // getting position of previous or next trigger point
-            int switchedToTriggerPoint = getItemActivationState() + direction;
+            int switchToTriggerPointPosition = getItemActivationState() + direction;
 
             // checking if previous or next trigger point is in range
-            if ((switchedToTriggerPoint >= 0) && (switchedToTriggerPoint <= getItemCount()-1)) {
+            if ((switchToTriggerPointPosition >= 0) && (switchToTriggerPointPosition <= getItemCount()-1)) {
+                // scrolling timeline automatically
                 recyclerListView.smoothScrollBy(direction*200, 0);
-                recyclerListView.smoothScrollToPosition(switchedToTriggerPoint);
-                triggerPointList.get(switchedToTriggerPoint).callOnClick();
+                recyclerListView.smoothScrollToPosition(switchToTriggerPointPosition);
+
+                // calling on-click for previous/next timeline-item on arrow-clicked
+                triggerPointList.get(switchToTriggerPointPosition).callOnClick();
             }
         }
     }
@@ -403,19 +410,21 @@ public class InformationActivity extends AppCompatActivity {
         String title;
         String extract;
         Boolean isActive;
-        int timelineTriggerImage;    // path to temporary locally stored timeline-point-image
-        int wikiImage;               // path to temporary locally stored wiki image
         String extArticle;
+        String imageUrl;
+        String timestamp;
+        Bitmap imageBitmap;
 
         // constructor
-        public ContentElement(String identifier, String title, String extract, Boolean isActive, int timelineTriggerImage, int wikiImage, String extArticle) {
+        public ContentElement(String identifier, String title, String extract, Boolean isActive, String extArticle, String imageUrl, String timestamp, Bitmap imageBitmap) {
             this.identifier = identifier;
             this.title = title;
             this.extract = extract;
             this.isActive = isActive;
-            this.timelineTriggerImage = timelineTriggerImage;
-            this.wikiImage = wikiImage;
             this.extArticle = extArticle;
+            this.imageUrl = imageUrl;
+            this.timestamp = timestamp;
+            this.imageBitmap = imageBitmap;
         }
     }
 }

@@ -8,8 +8,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:scaleType="centerCrop"
-        android:id="@+id/timelineItem"
-        android:src="@drawable/wiki_kaiserpinguin"/>
+        android:id="@+id/timelineItem"/>
 
     <View
         android:id="@+id/timelineItemDivider"
