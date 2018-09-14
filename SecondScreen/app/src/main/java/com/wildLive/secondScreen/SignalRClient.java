@@ -78,6 +78,7 @@ public class SignalRClient {
             return null;
         }
         protected void onPostExecute(Void voids) {
+            sendMsg(""); //send empty Msg as "ping"
             new ReconnectHandler().execute();
         }
     }
