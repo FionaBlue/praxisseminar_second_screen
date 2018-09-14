@@ -178,6 +178,11 @@ public class InformationActivity extends AppCompatActivity {
                         adapter.triggerPointList.clear();           // clearing list of trigger points for rearranging
                         adapter.notifyDataSetChanged();             // updating recycler-view-data (else nothing will show up after progress-bar loaded)
                         progressBar.setVisibility(View.GONE);       // deactivating progress-loader
+
+                        //sendVideoId to First Screen to start playing the specific video
+                        if(sRClient != null){
+                            sRClient.sendMsg("playVideo" + videoId);
+                        }
                     }
                 }
             }).execute(wikiElement.identifier);
@@ -240,7 +245,7 @@ public class InformationActivity extends AppCompatActivity {
         });
         forwardIcon.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) { if(sRClient != null){ sRClient.sendMsg("icon forward"); }}
+            public void onClick(View view) { if(sRClient != null){ sRClient.sendMsg("icon forward"); System.out.println("forward"); }}
         });
         backwardIcon.setOnClickListener(new View.OnClickListener() {
             @Override
