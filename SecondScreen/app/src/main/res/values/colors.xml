@@ -15,4 +15,5 @@
     <color name="colorMainOrange">#fd9e58</color>
     <color name="colorWhite">#FFFF</color>
     <color name="colorGrey">#484b4f</color>
+    <color name="colorLightGrey">#848991</color>
 </resources>

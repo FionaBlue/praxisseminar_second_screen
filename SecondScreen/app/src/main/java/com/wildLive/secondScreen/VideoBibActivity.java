@@ -44,14 +44,19 @@ import java.util.Set;
 
 public class VideoBibActivity extends AppCompatActivity {
 
-    // **************************************************************************
-    // here insert video-player-bib-content for selecting videos
-
     // src:
     // ********
     //http://android-coding.blogspot.com/2013/04/display-youtubethumbnailview-of-youtube.html
     //https://stackoverflow.com/questions/37253796/youtube-playlist-to-listview-in-android-studio#
     //https://stackoverflow.com/questions/34371461/how-to-load-youtube-thumbnails-in-a-recyclerview-using-youtube-api
+    //https://stackoverflow.com/questions/32409964/get-color-resource-as-string/32410035
+    //https://stackoverflow.com/questions/18708955/invisible-components-still-take-up-space
+    //https://stackoverflow.com/questions/5237101/is-it-possible-to-get-element-from-hashmap-by-its-position/5237147
+    //http://www.tutorialspoint.com/java/java_linkedhashmap_class.htm
+    //https://gist.github.com/tejainece/d32cba84b747c0b2e7df
+    //https://stackoverflow.com/questions/10387290/how-to-get-position-of-key-value-in-linkedhashmap-using-its-key
+    //https://guides.codepath.com/android/Using-an-ArrayAdapter-with-ListView
+    //https://stackoverflow.com/questions/35606368/java-lang-illegalstateexception-not-connected-call-connect-youtube-api
 
     private ImageView chevron_right;
     private ImageView chevron_left;
@@ -71,17 +76,14 @@ public class VideoBibActivity extends AppCompatActivity {
         setContentView(R.layout.activity_videobib);
         progressBar = findViewById(R.id.load_videos);
 
-        GetPlaylists asyncTask = (GetPlaylists) new GetPlaylists(new GetPlaylists.AsyncResponse(){
-
+        //getting YouTube playlists from WildLive Channel in GetPlaylists AsyncTask
+        VideoRequestHandler.GetPlaylists asyncTask = (VideoRequestHandler.GetPlaylists) new VideoRequestHandler.GetPlaylists(new VideoRequestHandler.GetPlaylists.AsyncResponse(){
             @Override
-            public void processFinish(LinkedHashMap output){
-                //Here you will receive the result fired from async class
-                //of onPostExecute(result) method.
-                System.out.println("Main " + output);
+            public void processFinish(LinkedHashMap playlists){ //receiving the result fired from async task
                 continentTitle = (TextView)findViewById(R.id.continent);
-                updateContinentTitle(output, 0);
-                continents = output;
-                //chevron handling
+                updateContinentTitle(playlists, 0);
+                continents = playlists;
+                //initializing listeners but now for bug prevention
                 addListenerOnChevrons();
             }
         }).execute();
@@ -98,8 +100,8 @@ public class VideoBibActivity extends AppCompatActivity {
 
     private void resetVideoView(){
         arrayOfVideos.clear();
-        LinkedHashMap emptyMap = new LinkedHashMap();
-        setVideoList(emptyMap);
+        ArrayList emptyArray = new ArrayList();
+        setVideoList(emptyArray);
         progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -112,7 +114,6 @@ public class VideoBibActivity extends AppCompatActivity {
         getContinentVideos(continentID);
     }
 
-    //https://stackoverflow.com/questions/32409964/get-color-resource-as-string/32410035
     private void setContientColor(String continent) {
         System.out.println("Continent " + continent);
         CardView continentCard = (CardView) continentTitle.getParent();
@@ -121,11 +122,8 @@ public class VideoBibActivity extends AppCompatActivity {
             case "Arktis":
                 continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorArktis)));
                 continentCard.setCardBackgroundColor(continentColor);
-                System.out.println("Arktis Client " + srClient);
                 if(srClient != null){
-                    System.out.println("Arktis Client if " + srClient);
                     srClient.sendMsg(continent);
-                    System.out.println("Arktis message sent?");
                 }
                 break;
             case "Antarktis":
@@ -145,7 +143,6 @@ public class VideoBibActivity extends AppCompatActivity {
             case "Australien":
                 continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAustralien)));
                 continentCard.setCardBackgroundColor(continentColor);
-                System.out.println("SRClient" + srClient.toString());
                 if(srClient != null){
                     srClient.sendMsg(continent);
                 }
@@ -189,65 +186,89 @@ public class VideoBibActivity extends AppCompatActivity {
         }
     }
 
+    //gets PlayListItems and the video durations from Videos in two extra AsyncTasks from YouTube
     private void getContinentVideos(String continent) {
-        GetVideos videoAsyncTask = (GetVideos) new GetVideos(new GetVideos.AsyncResponse(){
-
+        VideoRequestHandler.GetVideos videoAsyncTask = (VideoRequestHandler.GetVideos) new VideoRequestHandler.GetVideos(new VideoRequestHandler.GetVideos.AsyncResponse(){
             @Override
-            public void processFinish(LinkedHashMap output){
-                //Here you will receive the result fired from async class
-                //of onPostExecute(result) method.
-                System.out.println("Videos " + output);
-                setVideoList(output);
-
+            public void processFinish(final ArrayList videoList){
+                for(int i = 0; i < videoList.size(); i++) {
+                    final VideoRequestHandler.GetVideos.VideoInformationModel currentVideo = (VideoRequestHandler.GetVideos.VideoInformationModel) videoList.get(i);
+                    VideoRequestHandler.GetVideoLength videoLenghtAsyncTask = (VideoRequestHandler.GetVideoLength) new VideoRequestHandler.GetVideoLength(new VideoRequestHandler.GetVideoLength.AsyncResponse(){
+                        @Override
+                        public void processFinish(String videoLength){
+                            currentVideo.videoLength = parseDuration(videoLength);
+                            resetVideoView();
+                            setVideoList(videoList);
+                        }
+                    }).execute(currentVideo.videoID);
+                }
+                //sets chevrons clickable but now for bug prevention
                 chevron_right.setClickable(true);
                 chevron_left.setClickable(true);
             }
         }).execute(continent);
     }
 
-    private void setVideoList(LinkedHashMap map){
+    //parses the duration ISO8601 format from YouTube
+    private String parseDuration(String vLength){
+        String parsedLength = "";
+        for(int i = 2; i<vLength.length()-1;i++){
+            if(Character.isDigit(vLength.charAt(i))){
+                parsedLength += vLength.charAt(i);
+            } else {
+                parsedLength += ":";
+            }
+        }
+        //supplements missing zeros from ISO8601 format
+        if(parsedLength.length()%2 == 0){
+            if(parsedLength.length() == 4 && parsedLength.indexOf(":") == 2){
+                parsedLength = parsedLength.substring(0, parsedLength.length()-1) + "0" + parsedLength.substring(parsedLength.length()-1, parsedLength.length());
+            } else if (parsedLength.length() == 6){
+                parsedLength = parsedLength.substring(0, parsedLength.length()-4) + "0" + parsedLength.substring(parsedLength.length()-4, parsedLength.length());
+            } else if (parsedLength.length() == 2){
+                if(vLength.contains("M")) {
+                    parsedLength = parsedLength + ":00";
+                } else {
+                    parsedLength = "00:" + parsedLength;
+                }
+            } else if (parsedLength.length() == 1){
+                parsedLength = "0:0" + parsedLength;
+            }
+        }
+        return parsedLength;
+    }
 
-        List videotitles = new ArrayList(map.keySet());
-        System.out.println("VT " + videotitles.toString());
-
-        for (int i=0; i<videotitles.size(); i++){
-            String actualTitle = videotitles.get(i).toString();
-            VideoDataModel newVideoData = new VideoDataModel(actualTitle, map.get(actualTitle).toString(), "0:00");
+    //hands the data from the AsyncTasks over to the VideoListAdapter
+    //ends the loading circle
+    private void setVideoList(ArrayList videoInformation){
+        for (int i=0; i<videoInformation.size(); i++){
+            VideoRequestHandler.GetVideos.VideoInformationModel currentInfoModel = (VideoRequestHandler.GetVideos.VideoInformationModel) videoInformation.get(i);
+            VideoDataModel newVideoData = new VideoDataModel(currentInfoModel.videoTitle, currentInfoModel.videoID, currentInfoModel.videoLength, currentInfoModel.videoDescription);
             arrayOfVideos.add(newVideoData);
         }
-
-        VideoListAdapter videoListAdapter = new VideoListAdapter(this, arrayOfVideos, srClient);
+        VideoListAdapter videoListAdapter = new VideoListAdapter(this, arrayOfVideos);
         ListView videoListView = (ListView) findViewById(R.id.videoList);
         videoListView.setAdapter(videoListAdapter);
-        //https://stackoverflow.com/questions/18708955/invisible-components-still-take-up-space
         progressBar.setVisibility(View.GONE);
     }
 
-    //https://stackoverflow.com/questions/5237101/is-it-possible-to-get-element-from-hashmap-by-its-position/5237147
-    //http://www.tutorialspoint.com/java/java_linkedhashmap_class.htm
-    //https://gist.github.com/tejainece/d32cba84b747c0b2e7df
     private String getContinentByIndex(LinkedHashMap map, int index){
         Set entrySet = map.entrySet();
         Map.Entry theEntry = (Map.Entry) entrySet.toArray()[index];
-        System.out.println("entry" + theEntry);
         return (String) theEntry.getKey();
     }
 
+    //implements logic for 'Rondell' functionality
     private void addListenerOnChevrons() {
+        //adds listener to left chevron
         chevron_left = (ImageView)findViewById(R.id.category_chevron_left);
         chevron_left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //last continent
-                Toast.makeText(getApplicationContext(),
-                        "LAST", Toast.LENGTH_SHORT).show();
-
                 chevron_left.setClickable(false);
                 chevron_right.setClickable(false);
 
                 Integer continentIndex = (Integer) getContinentIndex(continents, (String) continentTitle.getText());
-
-                System.out.println("ci" + continentIndex + " " + "cs" + continents.size());
                 if (continentIndex - 1 < 0) {
                     String lastContinent = getContinentByIndex(continents, continents.size() -1);
                     continentTitle.setText(lastContinent);
@@ -264,14 +285,11 @@ public class VideoBibActivity extends AppCompatActivity {
             }
         });
 
+        //adds listener to right chevron
         chevron_right = (ImageView)findViewById(R.id.category_chevron_right);
         chevron_right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //next continent
-                Toast.makeText(getApplicationContext(),
-                        "NEXT", Toast.LENGTH_SHORT).show();
-
                 chevron_left.setClickable(false);
                 chevron_right.setClickable(false);
 
@@ -293,7 +311,6 @@ public class VideoBibActivity extends AppCompatActivity {
         });
     }
 
-    //https://stackoverflow.com/questions/10387290/how-to-get-position-of-key-value-in-linkedhashmap-using-its-key
     private Integer getContinentIndex(LinkedHashMap map, String continent) {
         Integer index;
         index = new ArrayList<String>(map.keySet()).indexOf(continent);
@@ -301,27 +318,22 @@ public class VideoBibActivity extends AppCompatActivity {
     }
 
     // **************************************************************************
-    //https://guides.codepath.com/android/Using-an-ArrayAdapter-with-ListView
-    //https://stackoverflow.com/questions/35606368/java-lang-illegalstateexception-not-connected-call-connect-youtube-api
 
     public class VideoListAdapter extends ArrayAdapter<VideoDataModel> {
 
-        private final SignalRClient signalRClient;
-        public static final String DEVELOPER_KEY = "AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI";
-        public boolean loadThumbnail = true;
         private String PRE_REQUEST = "https://i.ytimg.com/vi/";
         private String POST_REQUEST = "/mqdefault.jpg";
 
         private class VideoViewHolder {
             TextView videoTitle;
             TextView videoLength;
+            TextView videoDescription;
             YouTubeThumbnailView videoThumbnail;
             ProgressBar videoLoad;
         }
 
-        public VideoListAdapter(Context context, ArrayList<VideoDataModel> videoDataModels, SignalRClient sRClient) {
+        public VideoListAdapter(Context context, ArrayList<VideoDataModel> videoDataModels) {
             super(context, R.layout.videolist_item, videoDataModels);
-            this.signalRClient = sRClient;
         }
 
         public View getView(int position, View convertView, ViewGroup parent){
@@ -333,6 +345,7 @@ public class VideoBibActivity extends AppCompatActivity {
 
                 videoViewHolder.videoTitle = (TextView) convertView.findViewById(R.id.titleView);
                 videoViewHolder.videoLength = (TextView) convertView.findViewById(R.id.lengthView);
+                videoViewHolder.videoDescription = (TextView) convertView.findViewById(R.id.descriptionView);
                 videoViewHolder.videoThumbnail = (YouTubeThumbnailView) convertView.findViewById(R.id.thumbnailView);
                 videoViewHolder.videoLoad = (ProgressBar) convertView.findViewById(R.id.thumbnailLoad);
                 convertView.setTag(videoViewHolder);
@@ -341,13 +354,10 @@ public class VideoBibActivity extends AppCompatActivity {
             }
             videoViewHolder.videoTitle.setText(videoDataModel.videoTitle);
             videoViewHolder.videoLength.setText(videoDataModel.videoLength);
+            videoViewHolder.videoDescription.setText(videoDataModel.videoDescription);
             videoViewHolder.videoThumbnail.setTag(videoDataModel.videoID);
-            System.out.println("TAG " + videoViewHolder.videoThumbnail.getTag().toString());
-            System.out.println("thumbnails" + videoDataModel.videoID);
-            //GetThumbnails asyncTask = (GetThumbnails) new GetThumbnails().execute(videoViewHolder.videoThumbnail);
             String urlRequest = PRE_REQUEST + videoDataModel.videoID + POST_REQUEST;
-            GetImage imageAsyncTask = (GetImage) new GetImage(new GetImage.AsyncResponse(){
-
+            VideoRequestHandler.GetImage imageAsyncTask = (VideoRequestHandler.GetImage) new VideoRequestHandler.GetImage(new VideoRequestHandler.GetImage.AsyncResponse(){
                 @Override
                 public void processFinish(Drawable output) {
                     videoViewHolder.videoThumbnail.setImageDrawable(output);
@@ -363,60 +373,24 @@ public class VideoBibActivity extends AppCompatActivity {
             final Context context = getApplicationContext();
             // registering button and button-behaviour by on-clicking
             thumbnailView.setOnClickListener(new View.OnClickListener() {
-
                 @Override
                 public void onClick(View arg0) {
                     // switching to next activity on button click
-                    if(srClient != null) {
-                        //signalRClient.sendMsg("playVideo" + thumbnailView.getTag().toString());
+                    /*if(srClient != null) {
                         // switching to next activity on button click
                         Intent intent = new Intent(context, InformationActivity.class);
                         intent.putExtra("VideoID", thumbnailView.getTag().toString());
                         startActivity(intent);
                     } else {
                         Toast.makeText(context, "No Connection!", Toast.LENGTH_LONG).show();
-                    }
+                    }*/
                     Intent intent = new Intent(context, InformationActivity.class);
                     String videoID = new String(thumbnailView.getTag().toString());
                     intent.putExtra("videoID", videoID);
-                    System.out.println("VideoBib VideoID " + videoID);
+                    //System.out.println("VideoBib VideoID " + videoID);
                     startActivity(intent);
                 }
             });
-        }
-    }
-
-    // **************************************************************************
-    //https://stackoverflow.com/questions/6407324/how-to-display-image-from-url-on-android
-    private static class GetImage extends AsyncTask<String, Void, Drawable> {
-
-        private String inputURL;
-        private AsyncResponse delegate;
-
-        public GetImage(AsyncResponse delegate){
-            this.delegate = delegate;
-        }
-
-        public interface AsyncResponse {
-            void processFinish(Drawable output);
-        }
-
-        protected void onPostExecute (Drawable result) {
-            delegate.processFinish(result);
-        }
-
-
-        @Override
-        protected Drawable doInBackground(String... params) {
-            inputURL = params[0];
-            InputStream is = null;
-            try {
-                is = (InputStream) new URL(inputURL).getContent();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Drawable d = Drawable.createFromStream(is, "Thumbnail");
-            return d;
         }
     }
 
@@ -426,146 +400,13 @@ public class VideoBibActivity extends AppCompatActivity {
         String videoTitle;
         String videoID;
         String videoLength;
+        String videoDescription;
 
-        public VideoDataModel(String videoTitle, String videoID, String videoLength) {
+        public VideoDataModel(String videoTitle, String videoID, String videoLength, String videoDescription) {
             this.videoTitle = videoTitle;
             this.videoID = videoID;
             this.videoLength = videoLength;
-        }
-    }
-
-    // **************************************************************************
-    //https://stackoverflow.com/questions/17549042/android-asynctask-passing-a-single-string
-    private static class GetVideos extends AsyncTask<String, Void, LinkedHashMap> {
-        public AsyncResponse delegate = null;
-        private Exception exception;
-        private String PLAYLIST_REQUEST = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50";
-        private String PLAYLIST_PREFIX = "&playlistId=";
-        private String DEVELOPERKEY = "&key=AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI";
-        private String TEST_REQUEST = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=PLrEmzVduftH1S9XyRT5F9AZNt9ZzopwE5&key=AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI";
-
-        public GetVideos(AsyncResponse delegate){
-            this.delegate = delegate;
-        }
-
-        public interface AsyncResponse {
-            void processFinish(LinkedHashMap output);
-        }
-
-        protected void onPostExecute (LinkedHashMap result) {
-            delegate.processFinish(result);
-        }
-
-        @Override
-        protected LinkedHashMap doInBackground(String... params) {
-
-            LinkedHashMap <String, String> playlistVideos = new LinkedHashMap<>();
-
-            HttpClient httpclient = new DefaultHttpClient();
-            String playlistID = params[0];
-            //System.out.println("playlistID" + playlistID);
-            HttpGet httpget = new HttpGet(PLAYLIST_REQUEST + PLAYLIST_PREFIX + playlistID + DEVELOPERKEY);
-            org.apache.http.HttpResponse response = null;
-            try {
-                response = httpclient.execute(httpget);
-            } catch (Exception e) {
-                this.exception = e;
-            }
-            String responseAsString;
-            JSONObject responseAsJSONObject = null;
-            JSONArray playlistVideosArray;
-
-            try {
-                responseAsString = EntityUtils.toString(response.getEntity());
-                //System.out.println(responseAsString);
-                try {
-                    responseAsJSONObject = new JSONObject(responseAsString);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                playlistVideosArray = responseAsJSONObject.getJSONArray("items");
-                //System.out.println(playlistVideosArray);
-                for (int i=0; i<playlistVideosArray.length(); i++){
-                    JSONObject video = playlistVideosArray.getJSONObject(i);
-                    //System.out.println(video);
-                    JSONObject snippet = video.getJSONObject("snippet");
-                    JSONObject resourceId = snippet.getJSONObject("resourceId");
-                    playlistVideos.put(snippet.getString("title"), resourceId.getString("videoId"));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            //System.out.println("PV" + playlistVideos);
-            return playlistVideos;
-        }
-    }
-
-    // **************************************************************************
-
-    private static class GetPlaylists extends AsyncTask<String, Void, LinkedHashMap> {
-
-        public AsyncResponse delegate = null;
-        private Exception exception;
-        private String PLAYLISTS_REQUEST = "https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=UC2ETsCbgegY8iqQFwS9Xi4w&key=AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI&maxResults=50";
-
-        public GetPlaylists(AsyncResponse delegate){
-            this.delegate = delegate;
-        }
-
-        public interface AsyncResponse {
-            void processFinish(LinkedHashMap output);
-        }
-
-        protected LinkedHashMap doInBackground(String... string) {
-
-            LinkedHashMap<String, String> playlistRondell = new LinkedHashMap<String, String>();
-
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpGet httpget = new HttpGet(PLAYLISTS_REQUEST);
-            org.apache.http.HttpResponse response = null;
-
-            try {
-                response = httpclient.execute(httpget);
-            } catch (Exception e) {
-                this.exception = e;
-            }
-            String responseAsString;
-            JSONObject responseAsJSONObject = null;
-            JSONArray playlistsArray;
-
-            try {
-                responseAsString = EntityUtils.toString(response.getEntity());
-                try {
-                    responseAsJSONObject = new JSONObject(responseAsString);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            //System.out.println(responseAsJSONObject);
-            try {
-                playlistsArray = responseAsJSONObject.getJSONArray("items");
-
-                for (int i=0; i<playlistsArray.length(); i++){
-                    JSONObject playlist = playlistsArray.getJSONObject(i);
-                    //System.out.println(playlist);
-                    JSONObject snippet = playlist.getJSONObject("snippet");
-                    playlistRondell.put(snippet.getString("title"), playlist.getString("id"));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            //System.out.println(playlistRondell);
-            return playlistRondell;
-        }
-
-        protected void onPostExecute(LinkedHashMap result) {
-            delegate.processFinish(result);
+            this.videoDescription = videoDescription;
         }
     }
 }
