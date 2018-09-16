@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity implements DialogHandler.OnI
     public void sendInput(String input, int buttonId) {
         switchCastButton(buttonId);
         // registering signalR client
-        SRClient = new SignalRClient(messageCallback);
+        SRClient = new SignalRClient();
     }
     @Override
     public void sendInput(int buttonId) {
@@ -132,18 +132,6 @@ public class MainActivity extends AppCompatActivity implements DialogHandler.OnI
     // creating new instance of signalR client after reconnecting-event (callback)
     public void handleReconnection() {
         SRClient = null;
-        SRClient = new SignalRClient(messageCallback);
+        SRClient = new SignalRClient();
     }
-
-    // handling message requests from server-client-connection (via signalR)
-    final SignalRCallback<String> messageCallback = new SignalRCallback<String>() {
-        @Override
-        public void onSuccess(String var1) {
-            Log.d(TAG, "message success: " + var1);
-        }
-        @Override
-        public void onError(Error var1) {
-            Log.d(TAG, "message error: " + var1);
-        }
-    };
 }

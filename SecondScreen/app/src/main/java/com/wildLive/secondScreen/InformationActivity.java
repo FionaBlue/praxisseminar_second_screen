@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -41,10 +43,13 @@ public class InformationActivity extends AppCompatActivity {
     // https://www.youtube.com/watch?v=94rCjYxvzEE
     // https://stackoverflow.com/questions/26682277/how-do-i-get-the-position-selected-in-a-recyclerview
     // https://stackoverflow.com/questions/30340591/changing-an-imageview-to-black-and-white
+    // https://stackoverflow.com/questions/50668810/textview-settext-does-nothing
+    // https://stackoverflow.com/questions/48845814/recycler-view-adapter-looping-objects-in-pairs
 
     public List<ContentElement> contentElements = new ArrayList<>();    // dynamical array for content information
     RecyclerView recyclerListView;                                      // providing option for horizontal list view (= recyclerView)
     CustomAdapter adapter = new CustomAdapter();                        // adapter to fill list view with trigger points (timeline)
+    private LinearLayout guideCardView, contentCardView;                // card view layouts for showing guide or info content
     private TextView wikiContentTitle;                                  // text view for showing wiki-requested title content
     private TextView wikiContentExtract;                                // text view for showing wiki-requested extract content
     private ImageView wikiContentImage;                                 // image view for showing wiki-requested image content
@@ -59,6 +64,7 @@ public class InformationActivity extends AppCompatActivity {
     private String videoId = "Nbrx5tFJzyQ";                             // id of currently loaded video (for retrieving specific information)
     private SignalRClient sRClient;                                     // signalR-client for communication between devices (first screen/second screen)
 
+    public enum InformationViewState { GUIDE, CONTENT }                 // enum for choosing current layout state (guide or info content)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,11 +103,39 @@ public class InformationActivity extends AppCompatActivity {
         WildLive app = (WildLive)getApplication();
         sRClient = app.getSRClient();
         System.out.println("Information Client " + sRClient);
+
+        // receiving and handling messages from signalR-client (transferring data)
+        if (sRClient != null) {
+            sRClient.setMessageListener(new SignalRClient.SignalRCallback<String>() {
+                @Override
+                public void onSuccess(String message) {
+                    Log.d("LOG_INFOACT", "received :: " + message);
+                    // converting message for right usage
+                    final int messagePos = Integer.parseInt(message);
+
+                    // returning to original ui-thread for handling ui-element (textViews, imageViews, etc.)
+                    InformationActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // activate new trigger-point
+                            adapter.activateNewTriggerPoint(messagePos);
+                        }
+                    });
+                }
+                @Override
+                public void onError(String message) { }
+            });
+        }
     }
 
     private void registerLayoutComponents() {
         // defining actual layout group
         setContentView(R.layout.activity_information);
+
+        // registering different card view layouts (for initial guide and for revealed placeholder)
+        guideCardView = (LinearLayout) findViewById(R.id.guideCardView);
+        contentCardView = (LinearLayout) findViewById(R.id.contentCardView);
+        activateInformationState(InformationViewState.GUIDE);   // initially registering guide state
 
         // registering and starting progress bar loader that waits for wiki information content to be loaded
         progressBar = (ProgressBar) findViewById(R.id.informationLoader);
@@ -126,11 +160,28 @@ public class InformationActivity extends AppCompatActivity {
         // registering list view (recyclerView) with arrows/chevrons and custom array adapter
         arrowLeft = (ImageView) findViewById(R.id.timelineChevronLeft);
         arrowRight = (ImageView) findViewById(R.id.timelineChevronRight);
+        arrowLeft.setVisibility(View.INVISIBLE);
+        arrowRight.setVisibility(View.INVISIBLE);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);   // setting orientation to horizontal!
         recyclerListView = (RecyclerView) findViewById(R.id.timeline);
         recyclerListView.setLayoutManager(layoutManager);
         recyclerListView.setAdapter(adapter);   // binding data from separate timeline-item layout to activity layout via adapter
+    }
+
+    public void activateInformationState(InformationViewState state) {
+        switch (state) {
+            case GUIDE:
+                contentCardView.setVisibility(View.INVISIBLE);
+                guideCardView.setVisibility(View.VISIBLE);
+                guideCardView.setHovered(true);
+                break;
+            case CONTENT:
+                guideCardView.setVisibility(View.INVISIBLE);
+                contentCardView.setVisibility(View.VISIBLE);
+                contentCardView.setHovered(true);
+                break;
+        }
     }
 
     private void getInformationContent() {
@@ -139,7 +190,7 @@ public class InformationActivity extends AppCompatActivity {
             public void processFinished(ArrayList<DatabaseHandler.VideoTriggerPoint> output) {
                 for (DatabaseHandler.VideoTriggerPoint currItem : output) {
                     // adding new item filled with retrieved database content (wikipedia-content will be loaded later on)
-                    contentElements.add(new ContentElement(currItem.triggerPointTitle,"", "", (currItem.triggerPointId == 0) ? true : false, "", currItem.triggerPointImageUrl, currItem.triggerPointTimestamp, currItem.triggerPointBitmap));
+                    contentElements.add(new ContentElement(currItem.triggerPointTitle,"", "", true, false, "", currItem.triggerPointImageUrl, currItem.triggerPointTimestamp, currItem.triggerPointBitmap));
                 }
                 getContentInformationFromWiki();
             }
@@ -167,11 +218,6 @@ public class InformationActivity extends AppCompatActivity {
                     wikiElement.title = contentOutput.wikiContentTitle;
                     wikiElement.extract = contentOutput.wikiContentExtract;
                     wikiElement.extArticle = contentOutput.wikiContentArticle;
-
-                    // loading responded information and local image in card view elements
-                    if (wikiElement.isActive == true) {
-                        integrateInformation(wikiElement.title, wikiElement.extract, wikiElement.imageBitmap);
-                    }
 
                     // checking if last content element information was retrieved, than stopping progress bar and refresh adapter
                     if (wikiElement == contentElements.get(contentElements.size() - 1)) {
@@ -320,20 +366,23 @@ public class InformationActivity extends AppCompatActivity {
                 if (triggerPointList.size() == 1) {
                     // setting activated highlighting for first item in timeline-item-list
                     prevPosition = 0;
-                    setItemActivationState(prevPosition);
-
-                    // setting arrow for scrolling left invisible to emphasize possible scroll-direction
-                    arrowLeft.setVisibility(View.INVISIBLE);
                 }
             }
             // setting image for current timeline-item
-            viewHolder.timelineItem.setImageBitmap(contentElements.get(position).imageBitmap);
+            if (contentElements.get(position).isPlaceholder == true) {
+                viewHolder.timelineItem.setImageResource(R.drawable.placeholder);
+            } else {
+                viewHolder.timelineItem.setImageBitmap(contentElements.get(position).imageBitmap);
+            }
 
             // handling on-click behaviour (loading information and setting highlighting for timeline-item)
             viewHolder.timelineItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onItemClicked(position);
+                    // only clicking if item was revealed (no placeholder left)
+                    if (contentElements.get(position).isPlaceholder == false) {
+                        onItemClicked(position);
+                    }
                 }
             });
 
@@ -351,17 +400,7 @@ public class InformationActivity extends AppCompatActivity {
             setItemActivationState(position);
             prevPosition = position;
 
-            // activating/deactivating timeline arrows (on border reached) for emphasizing possible scroll-directions
-            if (position == 0) {
-                arrowLeft.setVisibility(View.INVISIBLE);
-                arrowRight.setVisibility(View.VISIBLE);
-            } else if (position == getItemCount()-1) {
-                arrowRight.setVisibility(View.INVISIBLE);
-                arrowLeft.setVisibility(View.VISIBLE);
-            } else {
-                arrowLeft.setVisibility(View.VISIBLE);
-                arrowRight.setVisibility(View.VISIBLE);
-            }
+            setNavigationArrowVisibility(position);
         }
 
         private void setItemActivationState(int position) {
@@ -384,6 +423,46 @@ public class InformationActivity extends AppCompatActivity {
             return activatedPosition;
         }
 
+        private void setNavigationArrowVisibility(int position) {
+            // activating/deactivating timeline arrows (on border reached) for emphasizing possible scroll-directions
+            int placeholderCount = getItemPlaceholderCount();
+            if (placeholderCount == getItemCount()) {
+                // checking if all placeholders are visible
+                arrowLeft.setVisibility(View.INVISIBLE);
+                arrowRight.setVisibility(View.INVISIBLE);
+            } else if (placeholderCount < getItemCount()) {
+                if (placeholderCount == getItemCount()-1) {
+                    // checking if single placeholder was revealed
+                    arrowLeft.setVisibility(View.INVISIBLE);
+                    arrowRight.setVisibility(View.INVISIBLE);
+                } else if (placeholderCount < getItemCount()-1) {
+                    if (position == (getItemCount()-placeholderCount)-1) {
+                        // checking if more than 1 placeholder was revealed and last available position was clicked
+                        arrowLeft.setVisibility(View.VISIBLE);
+                        arrowRight.setVisibility(View.INVISIBLE);
+                    } else if (position == 0) {
+                        // checking if more than 1 placeholder was revealed and first available position was clicked
+                        arrowLeft.setVisibility(View.INVISIBLE);
+                        arrowRight.setVisibility(View.VISIBLE);
+                    } else {
+                        // checking if more than 1 placeholder was revealed and any other available position was clicked
+                        arrowLeft.setVisibility(View.VISIBLE);
+                        arrowRight.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        }
+
+        private int getItemPlaceholderCount() {
+            int placeholderCounter = 0;
+            for (int i = 0; i < getItemCount(); i++) {
+                if (contentElements.get(i).isPlaceholder == true) {
+                    placeholderCounter++;
+                }
+            }
+            return placeholderCounter;
+        }
+
         // setting saturation value for images
         private void setTriggerPointSaturation(CircleImageView triggerPoint, int saturation) {
             ColorMatrix matrix = new ColorMatrix();
@@ -398,13 +477,35 @@ public class InformationActivity extends AppCompatActivity {
             int switchToTriggerPointPosition = getItemActivationState() + direction;
 
             // checking if previous or next trigger point is in range
-            if ((switchToTriggerPointPosition >= 0) && (switchToTriggerPointPosition <= getItemCount()-1)) {
+            setTriggerPoint(switchToTriggerPointPosition, direction);
+        }
+
+        private void setTriggerPoint(int position, int direction) {
+            // checking if trigger point id is in range
+            if ((position >= 0) && (position <= getItemCount()-1)) {
                 // scrolling timeline automatically
-                recyclerListView.smoothScrollBy(direction*200, 0);
-                recyclerListView.smoothScrollToPosition(switchToTriggerPointPosition);
+                if (direction != 0) {
+                    recyclerListView.smoothScrollBy(direction * 200, 0);
+                    recyclerListView.smoothScrollToPosition(position);
+                }
 
                 // calling on-click for previous/next timeline-item on arrow-clicked
-                triggerPointList.get(switchToTriggerPointPosition).callOnClick();
+                triggerPointList.get(position).callOnClick();
+            }
+        }
+
+        private void activateNewTriggerPoint(int position) {
+            // activating new trigger-point for showing real animal-picture
+            if ((position >= 0) && (position <= getItemCount()-1)) {
+
+                contentElements.get(position).isPlaceholder = false;
+                triggerPointList.get(position).setImageBitmap(contentElements.get(position).imageBitmap);
+
+                if (position == 0) {
+                    activateInformationState(InformationViewState.CONTENT);
+                    setTriggerPoint(position, 0);
+                }
+                setTriggerPoint(position, +1);
             }
         }
     }
@@ -414,6 +515,7 @@ public class InformationActivity extends AppCompatActivity {
         String identifier;
         String title;
         String extract;
+        Boolean isPlaceholder;
         Boolean isActive;
         String extArticle;
         String imageUrl;
@@ -421,10 +523,11 @@ public class InformationActivity extends AppCompatActivity {
         Bitmap imageBitmap;
 
         // constructor
-        public ContentElement(String identifier, String title, String extract, Boolean isActive, String extArticle, String imageUrl, String timestamp, Bitmap imageBitmap) {
+        public ContentElement(String identifier, String title, String extract, Boolean isPlaceholder, Boolean isActive, String extArticle, String imageUrl, String timestamp, Bitmap imageBitmap) {
             this.identifier = identifier;
             this.title = title;
             this.extract = extract;
+            this.isPlaceholder = isPlaceholder;
             this.isActive = isActive;
             this.extArticle = extArticle;
             this.imageUrl = imageUrl;

@@ -20,10 +20,9 @@ public class SignalRClient {
     // https://github.com/SignalR/java-client/issues/61
 
     private static final String TAG = "MEK_Plugin_SignalR";                     // tags for logging
-    private MainActivity mainActivity = new MainActivity();                     // activity for handling signalR client
 
     //SignalR Variables
-    private String host = "http://pk029-audi-2nds.tvapp-server.de/SecondScreen";// url from web site (!)
+    private String host = "http://pk029-audi-2nds.tvapp-server.de/SecondScreen";// example server
     private static HubConnection _connection;
     private static HubProxy _hub = null;
     private static SubscriptionHandler1<String> handlerCon;
@@ -33,7 +32,7 @@ public class SignalRClient {
     boolean isReconnecting = false;                                             // status for checking connection state (and reacting if is "reconnecting" error)
 
     // constructor
-    public SignalRClient(SignalRCallback<String> messageCallback){
+    public SignalRClient(){
         // establishing signalR connection via hub
         _connection = new HubConnection( host );
         _hub = _connection.createHubProxy( hubName );                           // name from hub class in server
@@ -41,7 +40,6 @@ public class SignalRClient {
         // starting hub connection
         startConnection();
         disconnect();
-        setMessageListner(messageCallback);
 
         // starting session and generating session-id
         _hub.invoke(String.class, "StartSession").done(new Action<String>() {
@@ -63,6 +61,12 @@ public class SignalRClient {
         });
     }
 
+    // interface for handling message-receiving
+    public interface SignalRCallback<T> {
+        void onSuccess(T message);
+        void onError(T message);
+    }
+
     // asyncTask behaviour for instantiating new signalR client on reconnecting delay/error
     public class ReconnectHandler extends AsyncTask<Void, Void, Void> {
         @Override
@@ -79,6 +83,10 @@ public class SignalRClient {
         }
         protected void onPostExecute(Void voids) {
             sendMsg(""); //send empty Msg as "ping"
+            // waiting for "ping"-delay (for better performance issues)
+            int i = 0;
+            while (i < 3) { i++; }
+
             new ReconnectHandler().execute();
         }
     }
@@ -97,13 +105,14 @@ public class SignalRClient {
     }
 
     // receiving messages (if connection status is not "reconnecting")
-    private void setMessageListner(final SignalRCallback<String> messageCallback){
+    public void setMessageListener(final SignalRCallback<String> messageCallback){
         handlerCon = new SubscriptionHandler1<String>() {
             @Override
             public void run(String receivedMessage) {
                 // return all received messages (on success)
                 if (isReconnecting == false) {
                     messageCallback.onSuccess(receivedMessage);
+                    messageCallback.onError(receivedMessage);
                 }
             }
         };
