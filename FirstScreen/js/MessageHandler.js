@@ -79,6 +79,12 @@ WildLiveApp.MessageHandler = function() {
                 youTubePlayer.setVolumeDown();
             }
         }
+         // -----------------------------------------------------------------
+        //scorehandling
+        if(encodedMsg.includes("score")){
+            score = encodedMsg.slice(5);
+            document.getElementById("quizScore").innerHTML = score;
+        }
     }
 
     that.init = init;
