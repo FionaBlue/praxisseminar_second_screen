@@ -1,5 +1,7 @@
 package com.wildLive.secondScreen;
 
+import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Context;
@@ -10,6 +12,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements DialogHandler.OnInputListener {
 
@@ -38,9 +41,30 @@ public class MainActivity extends AppCompatActivity implements DialogHandler.OnI
                 if (activeCast.isVisible()) {
                     activeCast.setVisible(false);
                     inactiveCast.setVisible(true);
+
+
+                    //waits about 5 seconds until the message is sent so
+                    //SignalR is definitley up when the message score is transferred
+                    //has to be adjusted if the connection gets handled automatically
+                    //and not via ID entering
+                    SharedPreferences sp = getSharedPreferences("quizdata", MODE_PRIVATE);
+                    final int score = sp.getInt("score", 0);
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(SRClient != null){
+                                SRClient.sendMsg("score"+String.valueOf(score));
+                            }
+                        }
+                    }, 5000);
+
+
                 } else {
                     inactiveCast.setVisible(false);
                     activeCast.setVisible(true);
+
                 }
                 break;
             default:

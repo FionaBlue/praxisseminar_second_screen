@@ -33,6 +33,8 @@ public class QuizActivity extends AppCompatActivity {
 
     private int standardButtonColor;
 
+    private SignalRClient srClient = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,20 +47,18 @@ public class QuizActivity extends AppCompatActivity {
 
         Toast.makeText(QuizActivity.this, "LOADQUIZDATA - Score: "+score+" QuestionNumber: "+questionNumber, Toast.LENGTH_SHORT).show();
 
-
-        //DisplayMetrics dm = new DisplayMetrics();
-        //getWindowManager().getDefaultDisplay().getMetrics(dm);
-
-        //int width = dm.widthPixels;
-        //int height = dm.heightPixels;
-
-        //getWindow().setLayout((int)(width*.8),(int)(height*.6));
+        WildLive app = (WildLive) getApplication();
+        srClient = app.getSRClient();
 
         questionLibrary = new QuestionLibrary(QuizActivity.this);
         initiateElements();
         createButtonListeners();
         updateQuestion();
         updateScore(score);
+
+        if(srClient != null){
+            srClient.sendMsg("score"+String.valueOf(score));
+        }
     }
 
     @Override
@@ -122,6 +122,11 @@ public class QuizActivity extends AppCompatActivity {
                 button.setBackgroundColor(standardButtonColor);
                 score = score+1;
                 updateScore(score);
+
+                if(srClient != null){
+                    srClient.sendMsg("score"+String.valueOf(score));
+                }
+
                 incrementQuestion();
                 updateQuestion();
                 enableButtons();

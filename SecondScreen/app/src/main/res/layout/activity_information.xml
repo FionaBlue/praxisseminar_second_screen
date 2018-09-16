@@ -79,6 +79,16 @@
                     android:text="Hinter den Platzhaltern verbergen sich spannende Informationen zu Tieren im ausgewählten Video. Folge dem Video-Verlauf um mehr zu erfahren!"
                     android:textStyle="bold"
                     android:textSize="15sp"/>
+
+                <!-- JUST FOR TESTING! PLESE DELETE IF NOT NEEDED ANYMORE-->
+                <ImageButton
+                    android:id="@+id/buttonInformationNext"
+                    android:src="@drawable/quiz_marker"
+                    android:background="@null"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitCenter" />
+
             </LinearLayout>
 
 
@@ -146,13 +156,14 @@
                         android:text="ARTIKEL LESEN"
                         android:layout_height="wrap_content" />
 
+                    <!--
                     <ImageButton
                         android:id="@+id/buttonInformationNext"
                         android:src="@drawable/quiz_marker"
                         android:background="@null"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:scaleType="fitCenter" />
+                        android:scaleType="fitCenter" />-->
 
                 </LinearLayout>
             </LinearLayout>
