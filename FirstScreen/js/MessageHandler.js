@@ -85,6 +85,10 @@ WildLiveApp.MessageHandler = function() {
             score = encodedMsg.slice(5);
             document.getElementById("quizScore").innerHTML = score;
         }
+
+        if(encodedMsg.includes("endguide")){
+            document.getElementById("onBoardingGuide").hidden = true;
+        }
     }
 
     that.init = init;
