@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements DialogHandler.OnI
                         public void run() {
                             if(SRClient != null){
                                 SRClient.sendMsg("score"+String.valueOf(score));
+                                SRClient.sendMsg("endguide");
                             }
                         }
                     }, 5000);
