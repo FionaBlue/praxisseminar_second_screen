@@ -1,85 +1,62 @@
+// src:
+// ***************
+// https://docs.microsoft.com/en-us/aspnet/signalr/overview/guide-to-the-api/hubs-api-guide-javascript-client#nogenconnection
+
 var WildLiveApp = WildLiveApp || {};
 WildLiveApp.SignalRConnection = function() {
 
-    var that = {},
-        messageHandler;
+    var that = {}, messageHandler, chat;
 
-    function init() {
-        // src:
-        // ***************
-        // https://docs.microsoft.com/en-us/aspnet/signalr/overview/guide-to-the-api/hubs-api-guide-javascript-client#nogenconnection
+    $.connection.hub.url = "http://pk029-audi-2nds.tvapp-server.de/SecondScreen";   // server; "http://localhost:8080/signalr";
+    chat = $.connection.secondScreenHub;
+    // starting connection to server
+    $.connection.hub.start().done(function () {
+        console.log("Now connected");
 
+        // switching cast button if connection could be initialized
+        document.getElementById("castConnectedButton").classList.remove("hidden");
+        document.getElementById("castNotConnectedButton").classList.add("hidden");
+        
+        // generating session connection
+        chat.server.joinSession('123456789');
 
-        // setting up the hubs url for the connection
-        $.connection.hub.url = "http://pk029-audi-2nds.tvapp-server.de/SecondScreen";   //"http://localhost:8080/signalr";
-        // declaring a proxy for referencing the hub
-        var chat = $.connection.secondScreenHub;
+    }).fail(function() {
+        // if starting the connection failed
+        console.log("Could not connect");
+    });
 
-        // getting the connection id (temporary) and store it to prepend to messages
-        $('#displayname').val(prompt('Enter your name:', ''));
-        // setting initial focus to message input box
-        $('#message').focus();
-
-
-
-        // starting the connection
-        $.connection.hub.start().done(function () {
-            console.log("Now connected");
-            document.getElementById("castConnectedButton").classList.remove("hidden");
-            document.getElementById("castNotConnectedButton").classList.add("hidden");
-            
-            // generating session connection
-            chat.server.joinSession($('#displayname').val());
-            
-            // handling on click button behaviour
-            $('#sendmessage').click(function () {
-                
-                // calling the send method on the hub (with id and chat-message)
-                // -----------------------------------------------------------------
-                chat.server.sendMessage($('#displayname').val(), $('#message').val()).done(function() {
-                    // adding the message to the page
-                    $('#discussion').append('<li><strong> </strong>' + $('#message').val() + '</li>');
-
-                    // clearing text box and reseting focus for next comment
-                    $('#message').val('').focus();
-
-                }).fail(function(error) {
-                    console.log( 'sendMessage error: ' + error);
-                });
-                // -----------------------------------------------------------------
-            });
-            $('#disconnect').click(function () {
-                chat.server.leaveSession($('#displayname').val());
-                console.log("Now disconnected");
-                document.getElementById("castNotConnectedButton").classList.remove("hidden");
-                document.getElementById("castConnectedButton").classList.add("hidden");
-            });
-
-        }).fail(function() {
-            // if starting the connection failed
-            console.log("Could not connect");
-        });
-
-
-
+    function registerMessageReceiver() {
         // receiving messages (function that the hub can call to broadcast messages)
-        // -----------------------------------------------------------------
         chat.client.receiveMessage = function (message) {
-            var encodedMsg = $('<div />').text(message).html();
-            
-            // adding the received message to the page content
-            if(encodedMsg != ""){
-               $('#discussion').append('<li><strong> </strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
+
+            // only handling message if message is not empty
+            if (message != "") {
+                messageHandler = WildLiveApp.getMessageHandler();
+                messageHandler.handleMessage(message);
             }
-            messageHandler = new WildLiveApp.MessageHandler();
-            messageHandler.init();
-            messageHandler.handleMessage(encodedMsg);
         }
     }
 
-    that.init = init;
+    function sendMessageToAndroidDevice(message) {
+        // sending message for session id
+        chat.server.sendMessage("123456789", message).done(function() {
+            console.log('sendMessage done: ' + message);
+
+        }).fail(function(error) {
+            console.log( 'sendMessage error: ' + error);
+        });
+    }
+
+    function disconnect() {
+        chat.server.leaveSession('123456789');
+        console.log("Now disconnected");
+
+        // switching cast button if connection was disconnected
+        document.getElementById("castNotConnectedButton").classList.remove("hidden");
+        document.getElementById("castConnectedButton").classList.add("hidden");
+    }
+
+    that.sendMessageToAndroidDevice = sendMessageToAndroidDevice;
+    that.registerMessageReceiver = registerMessageReceiver;
     return that;
 };
-
-
-

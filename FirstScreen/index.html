@@ -22,18 +22,25 @@
         </header>
 
         <main>
-            <div class="templateBinding">
-            </div>
-    
+            <!-- current placeholder for template content-->
+            <div class="templateBinding"></div>
+
+            <!-- initialize firebase -->
+            <script src="https://www.gstatic.com/firebasejs/5.5.0/firebase.js"></script>
+			<script>
+			  var config = {
+				apiKey: "AIzaSyDN36F-020U2ACYgdPIncA11S6OYpeYHBA",
+				authDomain: "wildlive-210609.firebaseapp.com",
+				databaseURL: "https://wildlive-210609.firebaseio.com",
+				projectId: "wildlive-210609",
+				storageBucket: "wildlive-210609.appspot.com",
+				messagingSenderId: "130878348195"
+              };
+              firebase.initializeApp(config);
+			</script>
+
+            <!-- template for map -->
             <script type="text/template" id="Weltkarte">
-                <!-- text input box for signalR connection id -->
-                <div class="container">
-                    <input type="text" id="message" />
-                    <input type="button" id="sendmessage" value="Send" />
-                    <input type="button" id="disconnect" value="Disconnect" />
-                    <input type="hidden" id="displayname" />
-                    <ul id="discussion"></ul>
-                </div>
 
                 <!--Quiz-Score-->
                 <div class="quizScoreStar">
@@ -67,6 +74,7 @@
                 </div>
             </script>
     
+            <!-- template for played video -->
             <script type="text/template" id="VideoPlayer">
                 <!--https://developers.google.com/youtube/iframe_api_reference?hl=de -->
                 <!--The <iframe> (and video player) will replace this <div> tag. -->
@@ -92,14 +100,10 @@
                     </div>
 
                     <!--Fortschrittsanzeige Metadaten-->
-                    <div class="metadataInfoProgress" id="infoProgress">
-                        <img class="metaImg" src="res/img/wiki_kaiserpinguin.jpg">
-                        <img class="metaImg" src="res/img/wiki_delphin.jpg">
-                        <img class="metaImg" src="res/img/wiki_wanderameisen.jpg">
-                        <img class="metaImg" src="res/img/wiki_wanderfalke.jpg">
-                        <img class="metaImg" src="res/img/wiki_monarchfalter.jpg">
-                        <img class="metaImg" src="res/img/wiki_zebra.jpg">
-                        <img class="metaImg" src="res/img/wiki_krokodile.jpg">
+                    <div id="timeline">
+                        <div class="chevron"><img id="chevronLeft" src="res/img/chevron_left.png"></img></div>
+                        <div class="metadataInfoProgress" id="infoProgress"></div>
+                        <div class="chevron"><img id="chevronRight" src="res/img/chevron_right.png"></img></div>
                     </div>
 
                     <!--
@@ -125,6 +129,7 @@
             <script src="js/WildLiveApp.js"></script>
             <script src="js/YouTubeExampleCode.js"></script>
             <script src="js/MessageHandler.js"></script>
+            <script src="js/DatabaseHandler.js"></script>
             
             <!-- binding signalR behaviour (consider this order!) -->
             <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
