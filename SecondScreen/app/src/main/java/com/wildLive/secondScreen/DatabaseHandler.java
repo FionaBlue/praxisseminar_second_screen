@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -53,6 +54,7 @@ public class DatabaseHandler extends AsyncTask<String, Void, ArrayList<DatabaseH
             case VIDEO:
                 if (databaseReference != null) {
                     // retrieving video information: video information (timestamps, etc.) and storage images afterwards
+                    Log.d("DATABASE", "now try to get video data from database");
                     getVideoDataFromFirebaseDatabase();
                 }
                 break;
@@ -76,35 +78,43 @@ public class DatabaseHandler extends AsyncTask<String, Void, ArrayList<DatabaseH
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // getting all stored firebase items at given database-reference (stored in snapshot)
-                for (DataSnapshot currentSnap : dataSnapshot.getChildren()) {
-                    int currentId = Integer.parseInt(currentSnap.getKey().toString());
-                    String imageUrl = currentSnap.child("image").getValue().toString();
-                    String imageFile = currentSnap.child("imageFile").getValue().toString();
-                    String timestamp = currentSnap.child("timestamp").getValue().toString();
-                    String title = currentSnap.child("title").getValue().toString();
 
-                    // forming objects (VideoTriggerPoint) for each retrieval
-                    VideoTriggerPoint triggerPoint = new VideoTriggerPoint(currentId, imageUrl, imageFile, timestamp, title, null);
-                    itemsFromDatabase.add(triggerPoint);
+                // checking if data for given database-ref is existent
+                if (dataSnapshot.getChildrenCount() != 0) {
 
-                    // if last database item: now trying to receive images from firebase storage (via url)
-                    if (currentId == dataSnapshot.getChildrenCount() - 1) {
-                        if (storageReference != null) {
-                            getImageDataFromFirebaseStorage();
-                        } else {
-                            retrievedAllFromStorage = true;
+                    // getting all stored firebase items at given database-reference (stored in snapshot)
+                    for (DataSnapshot currentSnap : dataSnapshot.getChildren()) {
+                        int currentId = Integer.parseInt(currentSnap.getKey().toString());
+                        String imageUrl = currentSnap.child("image").getValue().toString();
+                        String imageFile = currentSnap.child("imageFile").getValue().toString();
+                        String timestamp = currentSnap.child("timestamp").getValue().toString();
+                        String title = currentSnap.child("title").getValue().toString();
+
+                        // forming objects (VideoTriggerPoint) for each retrieval
+                        VideoTriggerPoint triggerPoint = new VideoTriggerPoint(currentId, imageUrl, imageFile, timestamp, title, null);
+                        itemsFromDatabase.add(triggerPoint);
+
+                        // if last database item: now trying to receive images from firebase storage (via url)
+                        if (currentId == dataSnapshot.getChildrenCount() - 1) {
+                            if (storageReference != null) {
+                                getImageDataFromFirebaseStorage();
+                            } else {
+                                retrievedAllFromStorage = true;
+                            }
+                            retrievedAllFromDatabase = true;
                         }
-                        retrievedAllFromDatabase = true;
                     }
+                } else {
+                    // given database-ref (for video-id) does not exist
+                    itemsFromDatabase = null;
+                    retrievedAllFromDatabase = true;
+                    retrievedAllFromStorage = true;
                 }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                // add empty firebase item
-                VideoTriggerPoint triggerPoint = new VideoTriggerPoint(-1, "", "", "", "", null);
-                itemsFromDatabase.add(triggerPoint);
-
+                //itemsFromDatabase.add(null);
+                itemsFromDatabase = null;
                 retrievedAllFromDatabase = true;
                 retrievedAllFromStorage = true;
             }

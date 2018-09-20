@@ -23,16 +23,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class InformationActivity extends AppCompatActivity {
@@ -46,25 +40,26 @@ public class InformationActivity extends AppCompatActivity {
     // https://stackoverflow.com/questions/50668810/textview-settext-does-nothing
     // https://stackoverflow.com/questions/48845814/recycler-view-adapter-looping-objects-in-pairs
 
-    public List<ContentElement> contentElements = new ArrayList<>();    // dynamical array for content information
-    RecyclerView recyclerListView;                                      // providing option for horizontal list view (= recyclerView)
-    CustomAdapter adapter = new CustomAdapter();                        // adapter to fill list view with trigger points (timeline)
-    private LinearLayout guideCardView, contentCardView;                // card view layouts for showing guide or info content
-    private TextView wikiContentTitle;                                  // text view for showing wiki-requested title content
-    private TextView wikiContentExtract;                                // text view for showing wiki-requested extract content
-    private ImageView wikiContentImage;                                 // image view for showing wiki-requested image content
-    private ImageButton buttonInformationNext;                          // button for switching to next activity (temporary!)
-    private Button buttonReadArticle;                                   // button for opening up article in new external web browser
-    private ProgressBar progressBar;                                    // progress loader which waits for information content to be loaded
-    private ImageView arrowLeft, arrowRight;                            // arrows/chevrons for switching to next/previous timeline point
+    public List<ContentElement> contentElements = new ArrayList<>();        // dynamical array for content information
+    RecyclerView recyclerListView;                                          // providing option for horizontal list view (= recyclerView)
+    CustomAdapter adapter = new CustomAdapter();                            // adapter to fill list view with trigger points (timeline)
+    private LinearLayout timelineRow;                                       // row for recyclerview and chevrons (for setting visibility when no data could be retrieved from database)
+    private LinearLayout datalessCardView, guideCardView, contentCardView;  // card view layouts for showing guide or info content
+    private TextView wikiContentTitle;                                      // text view for showing wiki-requested title content
+    private TextView wikiContentExtract;                                    // text view for showing wiki-requested extract content
+    private ImageView wikiContentImage;                                     // image view for showing wiki-requested image content
+    private ImageButton quizStartButton;                                    // button for switching to next activity (temporary!)
+    private Button buttonReadArticle;                                       // button for opening up article in new external web browser
+    private ProgressBar progressBar;                                        // progress loader which waits for information content to be loaded
+    private ImageView arrowLeft, arrowRight;                                // arrows/chevrons for switching to next/previous timeline point
     // icons for controlling current video
     private ImageView playIcon, pauseIcon, forwardIcon, backwardIcon, volumeUpIcon, volumeDownIcon;
 
     // transferred data (video-id, signalR-client)
-    private String videoId = "Nbrx5tFJzyQ";                             // id of currently loaded video (for retrieving specific information)
-    private SignalRClient sRClient;                                     // signalR-client for communication between devices (first screen/second screen)
+    private String videoId = "";                                            // id of currently loaded video (for retrieving specific information)
+    private SignalRClient sRClient;                                         // signalR-client for communication between devices (first screen/second screen)
 
-    public enum InformationViewState { GUIDE, CONTENT }                 // enum for choosing current layout state (guide or info content)
+    public enum InformationViewState { DATALESS, GUIDE, CONTENT }           // enum for choosing current layout state (guide or info content)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +67,7 @@ public class InformationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // getting selected video-id from previous activity (via registered tag)
-        //registerCurrentVideoId();
+        registerCurrentVideoId();
 
         // getting signalR-client from application (so, preventing newly instantiating new signalR-client)
         getSRClient();
@@ -96,7 +91,6 @@ public class InformationActivity extends AppCompatActivity {
         // getting selected video-id (registered tag/key) from previous activity via intent-extras
         Bundle extras = getIntent().getExtras();
         videoId = extras.getString("videoID");
-        System.out.println("VideoID through intent: " + videoId);
     }
 
     private void getSRClient() {
@@ -132,11 +126,6 @@ public class InformationActivity extends AppCompatActivity {
         // defining actual layout group
         setContentView(R.layout.activity_information);
 
-        // registering different card view layouts (for initial guide and for revealed placeholder)
-        guideCardView = (LinearLayout) findViewById(R.id.guideCardView);
-        contentCardView = (LinearLayout) findViewById(R.id.contentCardView);
-        activateInformationState(InformationViewState.GUIDE);   // initially registering guide state
-
         // registering and starting progress bar loader that waits for wiki information content to be loaded
         progressBar = (ProgressBar) findViewById(R.id.informationLoader);
         progressBar.setVisibility(View.VISIBLE);
@@ -146,7 +135,7 @@ public class InformationActivity extends AppCompatActivity {
         wikiContentTitle = (TextView) findViewById(R.id.currentWikiTitle);
         wikiContentExtract = (TextView) findViewById(R.id.currentWikiExtract);
         wikiContentExtract.setMovementMethod(new ScrollingMovementMethod());        // making extract content scrollable
-        buttonInformationNext = (ImageButton) findViewById(R.id.buttonInformationNext);
+        quizStartButton = (ImageButton) findViewById(R.id.quizStartButton);
         buttonReadArticle = (Button) findViewById(R.id.buttonReadArticle);
 
         // registering icons for video-control-function
@@ -163,23 +152,46 @@ public class InformationActivity extends AppCompatActivity {
         arrowLeft.setVisibility(View.INVISIBLE);
         arrowRight.setVisibility(View.INVISIBLE);
 
+        timelineRow = (LinearLayout) findViewById(R.id.timelineRow);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);   // setting orientation to horizontal!
         recyclerListView = (RecyclerView) findViewById(R.id.timeline);
         recyclerListView.setLayoutManager(layoutManager);
         recyclerListView.setAdapter(adapter);   // binding data from separate timeline-item layout to activity layout via adapter
+
+        // registering different card view layouts (for initial guide and for revealed placeholder)
+        datalessCardView = (LinearLayout) findViewById(R.id.datalessCardView);
+        guideCardView = (LinearLayout) findViewById(R.id.guideCardView);
+        contentCardView = (LinearLayout) findViewById(R.id.contentCardView);
+        activateInformationState(InformationViewState.GUIDE);   // initially registering guide state
     }
 
     public void activateInformationState(InformationViewState state) {
         switch (state) {
             case GUIDE:
-                contentCardView.setVisibility(View.INVISIBLE);
                 guideCardView.setVisibility(View.VISIBLE);
-                guideCardView.setHovered(true);
+                contentCardView.setVisibility(View.GONE);
+                datalessCardView.setVisibility(View.GONE);
+
+                buttonReadArticle.setVisibility(View.INVISIBLE);
+                timelineRow.setVisibility(View.VISIBLE);
+                //guideCardView.setHovered(true);
                 break;
             case CONTENT:
-                guideCardView.setVisibility(View.INVISIBLE);
                 contentCardView.setVisibility(View.VISIBLE);
-                contentCardView.setHovered(true);
+                guideCardView.setVisibility(View.GONE);
+                datalessCardView.setVisibility(View.GONE);
+
+                buttonReadArticle.setVisibility(View.VISIBLE);
+                timelineRow.setVisibility(View.VISIBLE);
+                //contentCardView.setHovered(true);
+                break;
+            case DATALESS:
+                datalessCardView.setVisibility(View.VISIBLE);
+                contentCardView.setVisibility(View.GONE);
+                guideCardView.setVisibility(View.GONE);
+
+                buttonReadArticle.setVisibility(View.INVISIBLE);
+                timelineRow.setVisibility(View.INVISIBLE);
                 break;
         }
     }
@@ -188,11 +200,18 @@ public class InformationActivity extends AppCompatActivity {
         DatabaseHandler databaseHandler = new DatabaseHandler(getApplicationContext(), new DatabaseHandler.AsyncResponse() {
             @Override
             public void processFinished(ArrayList<DatabaseHandler.VideoTriggerPoint> output) {
-                for (DatabaseHandler.VideoTriggerPoint currItem : output) {
-                    // adding new item filled with retrieved database content (wikipedia-content will be loaded later on)
-                    contentElements.add(new ContentElement(currItem.triggerPointTitle,"", "", true, false, "", currItem.triggerPointImageUrl, currItem.triggerPointTimestamp, currItem.triggerPointBitmap));
+
+                if (output != null) {
+                    for (DatabaseHandler.VideoTriggerPoint currItem : output) {
+                        // adding new item filled with retrieved database content (wikipedia-content will be loaded later on)
+                        contentElements.add(new ContentElement(currItem.triggerPointTitle, "", "", true, false, "", currItem.triggerPointImageUrl, currItem.triggerPointTimestamp, currItem.triggerPointBitmap));
+                    }
+                    getContentInformationFromWiki();
+                } else {
+                    // no data could be retrieved from database, show specific guide note
+                    activateInformationState(InformationViewState.DATALESS);
+                    progressBar.setVisibility(View.GONE);       // deactivating progress-loader
                 }
-                getContentInformationFromWiki();
             }
         });
         // setting entry point for getting all information (image-storage-link, title, timestamp) from firebase database
@@ -246,7 +265,7 @@ public class InformationActivity extends AppCompatActivity {
     public void addListenersOnUiComponents() {
         final Context context = this;
         // registering button and button-behaviour by on-clicking
-        buttonInformationNext.setOnClickListener(new View.OnClickListener() {
+        quizStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 // switching to next activity on button click
