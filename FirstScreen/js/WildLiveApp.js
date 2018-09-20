@@ -31,7 +31,7 @@ var WildLiveApp = (function() {
         function onVideoStarted() {
             deactivatePrevPage();
             activatePage('#VideoPlayer');
-
+            document.body.style.backgroundImage = "url('res/img/img_background_stars.jpg')";
             // binding database functionality and data from firebase
             databaseHandler.init();
         }
@@ -39,6 +39,7 @@ var WildLiveApp = (function() {
         function onVideoEnded() {            
             deactivatePrevPage();
             activatePage('#Weltkarte');
+            document.body.style.backgroundImage = "url('res/img/Default_map.jpg')";
         }
     
         //src: Montagsmaler-project
