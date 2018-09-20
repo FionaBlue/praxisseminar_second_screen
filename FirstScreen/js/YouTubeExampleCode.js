@@ -2,7 +2,8 @@
 var player;
 var WildLiveApp = WildLiveApp || {};
 WildLiveApp.YouTubePlayer = function() {
-  var that = {};//,
+  var that = {},
+      signalRClient;//,
       //player;
 
   function loadPlayer(videoID) {
@@ -17,6 +18,7 @@ WildLiveApp.YouTubePlayer = function() {
         height: '560',
         width: '940',
         videoId: videoID,
+        startSeconds: 0,
         playerVars: {
           showinfo: 0,
           controls: 0,
@@ -25,7 +27,8 @@ WildLiveApp.YouTubePlayer = function() {
           fs: 0
         },
         events: {
-          'onReady': onPlayerReady
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChanged
         }
       });
     }
@@ -33,8 +36,25 @@ WildLiveApp.YouTubePlayer = function() {
 
   // 4. The API will call this function when the video player is ready.
   function onPlayerReady(event) {
-    //console.log("onPlayerReady");
     event.target.playVideo();
+    sendVideoProgressToAndroidDevice();
+  }
+
+  async function sendVideoProgressToAndroidDevice() {
+    if(player.getPlayerState() == 1){
+      signalRClient.sendMessageToAndroidDevice("time " + player.getCurrentTime());
+    }    
+    setTimeout(sendVideoProgressToAndroidDevice, 3000);
+  }
+
+  function onPlayerStateChanged(event) {
+    signalRClient = WildLiveApp.getSignalRClient();
+    if(event.data == 2) {      
+      signalRClient.sendMessageToAndroidDevice("enable Quiz");
+    }
+    if(event.data == 1) {
+      signalRClient.sendMessageToAndroidDevice("disable Quiz");
+    }
   }
 
   function pauseVideo() {
