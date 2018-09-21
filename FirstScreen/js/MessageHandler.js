@@ -1,10 +1,12 @@
 var WildLiveApp = WildLiveApp || {};
 WildLiveApp.MessageHandler = function() {
-    var that = {},
-        youTubePlayer;
+    var that = {}, youTubePlayer, databaseHandler;
 
     function init() {
         youTubePlayer = new WildLiveApp.YouTubePlayer();
+        
+        // initializing database (firebase) component
+        databaseHandler = new WildLiveApp.DatabaseHandler();
     }
 
     function handleMessage(encodedMsg){
@@ -49,6 +51,10 @@ WildLiveApp.MessageHandler = function() {
             youTubePlayer.loadPlayer(videoID);
             //window.player.loadVideoById(videoID, 0);
             //window.player.playVideo();
+            
+            
+            // binding database functionality and data from firebase by accessing id and player
+            databaseHandler.init(videoID, youTubePlayer);
         }
 
     // -----------------------------------------------------------------

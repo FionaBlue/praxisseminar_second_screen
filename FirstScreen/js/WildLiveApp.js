@@ -1,14 +1,11 @@
 var WildLiveApp = (function() {
-    var that = {}, signalRConnection, databaseHandler, messageHandler;
+    var that = {}, signalRConnection, messageHandler;
     
         function init() {
             // initializing signalR component and set base instance
             signalRConnection = new WildLiveApp.SignalRConnection();
             signalRConnection.registerMessageReceiver();
             setSignalRClient(signalRConnection);
-
-            // initializing database (firebase) component
-            databaseHandler = new WildLiveApp.DatabaseHandler();
 
             // initializing message handler component for receiving messages from android device
             messageHandler = new WildLiveApp.MessageHandler();
@@ -32,8 +29,6 @@ var WildLiveApp = (function() {
             deactivatePrevPage();
             activatePage('#VideoPlayer');
             document.body.style.backgroundImage = "url('res/img/img_background_stars.jpg')";
-            // binding database functionality and data from firebase
-            databaseHandler.init();
         }
     
         function onVideoEnded() {            

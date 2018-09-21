@@ -1,18 +1,113 @@
 var WildLiveApp = WildLiveApp || {};
 WildLiveApp.DatabaseHandler = function() {
-    var that = {}, itemsFromDatabase = [], database, storage, signalRHandler;
+    var that = {}, itemsFromDatabase = [], database, storage, signalRHandler, videoPlayer, prevPosition = 0;
 
-    function init() {
-        console.log("DatabaseHandler init");
+    function init(videoId, player) {
+        // referencing player element
+        videoPlayer = player;
 
+        // defining firebase databases
         database = firebase.database();
         storage = firebase.storage();
         
+        // getting local instances of necessary handlers
         signalRHandler = WildLiveApp.getSignalRClient();
+        videoPlayer = WildLiveApp.YouTubePlayer();
+        
+        // getting content from database for current, given video-id
+        getContentFromDatabase(videoId);
+    }
 
-        // start progress loader ? 
+    function startTimestampTimer(itemsFromDatabase) {
+        var timerVar = setInterval(function() {
+            // starting timer that scans video-timestamps for each second
+            myTimer(itemsFromDatabase);
+        }, 1000);
+    }
 
-        getContentFromDatabase('Nbrx5tFJzyQ');
+    function myTimer(itemsFromDatabase) {
+        // rounding current given time from player
+        var currentTime = Math.floor(videoPlayer.getCurrentVideoTime());
+
+        // checking if timestamp-seconds were reached
+        for (var i = 0; i < itemsFromDatabase.length; i++) {
+            if (itemsFromDatabase[i].timestamp-1 == currentTime) {
+                if (itemsFromDatabase[i].isPlaceholder == true) {
+                    // revealing trigger-point (ui) by timestamp and id
+                    var triggerPoint = document.getElementById(itemsFromDatabase[i].currentId);
+                    triggerPoint.src = itemsFromDatabase[i].imageUrl;
+
+                    itemsFromDatabase[i].isPlaceholder = false;
+                }
+                // setting highlighting for current clicked trigger point
+                setItemActivationState(i, itemsFromDatabase);
+                prevPosition = itemsFromDatabase[i].currentId;
+                
+                // if not already revealed  
+                signalRHandler.sendMessageToAndroidDevice(itemsFromDatabase[i].currentId);
+            }
+        }
+    }
+
+    function setItemActivationState(position, itemsFromDatabase) {
+        // changing activation state
+        itemsFromDatabase[prevPosition].isActive = false;
+        itemsFromDatabase[position].isActive = true;
+
+        // setting highlighting
+        setTriggerPointSaturation(position, itemsFromDatabase);
+    }
+
+    function setTriggerPointSaturation(triggerPointId, itemsFromDatabase) {
+        document.getElementById(prevPosition).className = 'metaImg greyScaling';
+        document.getElementById(triggerPointId).className = 'metaImg';
+
+        // setting chevron opactiy
+        setNavigationArrowVisibility(triggerPointId, itemsFromDatabase);
+    }
+
+    function setNavigationArrowVisibility(position, itemsFromDatabase) {
+        // activating/deactivating timeline arrows (on border reached) for emphasizing possible scroll-directions
+        var placeholderCount = getItemPlaceholderCount(itemsFromDatabase);
+
+        var arrowLeft = document.getElementById('chevronLeft');
+        var arrowRight = document.getElementById('chevronRight');
+
+        if (placeholderCount == itemsFromDatabase.length) {
+            // checking if all placeholders are visible
+            arrowLeft.className = "hiddenItem";
+            arrowRight.className = "hiddenItem";
+        } else if (placeholderCount < itemsFromDatabase.length) {
+            if (placeholderCount == itemsFromDatabase.length-1) {
+                // checking if single placeholder was revealed
+                arrowLeft.className = "hiddenItem";
+                arrowRight.className = "hiddenItem";
+            } else if (placeholderCount < itemsFromDatabase.length-1) {
+                if (position == (itemsFromDatabase.length-placeholderCount)-1) {
+                    // checking if more than 1 placeholder was revealed and last available position was clicked
+                    arrowLeft.className = "";
+                    arrowRight.className = "hiddenItem";
+                } else if (position == 0) {
+                    // checking if more than 1 placeholder was revealed and first available position was clicked
+                    arrowLeft.className = "hiddenItem";
+                    arrowRight.className = "";
+                } else {
+                    // checking if more than 1 placeholder was revealed and any other available position was clicked
+                    arrowLeft.className = "";
+                    arrowRight.className = "";
+                }
+            }
+        }
+    }
+
+    function getItemPlaceholderCount(itemsFromDatabase) {
+        var placeholderCounter = 0;
+        for (var i = 0; i < itemsFromDatabase.length; i++) {
+            if (itemsFromDatabase[i].isPlaceholder == true) {
+                placeholderCounter++;
+            }
+        }
+        return placeholderCounter;
     }
 
     function getContentFromDatabase(videoId) {
@@ -23,30 +118,28 @@ WildLiveApp.DatabaseHandler = function() {
         currentDatabaseVideoRef.once('value').then(function(snapshot) {
             // retrieving all stored firebase items at given database-reference
             var dataForVideoId = snapshot.val();
-
-            // 
             for (var i = 0; i < dataForVideoId.length; i++) {
                 var currentTriggerPoint = dataForVideoId[i];
-
                 var currentId = i;
                 var imageUrl = currentTriggerPoint.image;
                 var imageFile = currentTriggerPoint.imageFile;
                 var timestamp = currentTriggerPoint.timestamp;
                 var title = currentTriggerPoint.title;
 
-                // generating new trigger-point-object for each retrieval (for ui-timeline-binding)
-                var triggerPoint = { currentId: currentId, imageUrl: imageUrl, imageFile: imageFile, timestamp: timestamp, title: title }
+                // https://stackoverflow.com/questions/9640266/convert-hhmmss-string-to-seconds-only-in-javascript
+                // calculating seconds for given trigger-point-timestamp
+                var timestampTime = currentTriggerPoint.timestamp.split(':');                
+                var timestampSeconds = parseInt(timestampTime[0])*60*60 + parseInt(timestampTime[1])*60 + parseInt(timestampTime[2]);
 
+                // generating new trigger-point-object for each retrieval (for ui-timeline-binding)
+                var triggerPoint = { currentId: currentId, imageUrl: imageUrl, imageFile: imageFile, timestamp: timestampSeconds, title: title, isActive: false, isPlaceholder: true };
                 // adding trigger-point to list for later ui-binding
                 itemsFromDatabase.push(triggerPoint);
 
-                // if last database item: now trying to receive images from firebase storage (via url)
+                // if last database item: now trying to start timestamp timer and to fill timeline by receiving images from firebase storage (via url)
                 if (currentId == dataForVideoId.length - 1) {
-
-                    // opening up video-template
-                    //WildLiveApp.onVideoStarted();
-
                     addContentToTimeline(itemsFromDatabase);
+                    startTimestampTimer(itemsFromDatabase);
                 }
             }
         }); 
@@ -55,6 +148,12 @@ WildLiveApp.DatabaseHandler = function() {
     function addContentToTimeline(itemsFromDatabase) {
         // getting timeline by id
         var timeline = document.getElementById('infoProgress');
+        
+        // hiding chevrons from the start
+        var arrowLeft = document.getElementById('chevronLeft');
+        var arrowRight = document.getElementById('chevronRight');
+        arrowLeft.className = "hiddenItem";
+        arrowRight.className = "hiddenItem";
 
         // getting each timeline item
         for (var i = 0; i < itemsFromDatabase.length; i++) {
@@ -67,20 +166,11 @@ WildLiveApp.DatabaseHandler = function() {
             // adding attributes to new img trigger-point-element
             triggerPoint.id = databaseItem.currentId;
             triggerPoint.className = 'metaImg';
-            //triggerPoint.src = 'res/img/placeholder.png';
-            triggerPoint.src = databaseItem.imageUrl;
+            triggerPoint.src = 'res/img/placeholder.png';
 
             // adding attributes to new divider-element
             triggerPointDivider.className = 'metaDivider';
             triggerPointDivider.src = 'res/img/divider.png';
-
-            // adding event-listener for on-clicking trigger-point
-            triggerPoint.addEventListener('click', function(triggerPoint) {
-                console.log(triggerPoint.srcElement.id);
-
-                // send message to android device
-                signalRHandler.sendMessageToAndroidDevice(triggerPoint.srcElement.id);
-            });
 
             // appending generated img elements to timeline
             timeline.appendChild(triggerPoint);

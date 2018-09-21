@@ -62,7 +62,7 @@ http://webkrauts.de/artikel/2012/css3-flexbox-abloesung-fuer-float-layouts
     max-width: 80%;
     white-space: nowrap;
     display: inline-block;
-    overflow: auto;                   /* actual scroll bar */
+    overflow: hidden;                   /* actual scroll bar */
 }
 .metaImg {
     height: 80px;
@@ -70,16 +70,23 @@ http://webkrauts.de/artikel/2012/css3-flexbox-abloesung-fuer-float-layouts
     border-radius: 50%;                 /* rounding image */
     object-fit: cover;                  /* https://css-tricks.com/almanac/properties/o/object-fit/ */
     object-position: center;            /* centering the image within the element */
-
-    /*filter: gray;*/                   /* IE6-9 */
-    /*-webkit-filter: grayscale(1);*/   /* Google Chrome, Safari 6+ & Opera 15+ */
-    /*filter: grayscale(1);*/           /* Microsoft Edge and Firefox 35+ */
-
+    /* shadows */
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(115,115,115,1);
+    -moz-box-shadow: 0px 1px 2px 0px rgba(115,115,115,1);
+    box-shadow: 0px 1px 2px 0px rgba(115,115,115,1);
 }
 .metaDivider {
     height: 30px;
     width: 40px;
     padding-bottom: 25px;
+}
+.greyScaling {
+    filter: gray;                     /* IE6-9 */
+    -webkit-filter: grayscale(1);       /* Google Chrome, Safari 6+ & Opera 15+ */
+    filter: grayscale(1);               /* Microsoft Edge and Firefox 35+ */
+}
+.hiddenItem {
+    opacity: 0;
 }
 /* --------------------------------------------------------------------------------- */
 

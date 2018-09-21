@@ -20,11 +20,11 @@ WildLiveApp.YouTubePlayer = function() {
         videoId: videoID,
         startSeconds: 0,
         playerVars: {
-          showinfo: 0,
-          controls: 0,
-          rel: 0,
+          showinfo: 1,
+          controls: 1,
+          rel: 1,
           disablekb: 1,
-          fs: 0
+          fs: 1
         },
         events: {
           'onReady': onPlayerReady,
@@ -33,6 +33,10 @@ WildLiveApp.YouTubePlayer = function() {
       });
     }
   //}
+    
+  function getCurrentVideoTime() {
+    return player.getCurrentTime();
+  }
 
   // 4. The API will call this function when the video player is ready.
   function onPlayerReady(event) {
@@ -107,6 +111,7 @@ WildLiveApp.YouTubePlayer = function() {
   that.playVideo = playVideo;
   that.pauseVideo = pauseVideo;
   that.loadPlayer = loadPlayer;
+  that.getCurrentVideoTime = getCurrentVideoTime;
   return that;
 };
 
