@@ -41,6 +41,17 @@ WildLiveApp.DatabaseHandler = function() {
                 }
                 // setting highlighting for current clicked trigger point
                 setItemActivationState(i, itemsFromDatabase);
+                
+                // checking which direction to scroll to
+                if (itemsFromDatabase[i].currentId < prevPosition) {
+                    // scrolling back, to the left
+                    scrollToPosition(prevPosition, itemsFromDatabase[i].currentId, -1);
+                } else if (itemsFromDatabase[i].currentId > prevPosition) {
+                    // scrolling forward, to the right
+                    scrollToPosition(prevPosition, itemsFromDatabase[i].currentId, +1);
+                }
+                
+                // setting new previous position
                 prevPosition = itemsFromDatabase[i].currentId;
                 
                 // if not already revealed  
@@ -98,6 +109,17 @@ WildLiveApp.DatabaseHandler = function() {
                 }
             }
         }
+    }
+    
+    function scrollToPosition(fromPosition, toPosition, direction) {
+        // defining fix scroll unit
+        var scrollUnit = 40;
+
+        // calculating absolute value of distance
+        var scrollDistance = Math.abs(toPosition - fromPosition);
+        
+        // scrolling timeline (horizontally) to appropriate position
+        document.getElementById('infoProgress').scrollBy(direction * scrollUnit * scrollDistance, 0);
     }
 
     function getItemPlaceholderCount(itemsFromDatabase) {
