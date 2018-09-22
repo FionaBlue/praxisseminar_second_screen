@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -15,16 +14,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 
-public class DatabaseHandler extends AsyncTask<String, Void, ArrayList<DatabaseHandler.VideoTriggerPoint>> {
+public class DatabaseHandler extends AsyncTask<String, Void, Void> {
 
     private StorageReference storageReference = null;                           // firebase storage reference for cloud image storage
     private DatabaseReference databaseReference = null;                         // firebase database reference for information storage
     private Context mainContext;                                                // context from calling activity to convert default-drawable when image could not be retrieved
     public DatabaseHandler.AsyncResponse responseHandler = null;                // interface for response data-usage in calling activity
     private DataCategory dataCategory;                                          // category (video vs quiz) for handling correct database structure
-    // boolean for checking if all data were received
-    private boolean retrievedAllFromDatabase = false;
-    private boolean retrievedAllFromStorage = false;
 
     public ArrayList<VideoTriggerPoint> itemsFromDatabase = new ArrayList<>();  // list for returning retrieved data
     private int currItem;                                                       // for getting current item from list
@@ -48,13 +44,12 @@ public class DatabaseHandler extends AsyncTask<String, Void, ArrayList<DatabaseH
 
 
     @Override
-    protected ArrayList<VideoTriggerPoint> doInBackground(String... categories) {
+    protected Void doInBackground(String... categories) {
         // choosing between different categories (each category has its own database structure due to different use)
         switch (dataCategory) {
             case VIDEO:
                 if (databaseReference != null) {
                     // retrieving video information: video information (timestamps, etc.) and storage images afterwards
-                    Log.d("DATABASE", "now try to get video data from database");
                     getVideoDataFromFirebaseDatabase();
                 }
                 break;
@@ -63,15 +58,14 @@ public class DatabaseHandler extends AsyncTask<String, Void, ArrayList<DatabaseH
             default:
                 return null;
         }
-        // wait for database data to be retrieved and return list of retrieved data
-        while (retrievedAllFromDatabase == false || retrievedAllFromStorage == false) { }
-        return itemsFromDatabase;
-    }
-    @Override
-    protected void onPostExecute(ArrayList<VideoTriggerPoint> triggerPoints) {
-        responseHandler.processFinished(triggerPoints);
+        return null;
     }
 
+    @Override
+    protected void onProgressUpdate(Void... values) {
+        // function is called when database-processes are truly finished
+        responseHandler.processFinished(itemsFromDatabase);
+    }
 
     // retrieving video data from database (id, image-url, image-format, timestamp, title as wikipedia-identifier)
     private void getVideoDataFromFirebaseDatabase() {
@@ -99,30 +93,28 @@ public class DatabaseHandler extends AsyncTask<String, Void, ArrayList<DatabaseH
                             if (storageReference != null) {
                                 getImageDataFromFirebaseStorage();
                             } else {
-                                retrievedAllFromStorage = true;
+                                publishProgress();  // finishing async task
                             }
-                            retrievedAllFromDatabase = true;
                         }
                     }
                 } else {
                     // given database-ref (for video-id) does not exist
                     itemsFromDatabase = null;
-                    retrievedAllFromDatabase = true;
-                    retrievedAllFromStorage = true;
+                    publishProgress();  // finishing async task
                 }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 //itemsFromDatabase.add(null);
                 itemsFromDatabase = null;
-                retrievedAllFromDatabase = true;
-                retrievedAllFromStorage = true;
+                publishProgress();  // finishing async task
             }
         });
     }
 
     // retrieving final image data from storage (converting bytes into bitmap for showing images in ui)
     private void getImageDataFromFirebaseStorage() {
+
         // getting images from storage for each stored trigger point
         for (int i = 0; i < itemsFromDatabase.size(); i++) {
             currItem = i;
@@ -139,7 +131,7 @@ public class DatabaseHandler extends AsyncTask<String, Void, ArrayList<DatabaseH
 
                     // checking if all images were retrieved
                     if (currIdx == itemsFromDatabase.size() - 1) {
-                        retrievedAllFromStorage = true;
+                        publishProgress();  // finishing async task
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -154,7 +146,7 @@ public class DatabaseHandler extends AsyncTask<String, Void, ArrayList<DatabaseH
 
                     // checking if all images were retrieved
                     if (currIdx == itemsFromDatabase.size() - 1) {
-                        retrievedAllFromStorage = true;
+                        publishProgress();  // finishing async task
                     }
                 }
             });
