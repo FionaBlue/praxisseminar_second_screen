@@ -40,8 +40,10 @@ public class InformationActivity extends AppCompatActivity {
     // https://stackoverflow.com/questions/30340591/changing-an-imageview-to-black-and-white
     // https://stackoverflow.com/questions/50668810/textview-settext-does-nothing
     // https://stackoverflow.com/questions/48845814/recycler-view-adapter-looping-objects-in-pairs
-    //https://stackoverflow.com/questions/2887410/unclickable-seekbar-in-android-listview
-    //https://stackoverflow.com/questions/14355731/killing-one-activity-from-another/14356774
+    // https://stackoverflow.com/questions/2887410/unclickable-seekbar-in-android-listview
+    // https://stackoverflow.com/questions/14355731/killing-one-activity-from-another/14356774
+
+    private WildLive app = (WildLive)getApplication();
 
     public List<ContentElement> contentElements = new ArrayList<>();        // dynamical array for content information
     RecyclerView recyclerListView;                                          // providing option for horizontal list view (= recyclerView)
@@ -65,8 +67,6 @@ public class InformationActivity extends AppCompatActivity {
     private String videoId = "";                                            // id of currently loaded video (for retrieving specific information)
     private SignalRClient sRClient;                                         // signalR-client for communication between devices (first screen/second screen)
 
-    private WildLive app;
-
     public enum InformationViewState { DATALESS, GUIDE, CONTENT }           // enum for choosing current layout state (guide or info content)
 
     @Override
@@ -75,7 +75,7 @@ public class InformationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // getting selected video-id from previous activity (via registered tag)
-        registerCurrentVideoId();
+        registerCurrentVideoInformation();
 
         // getting signalR-client from application (so, preventing newly instantiating new signalR-client)
         getSRClient();
@@ -89,13 +89,8 @@ public class InformationActivity extends AppCompatActivity {
         // registering ui component listener
         addListenersOnUiComponents();
 
-        //check if quiz is available
-        app = (WildLive)getApplication();
-        if(app.getQuizAvailalibity()){
-            quizStartButton.setVisibility(View.VISIBLE);
-        } else {
-            quizStartButton.setVisibility(View.INVISIBLE);
-        }
+        // checking if quiz is available
+        checkQuizActivityState();
     }
 
     @Override
@@ -114,7 +109,7 @@ public class InformationActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void registerCurrentVideoId() {
+    private void registerCurrentVideoInformation() {
         // getting selected video-id (registered tag/key) from previous activity via intent-extras
         Bundle extras = getIntent().getExtras();
         videoId = extras.getString("videoID");
@@ -133,7 +128,7 @@ public class InformationActivity extends AppCompatActivity {
                 public void onSuccess(String message) {
                     Log.d("LOG_INFOACT", "received :: " + message);
 
-                    //updating video-progress-SeekBar
+                    // updating video-progress-SeekBar
                     if(message.toString().contains("time")){
                         //get video-length from intent
                         Bundle extras = getIntent().getExtras();
@@ -150,7 +145,7 @@ public class InformationActivity extends AppCompatActivity {
                         videoProgress.setProgress(currentProgress);
                     }
 
-                    //start Quiz while advertisement
+                    // starting quiz while advertisement
                     if(message.toString().contains("start Quiz")){
                         app.setQuizAvailability(true);
                         final Context context = getApplicationContext();
@@ -158,7 +153,7 @@ public class InformationActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
 
-                    //finish Quiz after advertisement
+                    // finishing quiz after advertisement
                     if(message.toString().contains("finish Quiz")){
                         QuizActivity.getInstance().finish();
                         app.setQuizAvailability(false);
@@ -214,23 +209,6 @@ public class InformationActivity extends AppCompatActivity {
         
         // registering timeline/videoprogress and prevent interaction
         videoProgress = findViewById(R.id.videoProgress);
-        videoProgress.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
-            int originalProgress;
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                //Nothing here..
-            }
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                originalProgress = seekBar.getProgress();
-            }
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int arg1, boolean fromUser) {
-                if( fromUser == true){
-                    seekBar.setProgress( originalProgress);
-                }
-            }
-        });
         
         // registering icons for video-control-function
         playIcon = findViewById(R.id.video_play);
@@ -268,7 +246,6 @@ public class InformationActivity extends AppCompatActivity {
 
                 buttonReadArticle.setVisibility(View.INVISIBLE);
                 timelineRow.setVisibility(View.VISIBLE);
-                //guideCardView.setHovered(true);
                 break;
             case CONTENT:
                 contentCardView.setVisibility(View.VISIBLE);
@@ -277,7 +254,6 @@ public class InformationActivity extends AppCompatActivity {
 
                 buttonReadArticle.setVisibility(View.VISIBLE);
                 timelineRow.setVisibility(View.VISIBLE);
-                //contentCardView.setHovered(true);
                 break;
             case DATALESS:
                 datalessCardView.setVisibility(View.VISIBLE);
@@ -294,7 +270,6 @@ public class InformationActivity extends AppCompatActivity {
         DatabaseHandler databaseHandler = new DatabaseHandler(getApplicationContext(), new DatabaseHandler.AsyncResponse() {
             @Override
             public void processFinished(ArrayList<DatabaseHandler.VideoTriggerPoint> output) {
-
                 if (output != null) {
                     for (DatabaseHandler.VideoTriggerPoint currItem : output) {
                         // adding new item filled with retrieved database content (wikipedia-content will be loaded later on)
@@ -358,6 +333,26 @@ public class InformationActivity extends AppCompatActivity {
 
     public void addListenersOnUiComponents() {
         final Context context = this;
+
+        // registering video-progress-bar behaviour
+        videoProgress.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
+            int originalProgress;
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                //Nothing here..
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                originalProgress = seekBar.getProgress();
+            }
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int arg1, boolean fromUser) {
+                if( fromUser == true){
+                    seekBar.setProgress( originalProgress);
+                }
+            }
+        });
+
         // registering button and button-behaviour by on-clicking
         quizStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -418,6 +413,14 @@ public class InformationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) { if(sRClient != null){ sRClient.sendMsg("icon volumeDown"); }}
         });
+    }
+
+    public void checkQuizActivityState() {
+        if(app.getQuizAvailalibity()){
+            quizStartButton.setVisibility(View.VISIBLE);
+        } else {
+            quizStartButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     // custom adapter for binding list view data

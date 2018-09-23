@@ -1,15 +1,13 @@
 package com.wildLive.secondScreen;
 
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,12 +15,8 @@ public class QuizActivity extends AppCompatActivity {
     private QuestionLibrary questionLibrary;
     private Handler handler = new Handler();
 
-    private Button buttonA;
-    private Button buttonB;
-    private Button buttonC;
-    private Button buttonD;
-
-    private Button closeButton;
+    private Button buttonA, buttonB, buttonC, buttonD;
+    private ImageView closeButton;
 
     private TextView question;
     private TextView scoretext;
@@ -30,8 +24,6 @@ public class QuizActivity extends AppCompatActivity {
     private String answer;
     private int score = 0;
     private int questionNumber = 0;
-
-    private int standardButtonColor;
 
     private SignalRClient srClient = null;
 
@@ -49,7 +41,7 @@ public class QuizActivity extends AppCompatActivity {
         score = sp.getInt("score", 0);
         questionNumber = sp.getInt("questionNumber", 0);
 
-        Toast.makeText(QuizActivity.this, "LOADQUIZDATA - Score: "+score+" QuestionNumber: "+questionNumber, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(QuizActivity.this, "LOADQUIZDATA - Score: "+score+" QuestionNumber: "+questionNumber, Toast.LENGTH_SHORT).show();
 
         WildLive app = (WildLive) getApplication();
         srClient = app.getSRClient();
@@ -81,7 +73,7 @@ public class QuizActivity extends AppCompatActivity {
         SharedPreferences.Editor edit = sp.edit();
         edit.putInt("score",score);
 
-        Toast.makeText(QuizActivity.this, "SAVEQUIZDATA - Score: "+score+" QuestionNumber: "+questionNumber, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(QuizActivity.this, "SAVEQUIZDATA - Score: "+score+" QuestionNumber: "+questionNumber, Toast.LENGTH_SHORT).show();
 
         edit.putInt("questionNumber",questionNumber);
         edit.apply();
@@ -98,9 +90,7 @@ public class QuizActivity extends AppCompatActivity {
         buttonC = (Button) findViewById(R.id.buttonC);
         buttonD = (Button) findViewById(R.id.buttonD);
 
-        standardButtonColor = ((ColorDrawable)buttonA.getBackground()).getColor();
-
-        closeButton = (Button) findViewById(R.id.closeButton);
+        closeButton = (ImageView) findViewById(R.id.closeButton);
 
         question = (TextView) findViewById(R.id.question);
         scoretext = (TextView) findViewById(R.id.score);
@@ -123,11 +113,11 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     public void changeButtonColorRight(final Button button){
-        button.setBackgroundColor(Color.GREEN);
+        button.setBackgroundResource(R.drawable.quiz_button_right);
         disableButtons();
         handler.postDelayed(new Runnable() {
             public void run() {
-                button.setBackgroundColor(standardButtonColor);
+                button.setBackgroundResource(R.drawable.quiz_button_default);
                 score = score+1;
                 updateScore(score);
 
@@ -143,11 +133,11 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     public void changeButtonColorWrong(final Button button){
-        button.setBackgroundColor(Color.RED);
+        button.setBackgroundResource(R.drawable.quiz_button_wrong);
         disableButtons();
         handler.postDelayed(new Runnable() {
             public void run() {
-                button.setBackgroundColor(standardButtonColor);
+                button.setBackgroundResource(R.drawable.quiz_button_default);
                 incrementQuestion();
                 updateQuestion();
                 enableButtons();
@@ -173,10 +163,10 @@ public class QuizActivity extends AppCompatActivity {
                 if (buttonA.getText().toString().trim().equals(answer.trim())){
                     changeButtonColorRight(buttonA);
                     //optional
-                    Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
                     changeButtonColorWrong(buttonA);
                 }
             }
@@ -191,10 +181,10 @@ public class QuizActivity extends AppCompatActivity {
                 if (buttonB.getText().toString().trim().equals(answer.trim())){
                     changeButtonColorRight(buttonB);
                     //optional
-                    Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
                     changeButtonColorWrong(buttonB);
                 }
             }
@@ -207,11 +197,11 @@ public class QuizActivity extends AppCompatActivity {
                 if (buttonC.getText().toString().trim().equals(answer.trim())){
                     changeButtonColorRight(buttonC);
                     //optional
-                    Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     changeButtonColorWrong(buttonC);
-                    Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -223,11 +213,11 @@ public class QuizActivity extends AppCompatActivity {
                 if (buttonD.getText().toString().trim().equals(answer.trim())){
                     changeButtonColorRight(buttonD);
                     //optional
-                    Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     changeButtonColorWrong(buttonD);
-                    Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -248,7 +238,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private void updateQuestion(){
 
-        Toast.makeText(QuizActivity.this, "CurrentQuestionNumber: "+questionNumber, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(QuizActivity.this, "CurrentQuestionNumber: "+questionNumber, Toast.LENGTH_SHORT).show();
 
         question.setText(questionLibrary.getQuestion(questionNumber));
 
