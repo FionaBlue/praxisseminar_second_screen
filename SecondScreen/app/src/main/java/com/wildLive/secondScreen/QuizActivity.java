@@ -35,11 +35,15 @@ public class QuizActivity extends AppCompatActivity {
 
     private SignalRClient srClient = null;
 
+    static QuizActivity quizActivity;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
+
+        quizActivity = this;
 
         SharedPreferences sp = getSharedPreferences("quizdata", MODE_PRIVATE);
         score = sp.getInt("score", 0);
@@ -66,6 +70,10 @@ public class QuizActivity extends AppCompatActivity {
         super.onPause();
 
         saveQuizData();
+    }
+
+    public static QuizActivity getInstance(){
+        return quizActivity;
     }
 
     private void saveQuizData(){

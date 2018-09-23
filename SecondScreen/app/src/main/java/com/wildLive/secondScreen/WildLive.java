@@ -4,6 +4,7 @@ import android.app.Application;
 
 public class WildLive extends Application {
     private SignalRClient srClient;
+    private Boolean quizAvailability = false;
 
     public void setSRClient(SignalRClient srClient){
         System.out.println("WildLive " + srClient);
@@ -14,5 +15,13 @@ public class WildLive extends Application {
     public SignalRClient getSRClient() {
         System.out.println("WildLive getter " + this.srClient);
         return this.srClient;
+    }
+
+    public void setQuizAvailability(Boolean availability){
+        quizAvailability = availability;
+    }
+
+    public Boolean getQuizAvailalibity() {
+        return quizAvailability;
     }
 }

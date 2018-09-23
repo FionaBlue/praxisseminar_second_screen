@@ -187,7 +187,8 @@
                         android:layout_weight="0.2"
                         android:layout_height="match_parent"
                         android:scaleType="fitEnd"
-                        android:layout_marginBottom="10dp"/>
+                        android:layout_marginBottom="10dp"
+                        android:visibility="invisible"/>
                 </LinearLayout>
             </LinearLayout>
 

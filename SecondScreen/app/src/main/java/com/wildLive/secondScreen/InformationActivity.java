@@ -41,6 +41,7 @@ public class InformationActivity extends AppCompatActivity {
     // https://stackoverflow.com/questions/50668810/textview-settext-does-nothing
     // https://stackoverflow.com/questions/48845814/recycler-view-adapter-looping-objects-in-pairs
     //https://stackoverflow.com/questions/2887410/unclickable-seekbar-in-android-listview
+    //https://stackoverflow.com/questions/14355731/killing-one-activity-from-another/14356774
 
     public List<ContentElement> contentElements = new ArrayList<>();        // dynamical array for content information
     RecyclerView recyclerListView;                                          // providing option for horizontal list view (= recyclerView)
@@ -64,6 +65,8 @@ public class InformationActivity extends AppCompatActivity {
     private String videoId = "";                                            // id of currently loaded video (for retrieving specific information)
     private SignalRClient sRClient;                                         // signalR-client for communication between devices (first screen/second screen)
 
+    private WildLive app;
+
     public enum InformationViewState { DATALESS, GUIDE, CONTENT }           // enum for choosing current layout state (guide or info content)
 
     @Override
@@ -85,6 +88,25 @@ public class InformationActivity extends AppCompatActivity {
 
         // registering ui component listener
         addListenersOnUiComponents();
+
+        //check if quiz is available
+        app = (WildLive)getApplication();
+        if(app.getQuizAvailalibity()){
+            quizStartButton.setVisibility(View.VISIBLE);
+        } else {
+            quizStartButton.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        WildLive app = (WildLive)getApplication();
+        if(app.getQuizAvailalibity()){
+            quizStartButton.setVisibility(View.VISIBLE);
+        } else {
+            quizStartButton.setVisibility(View.INVISIBLE);
+        }
+        super.onResume();
     }
 
     public boolean onCreateOptionsMenu (Menu menu) {
@@ -100,7 +122,7 @@ public class InformationActivity extends AppCompatActivity {
     }
 
     private void getSRClient() {
-        WildLive app = (WildLive)getApplication();
+        app = (WildLive)getApplication();
         sRClient = app.getSRClient();
         System.out.println("Information Client " + sRClient);
 
@@ -126,6 +148,21 @@ public class InformationActivity extends AppCompatActivity {
                         Double currentVideoProgress = 100/(videoLengthInSeconds/timeAsDouble);
                         int currentProgress = Math.toIntExact(Math.round(currentVideoProgress));
                         videoProgress.setProgress(currentProgress);
+                    }
+
+                    //start Quiz while advertisement
+                    if(message.toString().contains("start Quiz")){
+                        app.setQuizAvailability(true);
+                        final Context context = getApplicationContext();
+                        Intent intent = new Intent(context, QuizActivity.class);
+                        startActivity(intent);
+                    }
+
+                    //finish Quiz after advertisement
+                    if(message.toString().contains("finish Quiz")){
+                        QuizActivity.getInstance().finish();
+                        app.setQuizAvailability(false);
+                        quizStartButton.setVisibility(View.INVISIBLE);
                     }
 
                     // converting message for right usage
