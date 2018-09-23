@@ -3,10 +3,12 @@ var player;
 var WildLiveApp = WildLiveApp || {};
 WildLiveApp.YouTubePlayer = function() {
   var that = {},
-      signalRClient;//,
-      //player;
+      signalRClient,
+      testAd = [["1:00", "1:00"],["2:00", "0:30"]],
+      timerVar;
 
   function loadPlayer(videoID) {
+    signalRClient = WildLiveApp.getSignalRClient();
     // 3. This function creates an <iframe> (and YouTube player)
     //    after the API code downloads.
     //https://stackoverflow.com/questions/23443476/some-options-to-youtube-api-embedded-player-not-being-respected
@@ -28,7 +30,7 @@ WildLiveApp.YouTubePlayer = function() {
         },
         events: {
           'onReady': onPlayerReady,
-          'onStateChange': onPlayerStateChanged
+          //'onStateChange': onPlayerStateChanged
         }
       });
     }
@@ -42,6 +44,66 @@ WildLiveApp.YouTubePlayer = function() {
   function onPlayerReady(event) {
     event.target.playVideo();
     sendVideoProgressToAndroidDevice();
+    startAdTimer(testAd);
+  }
+
+  function startAdTimer(adTimes) {
+    timerVar = setInterval(function() {
+        adTimer(adTimes);
+    }, 1000);
+  }
+
+  function adTimer(adTimes) {
+    var currentTime = Math.round(player.getCurrentTime());
+    for(var i=0; i<adTimes.length; i++){
+      var adTimeInSeconds = timeInSeconds(adTimes[i][0]);
+      if(adTimeInSeconds == currentTime && player.getPlayerState() == 1){
+        signalRClient.sendMessageToAndroidDevice("start Quiz");
+        player.pauseVideo();
+
+        templateString = document.querySelector('#Advertisement').innerHTML;       // reading template in index.html
+        tmpElement = document.createElement("div");                 // creating new div for loading template content
+        tmpElement.setAttribute("id", "AD-PopUp");
+        tmpElement.innerHTML = templateString;
+        start = document.querySelector(".templateBinding");
+        start.appendChild(tmpElement);        
+
+        var adDurationInSeconds = timeInSeconds(adTimes[i][1]);
+        var startAd = setInterval(function() {
+            var min = Math.floor(adDurationInSeconds/60);
+            var sec = Math.floor(adDurationInSeconds - min * 60);
+            if(sec.toString().length == 1){
+              document.getElementById('AD-Timer').innerHTML = min + ":0" + sec;
+            } else {
+              document.getElementById('AD-Timer').innerHTML = min + ":" + sec;
+            }            
+            adDurationInSeconds = adDurationInSeconds - 1;
+          if(adDurationInSeconds < 0){
+            clearInterval(startAd);
+            signalRClient.sendMessageToAndroidDevice("finish Quiz");
+            var adTemplate = document.querySelector("#AD-PopUp");
+            adTemplate.parentNode.removeChild(adTemplate);
+
+            testAd.splice(i); //remove Ad from testAdArray
+            player.playVideo();
+          }
+        }, 1000);
+        startAdTimer(testAd);
+      }
+    }
+  }
+
+  function timeInSeconds(time) {
+    var inSeconds;
+    var timeUnits = time.split(':');
+    if (timeUnits.length == 3) {
+      inSeconds = parseInt(timeUnits[0])*60*60 + parseInt(timeUnits[1])*60 + parseInt(timeUnits[2]);
+    } else if (timeUnits.length == 2) {
+      inSeconds = parseInt(timeUnits[0])*60 + parseInt(timeUnits[1]);
+    } else if (timeUnits.length == 1) {
+      inSeconds = parseInt(timeUnits[0]);
+    }
+    return inSeconds;
   }
 
   async function sendVideoProgressToAndroidDevice() {
@@ -51,15 +113,15 @@ WildLiveApp.YouTubePlayer = function() {
     setTimeout(sendVideoProgressToAndroidDevice, 3000);
   }
 
-  function onPlayerStateChanged(event) {
-    signalRClient = WildLiveApp.getSignalRClient();
-    if(event.data == 2) {      
+  /*function onPlayerStateChanged(event) {
+    
+    if(event.data == 2) {
       signalRClient.sendMessageToAndroidDevice("enable Quiz");
     }
     if(event.data == 1) {
       signalRClient.sendMessageToAndroidDevice("disable Quiz");
     }
-  }
+  }*/
 
   function pauseVideo() {
     if(player.getPlayerState() == 1){

@@ -148,3 +148,27 @@ body {
     top: 8%;
     left: 94%;
 }
+/*
+    Template - Advertisement
+
+    https://stackoverflow.com/questions/1351768/how-to-position-div-in-the-center-of-the-screen
+*/
+
+#AD-Data {
+    text-align: center;
+    background-color: #a8cafe;
+    font-size: 30px;
+    position:fixed;
+    z-index: 100;  
+    top:50%;  
+    left:50%;  
+    margin:-175px 0 0 -175px;  
+    width:350px;
+    height:350px;
+    border-radius: 5%;
+}
+
+#AD-Img {
+    height: 200px;
+    width: auto;
+}
