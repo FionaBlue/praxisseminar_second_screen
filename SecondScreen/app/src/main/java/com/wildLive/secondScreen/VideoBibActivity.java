@@ -365,11 +365,11 @@ public class VideoBibActivity extends AppCompatActivity {
                     videoViewHolder.videoThumbnail.setVisibility(View.VISIBLE);
                 }
             }).execute(urlRequest);
-            addListenerOnImages(videoViewHolder.videoThumbnail);
+            addListenerOnImages(videoViewHolder.videoThumbnail, videoViewHolder.videoLength.getText().toString());
             return convertView;
         }
 
-        private void addListenerOnImages(final YouTubeThumbnailView thumbnailView) {
+        private void addListenerOnImages(final YouTubeThumbnailView thumbnailView, final String videoLength) {
             final Context context = getApplicationContext();
             // registering button and button-behaviour by on-clicking
             thumbnailView.setOnClickListener(new View.OnClickListener() {
@@ -387,6 +387,7 @@ public class VideoBibActivity extends AppCompatActivity {
                     Intent intent = new Intent(context, InformationActivity.class);
                     String videoID = new String(thumbnailView.getTag().toString());
                     intent.putExtra("videoID", videoID);
+                    intent.putExtra("videoLength", videoLength);
                     //System.out.println("VideoBib VideoID " + videoID);
                     startActivity(intent);
                 }

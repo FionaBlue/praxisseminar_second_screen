@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -39,6 +40,7 @@ public class InformationActivity extends AppCompatActivity {
     // https://stackoverflow.com/questions/30340591/changing-an-imageview-to-black-and-white
     // https://stackoverflow.com/questions/50668810/textview-settext-does-nothing
     // https://stackoverflow.com/questions/48845814/recycler-view-adapter-looping-objects-in-pairs
+    //https://stackoverflow.com/questions/2887410/unclickable-seekbar-in-android-listview
 
     public List<ContentElement> contentElements = new ArrayList<>();        // dynamical array for content information
     RecyclerView recyclerListView;                                          // providing option for horizontal list view (= recyclerView)
@@ -54,8 +56,11 @@ public class InformationActivity extends AppCompatActivity {
     private ImageView arrowLeft, arrowRight;                                // arrows/chevrons for switching to next/previous timeline point
     // icons for controlling current video
     private ImageView playIcon, pauseIcon, forwardIcon, backwardIcon, volumeUpIcon, volumeDownIcon;
+    // SeekBar for showing video progress
+    private SeekBar videoProgress;
 
-    // transferred data (video-id, signalR-client)
+    // transferred data (video-length, video-id, signalR-client)
+    private String videoLength;                                             // length of currently loaded video (for calculating video progress, see SeekBar)
     private String videoId = "";                                            // id of currently loaded video (for retrieving specific information)
     private SignalRClient sRClient;                                         // signalR-client for communication between devices (first screen/second screen)
 
@@ -91,6 +96,7 @@ public class InformationActivity extends AppCompatActivity {
         // getting selected video-id (registered tag/key) from previous activity via intent-extras
         Bundle extras = getIntent().getExtras();
         videoId = extras.getString("videoID");
+        videoLength = extras.getString("videoLength");
     }
 
     private void getSRClient() {
@@ -104,6 +110,24 @@ public class InformationActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(String message) {
                     Log.d("LOG_INFOACT", "received :: " + message);
+
+                    //updating video-progress-SeekBar
+                    if(message.toString().contains("time")){
+                        //get video-length from intent
+                        Bundle extras = getIntent().getExtras();
+                        videoLength = extras.getString("videoLength");
+                        //convert video-length to seconds
+                        int videoLengthInSeconds;
+                        videoLengthInSeconds = timeInSeconds(videoLength);
+                        //get current video time from message as Double
+                        String messageTime = message.substring(5, message.length());
+                        Double timeAsDouble = Double.parseDouble(messageTime);
+                        //calculate and set current video-progress in SeekBar
+                        Double currentVideoProgress = 100/(videoLengthInSeconds/timeAsDouble);
+                        int currentProgress = Math.toIntExact(Math.round(currentVideoProgress));
+                        videoProgress.setProgress(currentProgress);
+                    }
+
                     // converting message for right usage
                     final int messagePos = Integer.parseInt(message);
 
@@ -122,6 +146,19 @@ public class InformationActivity extends AppCompatActivity {
         }
     }
 
+    private int timeInSeconds(String time) {
+        int inSeconds = 0;
+        String[] timeUnits = time.split(":");
+        if(timeUnits.length == 3){
+            inSeconds = Integer.parseInt(timeUnits[0]) * 60 * 60 + Integer.parseInt(timeUnits[1]) * 60 + Integer.parseInt(timeUnits[2]);
+        } else if(timeUnits.length == 2) {
+            inSeconds = Integer.parseInt(timeUnits[0]) * 60 + Integer.parseInt(timeUnits[1]);
+        } else if(timeUnits.length == 1) {
+            inSeconds = Integer.parseInt(timeUnits[0]);
+        }
+        return inSeconds;
+    }
+
     private void registerLayoutComponents() {
         // defining actual layout group
         setContentView(R.layout.activity_information);
@@ -137,7 +174,27 @@ public class InformationActivity extends AppCompatActivity {
         wikiContentExtract.setMovementMethod(new ScrollingMovementMethod());        // making extract content scrollable
         quizStartButton = (ImageButton) findViewById(R.id.quizStartButton);
         buttonReadArticle = (Button) findViewById(R.id.buttonReadArticle);
-
+        
+        // registering timeline/videoprogress and prevent interaction
+        videoProgress = findViewById(R.id.videoProgress);
+        videoProgress.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
+            int originalProgress;
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                //Nothing here..
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                originalProgress = seekBar.getProgress();
+            }
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int arg1, boolean fromUser) {
+                if( fromUser == true){
+                    seekBar.setProgress( originalProgress);
+                }
+            }
+        });
+        
         // registering icons for video-control-function
         playIcon = findViewById(R.id.video_play);
         pauseIcon = findViewById(R.id.video_pause);
