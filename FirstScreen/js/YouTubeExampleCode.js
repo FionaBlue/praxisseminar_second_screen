@@ -1,21 +1,19 @@
 //https://developers.google.com/youtube/iframe_api_reference?hl=de
 //https://support.google.com/youtube/answer/2467968?hl=de
+//https://stackoverflow.com/questions/23443476/some-options-to-youtube-api-embedded-player-not-being-respected
+//https://stackoverflow.com/questions/12256382/youtube-iframe-api-not-triggering-onyoutubeiframeapiready
 var player;
 var WildLiveApp = WildLiveApp || {};
 WildLiveApp.YouTubePlayer = function() {
   var that = {},
       signalRClient,
       testAd = [["1:00", "0:20"],["2:00", "0:20"]],
-      timerVar;
+      timerVar,
+      adState = false;
 
   function loadPlayer(videoID) {
     signalRClient = WildLiveApp.getSignalRClient();
-    // 3. This function creates an <iframe> (and YouTube player)
-    //    after the API code downloads.
-    //https://stackoverflow.com/questions/23443476/some-options-to-youtube-api-embedded-player-not-being-respected
-    //https://stackoverflow.com/questions/12256382/youtube-iframe-api-not-triggering-onyoutubeiframeapiready
-    //window.onYouTubeIframeAPIReady = function() {
-      //console.log("inner apiready");
+    
       player = new YT.Player('player', {
         enablejsapi: 1,
         height: '560',
@@ -31,11 +29,9 @@ WildLiveApp.YouTubePlayer = function() {
         },
         events: {
           'onReady': onPlayerReady,
-          //'onStateChange': onPlayerStateChanged
         }
       });
     }
-  //}
     
   function getCurrentVideoTime() {
     return player.getCurrentTime();
@@ -61,6 +57,7 @@ WildLiveApp.YouTubePlayer = function() {
       if(adTimeInSeconds == currentTime && player.getPlayerState() == 1){
         signalRClient.sendMessageToAndroidDevice("start Quiz");
         player.pauseVideo();
+        adState = true;       //set advertisement-state true
 
         templateString = document.querySelector('#Advertisement').innerHTML;       // reading template in index.html
         tmpElement = document.createElement("div");                 // creating new div for loading template content
@@ -85,7 +82,8 @@ WildLiveApp.YouTubePlayer = function() {
             var adTemplate = document.querySelector("#AD-PopUp");
             adTemplate.parentNode.removeChild(adTemplate);
 
-            testAd.splice(i); //remove Ad from testAdArray
+            testAd.splice(i);   // remove Ad from testAdArray
+            adState = false;    // set advertisement-state false
             player.playVideo();
           }
         }, 1000);
@@ -114,16 +112,6 @@ WildLiveApp.YouTubePlayer = function() {
     setTimeout(sendVideoProgressToAndroidDevice, 3000);
   }
 
-  /*function onPlayerStateChanged(event) {
-    
-    if(event.data == 2) {
-      signalRClient.sendMessageToAndroidDevice("enable Quiz");
-    }
-    if(event.data == 1) {
-      signalRClient.sendMessageToAndroidDevice("disable Quiz");
-    }
-  }*/
-
   function pauseVideo() {
     if(player.getPlayerState() == 1){
       player.pauseVideo();
@@ -131,7 +119,7 @@ WildLiveApp.YouTubePlayer = function() {
   }
 
   function playVideo() {
-    if(player.getPlayerState() == 2){
+    if(player.getPlayerState() == 2 && adState == false){
       player.playVideo();
     }    
   }
@@ -177,22 +165,3 @@ WildLiveApp.YouTubePlayer = function() {
   that.getCurrentVideoTime = getCurrentVideoTime;
   return that;
 };
-
-// 4. The API will call this function when the video player is ready.
-/*function onPlayerReady(event) {
-  event.target.playVideo();
-}
-
-// 5. The API calls this function when the player's state changes.
-//    The function indicates that when playing a video (state=1),
-//    the player should play for six seconds and then stop.
-var done = false;
-function onPlayerStateChange(event) {
-  if (event.data == YT.PlayerState.PLAYING && !done) {
-    setTimeout(stopVideo, 6000);
-    done = true;
-  }
-}
-function stopVideo() {
-  player.stopVideo();
-}*/
