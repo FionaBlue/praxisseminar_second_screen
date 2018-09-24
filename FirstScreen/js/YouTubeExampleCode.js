@@ -57,9 +57,10 @@ WildLiveApp.YouTubePlayer = function() {
 
   function adTimer(adTimes) {
     var currentTime = Math.round(player.getCurrentTime());
-    for(var i=0; i<adTimes.length; i++){
+    for(var i=0; i<adTimes.length; i++){      
       var adTimeInSeconds = timeInSeconds(adTimes[i][0]);
-      if(adTimeInSeconds == currentTime && player.getPlayerState() == 1){
+      console.log("adSec " + adTimeInSeconds + " " + "currentTime " + currentTime);
+      if(adTimeInSeconds <= currentTime && player.getPlayerState() == 1){
         signalRClient.sendMessageToAndroidDevice("start Quiz");
         player.pauseVideo();
 
@@ -73,7 +74,9 @@ WildLiveApp.YouTubePlayer = function() {
         adDurationInSeconds = timeInSeconds(adTimes[i][1]);
         startAdvertisement(adDurationInSeconds);
         
-        testAd = testAd.splice(i);   // remove Ad from testAdArray
+        adTimes.shift();
+        testAd = adTimes;
+        console.log("testAd " + testAd);
       }
     }
   }
