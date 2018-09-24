@@ -82,7 +82,7 @@ public class SignalRClient {
             return null;
         }
         protected void onPostExecute(Void voids) {
-            sendMsg(""); //send empty Msg as "ping"
+            sendMsg("castConnected"); //send castConnected Msg as "ping" and for CastButton indication
             // waiting for "ping"-delay (for better performance issues)
             int i = 0;
             while (i < 3) { i++; }
