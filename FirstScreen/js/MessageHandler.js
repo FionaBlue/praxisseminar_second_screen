@@ -1,6 +1,6 @@
 var WildLiveApp = WildLiveApp || {};
 WildLiveApp.MessageHandler = function() {
-    var that = {}, youTubePlayer, databaseHandler;
+    var that = {}, youTubePlayer, databaseHandler, androidConnection = false, androidBuffer = 0;
 
     function init() {
         youTubePlayer = new WildLiveApp.YouTubePlayer();
@@ -9,7 +9,28 @@ WildLiveApp.MessageHandler = function() {
         databaseHandler = new WildLiveApp.DatabaseHandler();
     }
 
+    function checkConnectionToAndroidDevice(){
+        if(androidConnection == true){
+            document.getElementById("castConnectedButton").classList.remove("hidden");
+            document.getElementById("castNotConnectedButton").classList.add("hidden");
+        } else {
+            document.getElementById("castConnectedButton").classList.add("hidden");
+            document.getElementById("castNotConnectedButton").classList.remove("hidden");
+        }
+        androidConnection = false;
+    }
+
     function handleMessage(encodedMsg){
+        // -----------------------------------------------------------------
+        //CastButton-Handling
+        if(encodedMsg.includes("castConnected")){
+            if(androidBuffer == 10){
+                androidConnection = true;
+                checkConnectionToAndroidDevice();
+                androidBuffer = 0;
+            }
+            androidBuffer = androidBuffer + 1;            
+        }
         // -----------------------------------------------------------------
         //Highlighting
         if(encodedMsg == "Antarktis"){
@@ -55,6 +76,11 @@ WildLiveApp.MessageHandler = function() {
             
             // binding database functionality and data from firebase by accessing id and player
             databaseHandler.init(videoID, youTubePlayer);
+        }
+        //stopVideo
+        if(encodedMsg.includes("stopVideo")){
+            youTubePlayer.stopVideo();
+            WildLiveApp.onVideoEnded();
         }
 
     // -----------------------------------------------------------------

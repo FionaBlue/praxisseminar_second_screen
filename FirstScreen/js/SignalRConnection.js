@@ -12,10 +12,6 @@ WildLiveApp.SignalRConnection = function() {
     // starting connection to server
     $.connection.hub.start().done(function () {
         console.log("Now connected");
-
-        // switching cast button if connection could be initialized
-        document.getElementById("castConnectedButton").classList.remove("hidden");
-        document.getElementById("castNotConnectedButton").classList.add("hidden");
         
         // generating session connection
         chat.server.joinSession('123456789');
