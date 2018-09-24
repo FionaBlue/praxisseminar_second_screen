@@ -15,7 +15,8 @@
         card_view:cardCornerRadius="10dp"
         android:padding="10dp"
         android:layout_marginBottom="10dp"
-        android:layout_marginTop="2.5dp">
+        android:layout_marginTop="2.5dp"
+        android:id="@+id/videoItemCard">
 
         <LinearLayout
             android:layout_width="match_parent"

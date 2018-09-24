@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -330,13 +331,15 @@ public class VideoBibActivity extends AppCompatActivity {
             TextView videoDescription;
             YouTubeThumbnailView videoThumbnail;
             ProgressBar videoLoad;
+            CardView videoCard;
         }
 
-        public VideoListAdapter(Context context, ArrayList<VideoDataModel> videoDataModels) {
+        VideoListAdapter(Context context, ArrayList<VideoDataModel> videoDataModels) {
             super(context, R.layout.videolist_item, videoDataModels);
         }
 
-        public View getView(int position, View convertView, ViewGroup parent){
+        @NonNull
+        public View getView(int position, View convertView, @NonNull ViewGroup parent){
             VideoDataModel videoDataModel = getItem(position);
             final VideoViewHolder videoViewHolder;
             if (convertView == null) {
@@ -348,14 +351,22 @@ public class VideoBibActivity extends AppCompatActivity {
                 videoViewHolder.videoDescription = (TextView) convertView.findViewById(R.id.descriptionView);
                 videoViewHolder.videoThumbnail = (YouTubeThumbnailView) convertView.findViewById(R.id.thumbnailView);
                 videoViewHolder.videoLoad = (ProgressBar) convertView.findViewById(R.id.thumbnailLoad);
+                videoViewHolder.videoCard = (CardView) convertView.findViewById(R.id.videoItemCard);
                 convertView.setTag(videoViewHolder);
             } else {
                 videoViewHolder = (VideoViewHolder) convertView.getTag();
             }
+
+            //set video-information texts
             videoViewHolder.videoTitle.setText(videoDataModel.videoTitle);
             videoViewHolder.videoLength.setText(videoDataModel.videoLength);
             videoViewHolder.videoDescription.setText(videoDataModel.videoDescription);
-            videoViewHolder.videoThumbnail.setTag(videoDataModel.videoID);
+
+            //add listener to video-item-card for switching to information activity
+            videoViewHolder.videoCard.setTag(videoDataModel.videoID);
+            addListenerOnCards(videoViewHolder.videoCard, videoViewHolder.videoLength.getText().toString());
+
+            //getting thumbnail-images via asynctask
             String urlRequest = PRE_REQUEST + videoDataModel.videoID + POST_REQUEST;
             VideoRequestHandler.GetImage imageAsyncTask = (VideoRequestHandler.GetImage) new VideoRequestHandler.GetImage(new VideoRequestHandler.GetImage.AsyncResponse(){
                 @Override
@@ -365,30 +376,21 @@ public class VideoBibActivity extends AppCompatActivity {
                     videoViewHolder.videoThumbnail.setVisibility(View.VISIBLE);
                 }
             }).execute(urlRequest);
-            addListenerOnImages(videoViewHolder.videoThumbnail, videoViewHolder.videoLength.getText().toString());
+
             return convertView;
         }
 
-        private void addListenerOnImages(final YouTubeThumbnailView thumbnailView, final String videoLength) {
+        private void addListenerOnCards(final CardView videoCard, final String videoLength) {
             final Context context = getApplicationContext();
-            // registering button and button-behaviour by on-clicking
-            thumbnailView.setOnClickListener(new View.OnClickListener() {
+            // registering button and button-behaviour by on-click
+            videoCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View arg0) {
                     // switching to next activity on button click
-                    /*if(srClient != null) {
-                        // switching to next activity on button click
-                        Intent intent = new Intent(context, InformationActivity.class);
-                        intent.putExtra("VideoID", thumbnailView.getTag().toString());
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(context, "No Connection!", Toast.LENGTH_LONG).show();
-                    }*/
                     Intent intent = new Intent(context, InformationActivity.class);
-                    String videoID = new String(thumbnailView.getTag().toString());
+                    String videoID = new String(videoCard.getTag().toString());
                     intent.putExtra("videoID", videoID);
                     intent.putExtra("videoLength", videoLength);
-                    //System.out.println("VideoBib VideoID " + videoID);
                     startActivity(intent);
                 }
             });
@@ -397,13 +399,14 @@ public class VideoBibActivity extends AppCompatActivity {
 
     // **************************************************************************
 
+    //VideoDataModel for VideoViewHolder
     public class VideoDataModel {
         String videoTitle;
         String videoID;
         String videoLength;
         String videoDescription;
 
-        public VideoDataModel(String videoTitle, String videoID, String videoLength, String videoDescription) {
+        VideoDataModel(String videoTitle, String videoID, String videoLength, String videoDescription) {
             this.videoTitle = videoTitle;
             this.videoID = videoID;
             this.videoLength = videoLength;
