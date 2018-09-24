@@ -58,15 +58,29 @@ WildLiveApp.MessageHandler = function() {
         }
 
     // -----------------------------------------------------------------
+        //playAdvertisement
+        if(encodedMsg.includes("playAdvertisement")){
+            youTubePlayer.playAd();
+        }
+
+    // -----------------------------------------------------------------
         //videohandling
         if(encodedMsg.includes("icon")){
             console.log("icon detected " + encodedMsg);
             if(encodedMsg.includes("play")){
-                youTubePlayer.playVideo();
+                if(encodedMsg.includes("quiz")){
+                    youTubePlayer.playAd();
+                } else {
+                    youTubePlayer.playVideo();
+                }
             }
 
             if(encodedMsg.includes("pause")){
-                youTubePlayer.pauseVideo();
+                if(encodedMsg.includes("quiz")){
+                    youTubePlayer.pauseAd();
+                } else {
+                    youTubePlayer.pauseVideo();
+                }
             }
 
             else if(encodedMsg.includes("forward")){
@@ -78,11 +92,19 @@ WildLiveApp.MessageHandler = function() {
             }
 
             else if(encodedMsg.includes("volumeUp")){
-                youTubePlayer.setVolumeUp();
+                if(encodedMsg.includes("quiz")){
+                    //set volume of advertisement up
+                } else {
+                    youTubePlayer.setVolumeUp();
+                }
             }
 
             else if(encodedMsg.includes("volumeDown")){
-                youTubePlayer.setVolumeDown();
+                if(encodedMsg.includes("quiz")){
+                    //set volume of advertisement down
+                } else {
+                    youTubePlayer.setVolumeDown();
+                }
             }
         }
          // -----------------------------------------------------------------

@@ -9,7 +9,12 @@ WildLiveApp.YouTubePlayer = function() {
       signalRClient,
       testAd = [["1:00", "0:20"],["2:00", "0:20"]],
       timerVar,
-      adState = false;
+      adState = false,
+      adPaused = false,
+      startAd,
+      adDurationInSeconds,
+      currentTimerTime,
+      pausedTimerTime;
 
   function loadPlayer(videoID) {
     signalRClient = WildLiveApp.getSignalRClient();
@@ -37,7 +42,7 @@ WildLiveApp.YouTubePlayer = function() {
     return player.getCurrentTime();
   }
 
-  // 4. The API will call this function when the video player is ready.
+  // The API will call this function when the video player is ready.
   function onPlayerReady(event) {
     event.target.playVideo();
     sendVideoProgressToAndroidDevice();
@@ -57,39 +62,46 @@ WildLiveApp.YouTubePlayer = function() {
       if(adTimeInSeconds == currentTime && player.getPlayerState() == 1){
         signalRClient.sendMessageToAndroidDevice("start Quiz");
         player.pauseVideo();
-        adState = true;       //set advertisement-state true
 
         templateString = document.querySelector('#Advertisement').innerHTML;       // reading template in index.html
         tmpElement = document.createElement("div");                 // creating new div for loading template content
         tmpElement.setAttribute("id", "AD-PopUp");
         tmpElement.innerHTML = templateString;
         start = document.querySelector(".templateBinding");
-        start.appendChild(tmpElement);        
+        start.appendChild(tmpElement);
 
-        var adDurationInSeconds = timeInSeconds(adTimes[i][1]);
-        var startAd = setInterval(function() {
-            var min = Math.floor(adDurationInSeconds/60);
-            var sec = Math.floor(adDurationInSeconds - min * 60);
-            if(sec.toString().length == 1){
-              document.getElementById('AD-Timer').innerHTML = min + ":0" + sec;
-            } else {
-              document.getElementById('AD-Timer').innerHTML = min + ":" + sec;
-            }            
-            adDurationInSeconds = adDurationInSeconds - 1;
-          if(adDurationInSeconds < 0){
-            clearInterval(startAd);
-            signalRClient.sendMessageToAndroidDevice("finish Quiz");
-            var adTemplate = document.querySelector("#AD-PopUp");
-            adTemplate.parentNode.removeChild(adTemplate);
-
-            testAd.splice(i);   // remove Ad from testAdArray
-            adState = false;    // set advertisement-state false
-            player.playVideo();
-          }
-        }, 1000);
-        startAdTimer(testAd);
+        adDurationInSeconds = timeInSeconds(adTimes[i][1]);
+        startAdvertisement(adDurationInSeconds);
+        
+        testAd = testAd.splice(i);   // remove Ad from testAdArray
       }
     }
+  }
+
+  function startAdvertisement(duration) {
+    adState = true;                  //set advertisement-state true
+    adPaused = false;
+    currentTimerTime = duration;
+    startAd = setInterval(function() {
+      var min = Math.floor(currentTimerTime/60);
+      var sec = Math.floor(currentTimerTime - min * 60);
+      if(sec.toString().length == 1){
+        document.getElementById('AD-Timer').innerHTML = min + ":0" + sec;
+      } else {
+        document.getElementById('AD-Timer').innerHTML = min + ":" + sec;
+      }            
+      currentTimerTime = currentTimerTime - 1;
+      if(currentTimerTime < 0){
+        clearInterval(startAd);
+        signalRClient.sendMessageToAndroidDevice("finish Quiz");
+        var adTemplate = document.querySelector("#AD-PopUp");
+        adTemplate.parentNode.removeChild(adTemplate);
+
+        adState = false;    // set advertisement-state false
+        player.playVideo();
+      }
+    }, 1000);
+    startAdTimer(testAd);
   }
 
   function timeInSeconds(time) {
@@ -112,6 +124,24 @@ WildLiveApp.YouTubePlayer = function() {
     setTimeout(sendVideoProgressToAndroidDevice, 3000);
   }
 
+  function pauseAd() {
+    if(adState == true) {
+      signalRClient.sendMessageToAndroidDevice("disable Quiz-answers");
+      pausedTimerTime = currentTimerTime;
+      clearInterval(startAd);
+      adState = false;
+      adPaused = true;
+    }
+  }
+
+  function playAd() {
+    if(adState == false) {
+      signalRClient.sendMessageToAndroidDevice("enable Quiz-answers");
+      startAdvertisement(pausedTimerTime);
+      adPaused = false;
+    }
+  }
+
   function pauseVideo() {
     if(player.getPlayerState() == 1){
       player.pauseVideo();
@@ -119,7 +149,7 @@ WildLiveApp.YouTubePlayer = function() {
   }
 
   function playVideo() {
-    if(player.getPlayerState() == 2 && adState == false){
+    if(player.getPlayerState() == 2 && adState == false && adPaused == false){
       player.playVideo();
     }    
   }
@@ -155,6 +185,8 @@ WildLiveApp.YouTubePlayer = function() {
     console.log("backward, seekTo " + newTime);
   }
 
+  that.pauseAd = pauseAd;
+  that.playAd = playAd;
   that.rewind = rewind;
   that.fastForward = fastForward;
   that.setVolumeDown = setVolumeDown;
