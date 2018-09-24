@@ -1,10 +1,11 @@
 //https://developers.google.com/youtube/iframe_api_reference?hl=de
+//https://support.google.com/youtube/answer/2467968?hl=de
 var player;
 var WildLiveApp = WildLiveApp || {};
 WildLiveApp.YouTubePlayer = function() {
   var that = {},
       signalRClient,
-      testAd = [["1:00", "1:00"],["2:00", "0:30"]],
+      testAd = [["1:00", "0:20"],["2:00", "0:20"]],
       timerVar;
 
   function loadPlayer(videoID) {
