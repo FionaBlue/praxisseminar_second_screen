@@ -360,7 +360,11 @@ public class VideoBibActivity extends AppCompatActivity {
             //set video-information texts
             videoViewHolder.videoTitle.setText(videoDataModel.videoTitle);
             videoViewHolder.videoLength.setText(videoDataModel.videoLength);
-            videoViewHolder.videoDescription.setText(videoDataModel.videoDescription);
+            if(videoDataModel.videoDescription.equals("")){
+                videoViewHolder.videoDescription.setText("Keine Beschreibung verfügbar");
+            } else {
+                videoViewHolder.videoDescription.setText(videoDataModel.videoDescription);
+            }
 
             //add listener to video-item-card for switching to information activity
             videoViewHolder.videoCard.setTag(videoDataModel.videoID);
