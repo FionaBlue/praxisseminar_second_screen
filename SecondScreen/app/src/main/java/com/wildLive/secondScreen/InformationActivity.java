@@ -58,7 +58,7 @@ public class InformationActivity extends AppCompatActivity {
     private ProgressBar progressBar;                                        // progress loader which waits for information content to be loaded
     private ImageView arrowLeft, arrowRight;                                // arrows/chevrons for switching to next/previous timeline point
     // icons for controlling current video
-    private ImageView playIcon, pauseIcon, forwardIcon, backwardIcon, volumeUpIcon, volumeDownIcon;
+    private ImageView playIcon, pauseIcon, forwardIcon, backwardIcon, volumeUpIcon, volumeDownIcon, advertisementPauseIcon;
     // SeekBar for showing video progress
     private SeekBar videoProgress;
 
@@ -66,6 +66,9 @@ public class InformationActivity extends AppCompatActivity {
     private String videoLength;                                             // length of currently loaded video (for calculating video progress, see SeekBar)
     private String videoId = "";                                            // id of currently loaded video (for retrieving specific information)
     private SignalRClient sRClient;                                         // signalR-client for communication between devices (first screen/second screen)
+
+    // transfer data to QuizActivity
+    private int currentVideoProgress = 0;
 
     public enum InformationViewState { DATALESS, GUIDE, CONTENT }           // enum for choosing current layout state (guide or info content)
 
@@ -96,10 +99,16 @@ public class InformationActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         WildLive app = (WildLive)getApplication();
+        playIcon.setVisibility(View.GONE);
         if(app.getQuizAvailalibity()){
             quizStartButton.setVisibility(View.VISIBLE);
+            pauseIcon.setVisibility(View.GONE);
+            advertisementPauseIcon.setVisibility(View.VISIBLE);
+            sRClient.sendMsg("playAdvertisement");
         } else {
             quizStartButton.setVisibility(View.INVISIBLE);
+            advertisementPauseIcon.setVisibility(View.GONE);
+            pauseIcon.setVisibility(View.VISIBLE);
         }
         super.onResume();
     }
@@ -140,9 +149,9 @@ public class InformationActivity extends AppCompatActivity {
                         String messageTime = message.substring(5, message.length());
                         Double timeAsDouble = Double.parseDouble(messageTime);
                         //calculate and set current video-progress in SeekBar
-                        Double currentVideoProgress = 100/(videoLengthInSeconds/timeAsDouble);
-                        int currentProgress = Math.toIntExact(Math.round(currentVideoProgress));
-                        videoProgress.setProgress(currentProgress);
+                        Double currentProgress = 100/(videoLengthInSeconds/timeAsDouble);
+                        currentVideoProgress = Math.toIntExact(Math.round(currentProgress));
+                        videoProgress.setProgress(currentVideoProgress);
                     }
 
                     // starting quiz while advertisement
@@ -150,6 +159,7 @@ public class InformationActivity extends AppCompatActivity {
                         app.setQuizAvailability(true);
                         final Context context = getApplicationContext();
                         Intent intent = new Intent(context, QuizActivity.class);
+                        intent.putExtra("videoProgress", currentVideoProgress);
                         startActivity(intent);
                     }
 
@@ -157,7 +167,48 @@ public class InformationActivity extends AppCompatActivity {
                     if(message.toString().contains("finish Quiz")){
                         QuizActivity.getInstance().finish();
                         app.setQuizAvailability(false);
-                        quizStartButton.setVisibility(View.INVISIBLE);
+                        InformationActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                quizStartButton.setVisibility(View.INVISIBLE);
+                                advertisementPauseIcon.setVisibility(View.GONE);
+                                pauseIcon.setVisibility(View.VISIBLE);
+                            }
+                        });
+                    }
+
+                    if(message.toString().contains("disable Quiz-answers")){
+                        QuizActivity.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                QuizActivity.getInstance().buttonA.setClickable(false);
+                                QuizActivity.getInstance().buttonB.setClickable(false);
+                                QuizActivity.getInstance().buttonC.setClickable(false);
+                                QuizActivity.getInstance().buttonD.setClickable(false);
+
+                                QuizActivity.getInstance().buttonA.setTextColor(getResources().getColor(R.color.colorLightGrey));
+                                QuizActivity.getInstance().buttonB.setTextColor(getResources().getColor(R.color.colorLightGrey));
+                                QuizActivity.getInstance().buttonC.setTextColor(getResources().getColor(R.color.colorLightGrey));
+                                QuizActivity.getInstance().buttonD.setTextColor(getResources().getColor(R.color.colorLightGrey));
+                            }
+                        });
+                    }
+
+                    if(message.toString().contains("enable Quiz-answers")){
+                        QuizActivity.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                QuizActivity.getInstance().buttonA.setClickable(true);
+                                QuizActivity.getInstance().buttonB.setClickable(true);
+                                QuizActivity.getInstance().buttonC.setClickable(true);
+                                QuizActivity.getInstance().buttonD.setClickable(true);
+
+                                QuizActivity.getInstance().buttonA.setTextColor(getResources().getColor(R.color.colorBlack));
+                                QuizActivity.getInstance().buttonB.setTextColor(getResources().getColor(R.color.colorBlack));
+                                QuizActivity.getInstance().buttonC.setTextColor(getResources().getColor(R.color.colorBlack));
+                                QuizActivity.getInstance().buttonD.setTextColor(getResources().getColor(R.color.colorBlack));
+                            }
+                        });
                     }
 
                     // converting message for right usage
@@ -217,6 +268,7 @@ public class InformationActivity extends AppCompatActivity {
         backwardIcon = findViewById(R.id.video_replay);
         volumeUpIcon = findViewById(R.id.video_volumeUp);
         volumeDownIcon = findViewById(R.id.video_volumeDown);
+        advertisementPauseIcon = findViewById(R.id.video_pause_Advertisement);
 
         // registering list view (recyclerView) with arrows/chevrons and custom array adapter
         arrowLeft = (ImageView) findViewById(R.id.timelineChevronLeft);
@@ -362,6 +414,7 @@ public class InformationActivity extends AppCompatActivity {
                 //quiz is being closed, the marker must be set active so the user can start
                 //the quiz again and continue the quiz
                 Intent intent = new Intent(context, QuizActivity.class);
+                intent.putExtra("videoProgress", currentVideoProgress);
                 startActivity(intent);
             }
         });

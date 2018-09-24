@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,7 +16,10 @@ public class QuizActivity extends AppCompatActivity {
     private QuestionLibrary questionLibrary;
     private Handler handler = new Handler();
 
-    private Button buttonA, buttonB, buttonC, buttonD;
+    public Button buttonA;
+    public Button buttonB;
+    public Button buttonC;
+    public Button buttonD;
     private ImageView closeButton;
 
     private TextView question;
@@ -28,6 +32,12 @@ public class QuizActivity extends AppCompatActivity {
     private SignalRClient srClient = null;
 
     static QuizActivity quizActivity;
+
+    public ImageView quizPauseButton;
+    public ImageView quizPlayButton;
+    private ImageView quizVolumeUpButton;
+    private ImageView quizVolumeDownButton;
+    private SeekBar videoProgress;
 
 
     @Override
@@ -52,6 +62,10 @@ public class QuizActivity extends AppCompatActivity {
         updateQuestion();
         updateScore(score);
 
+        Bundle extras = getIntent().getExtras();
+        int videoProgressInt = extras.getInt("videoProgress");
+        updateVideoProgress(videoProgressInt);
+
         if(srClient != null){
             srClient.sendMsg("score"+String.valueOf(score));
         }
@@ -66,6 +80,10 @@ public class QuizActivity extends AppCompatActivity {
 
     public static QuizActivity getInstance(){
         return quizActivity;
+    }
+
+    private void updateVideoProgress(int progress){
+        videoProgress.setProgress(progress);
     }
 
     private void saveQuizData(){
@@ -94,6 +112,13 @@ public class QuizActivity extends AppCompatActivity {
 
         question = (TextView) findViewById(R.id.question);
         scoretext = (TextView) findViewById(R.id.score);
+
+        quizPlayButton = findViewById(R.id.video_play_quiz);
+        quizPauseButton = findViewById(R.id.video_pause_quiz);
+        quizVolumeUpButton = findViewById(R.id.video_volumeUp_quiz);
+        quizVolumeDownButton = findViewById(R.id.video_volumeDown_quiz);
+
+        videoProgress = findViewById(R.id.videoProgress_quiz);
     }
 
     private void disableButtons(){
@@ -146,6 +171,48 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     public void createButtonListeners(){
+
+        quizPlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                quizPlayButton.setVisibility(View.GONE);
+                quizPauseButton.setVisibility(View.VISIBLE);
+                if(srClient != null){
+                    srClient.sendMsg("icon play quiz");
+                }
+            }
+        });
+
+        quizPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                quizPlayButton.setVisibility(View.VISIBLE);
+                quizPauseButton.setVisibility(View.GONE);
+                if(srClient != null){
+                    srClient.sendMsg("icon pause quiz");
+                }
+            }
+        });
+
+        quizVolumeUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(srClient != null){
+                    srClient.sendMsg("icon volumeUp quiz");
+                }
+            }
+        });
+
+        quizVolumeDownButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(srClient != null){
+                    srClient.sendMsg("icon volumeDown quiz");
+                }
+            }
+        });
+
+
         closeButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -222,7 +289,6 @@ public class QuizActivity extends AppCompatActivity {
             }
 
         });
-
     }
 
     private void incrementQuestion(){
