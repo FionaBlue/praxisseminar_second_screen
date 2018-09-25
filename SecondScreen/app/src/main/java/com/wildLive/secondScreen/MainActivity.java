@@ -14,14 +14,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements DialogHandler.OnInputListener {
+public class MainActivity extends AppCompatActivity {//implements DialogHandler.OnInputListener {
 
     // src:
     // ************
     // https://developer.android.com/guide/topics/ui/dialogs
 
     // interfaces from dialogHandler
-    @Override
+    /*@Override
     public void sendInput(String input, int buttonId) {
         switchCastButton(buttonId);
         // registering signalR client
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements DialogHandler.OnI
             default:
                 break;
         }
-    }
+    }*/
 
     public  final String TAG = "MEK_Plugin_Activity";       // tags for logging
     private Button buttonMainNext;                          // button for switching to next activity (temporary!)
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements DialogHandler.OnI
         setContentView(R.layout.activity_main);
 
         // registering button listener
-        addListenerOnButtons();
+        //addListenerOnButtons();
     }
 
     @Override
@@ -95,15 +95,15 @@ public class MainActivity extends AppCompatActivity implements DialogHandler.OnI
         getMenuInflater().inflate(R.menu.main, menu);
 
         // registering menu (cast) items for further on-click handling (e.g. visibility)
-        activeCast = menu.findItem(R.id.action_cast_main);
-        inactiveCast = menu.findItem(R.id.action_cast_connected_main);
+        inactiveCast = menu.findItem(R.id.action_cast_main);
+        activeCast = menu.findItem(R.id.action_cast_connected_main);
 
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_cast_main) {
+        /*if (item.getItemId() == R.id.action_cast_main) {
             // calling popup dialog (for deactivating connection)
             callCastActivation();
             return true;
@@ -111,6 +111,39 @@ public class MainActivity extends AppCompatActivity implements DialogHandler.OnI
             // calling popup dialog (for activating connection)
             callCastDeactivation();
             return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }*/
+        int itemId = item.getItemId();
+        if (itemId == R.id.dropdown_firstscreen) {
+            SRClient = new SignalRClient();
+            //waits about 5 seconds until the message is sent so
+            //SignalR is definitley up when the message score is transferred
+            //has to be adjusted if the connection gets handled automatically
+            //and not via ID entering
+            SharedPreferences sp = getSharedPreferences("quizdata", MODE_PRIVATE);
+            final int score = sp.getInt("score", 0);
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (SRClient != null) {
+                        SRClient.sendMsg("score" + String.valueOf(score));
+                        SRClient.sendMsg("endguide");
+                    }
+                }
+            }, 5000);
+
+            // switching to next activity
+            if (SRClient != null) {
+                Intent intent = new Intent(getApplicationContext(), VideoBibActivity.class);
+                startActivity(intent);
+                WildLive app = (WildLive) getApplication();
+                app.setSRClient(SRClient);
+            }
+            return true;
+
         } else {
             return super.onOptionsItemSelected(item);
         }
@@ -136,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements DialogHandler.OnI
         dialog.show(getSupportFragmentManager(), "disconnectionDialogHandler");
     }
 
-    public void addListenerOnButtons() {
+    /*public void addListenerOnButtons() {
         final Context context = this;
 
         // registering button for switching to new activity behaviour
@@ -152,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements DialogHandler.OnI
                 app.setSRClient(SRClient);
             }
         });
-    }
+    }*/
 
     // creating new instance of signalR client after reconnecting-event (callback)
     public void handleReconnection() {
