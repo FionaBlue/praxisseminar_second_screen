@@ -65,6 +65,8 @@ public class VideoBibActivity extends AppCompatActivity {
     private TextView continentTitle;
     private LinkedHashMap continents;
 
+    private String currentContinent;
+
     private ProgressBar progressBar;
 
     ArrayList<VideoDataModel> arrayOfVideos = new ArrayList<>();
@@ -77,12 +79,16 @@ public class VideoBibActivity extends AppCompatActivity {
         setContentView(R.layout.activity_videobib);
         progressBar = findViewById(R.id.load_videos);
 
+        Bundle extras = getIntent().getExtras();
+        currentContinent = extras.getString("currentContinent");
+
         //getting YouTube playlists from WildLive Channel in GetPlaylists AsyncTask
         VideoRequestHandler.GetPlaylists asyncTask = (VideoRequestHandler.GetPlaylists) new VideoRequestHandler.GetPlaylists(new VideoRequestHandler.GetPlaylists.AsyncResponse(){
             @Override
             public void processFinish(LinkedHashMap playlists){ //receiving the result fired from async task
                 continentTitle = (TextView)findViewById(R.id.continent);
-                updateContinentTitle(playlists, 0);
+                //updateContinentTitle(playlists, 0);
+                updateContinentTitle(playlists, currentContinent);
                 continents = playlists;
                 //initializing listeners but now for bug prevention
                 addListenerOnChevrons();
@@ -92,11 +98,6 @@ public class VideoBibActivity extends AppCompatActivity {
         WildLive app = (WildLive) getApplication();
         srClient = app.getSRClient();
         System.out.println("VideoBib Client " + srClient);
-    }
-
-    @Override
-    public void onBackPressed(){
-        //do nothing for setting Back Button on Device disabled
     }
 
     public boolean onCreateOptionsMenu (Menu menu) {
@@ -111,11 +112,14 @@ public class VideoBibActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    private void updateContinentTitle(LinkedHashMap map, Integer index) {
-        continentTitle.setText((String) getContinentByIndex(map, index));
-        String continentName = (String) continentTitle.getText();
-        setContientColor(continentName);
-        String continentID = (String) map.get(continentName);
+    private void updateContinentTitle(LinkedHashMap map, String continent) { //Integer index) {
+        //continentTitle.setText((String) getContinentByIndex(map, index));
+        //String continentName = (String) continentTitle.getText();
+        continentTitle.setText(continent);
+        //setContientColor(continentName);
+        setContientColor(continent);
+        //String continentID = (String) map.get(continentName);
+        String continentID = (String) map.get(continent);
         arrayOfVideos.clear();
         getContinentVideos(continentID);
     }

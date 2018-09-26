@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {//implements DialogHandler.
 
             // switching to next activity
             if (SRClient != null) {
-                Intent intent = new Intent(getApplicationContext(), VideoBibActivity.class);
+                Intent intent = new Intent(getApplicationContext(), VideoOverviewActivity.class);
                 startActivity(intent);
                 WildLive app = (WildLive) getApplication();
                 app.setSRClient(SRClient);

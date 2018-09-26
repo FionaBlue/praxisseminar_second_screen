@@ -22,6 +22,8 @@
         </activity>
         <activity android:name=".VideoBibActivity">
         </activity>
+        <activity android:name=".VideoOverviewActivity">
+        </activity>
         <activity android:name=".InformationActivity">
         </activity>
         <activity android:name=".QuizActivity">
