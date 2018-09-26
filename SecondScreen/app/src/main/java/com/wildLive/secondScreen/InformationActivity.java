@@ -128,14 +128,27 @@ public class InformationActivity extends AppCompatActivity {
     private void getSRClient() {
         app = (WildLive)getApplication();
         sRClient = app.getSRClient();
-        System.out.println("Information Client " + sRClient);
 
         // receiving and handling messages from signalR-client (transferring data)
         if (sRClient != null) {
             sRClient.setMessageListener(new SignalRClient.SignalRCallback<String>() {
                 @Override
                 public void onSuccess(String message) {
-                    Log.d("LOG_INFOACT", "received :: " + message);
+                    //Log.d("LOG_INFOACT", "received :: " + message);
+
+                    if (message.toString().contains("index")) {
+                        // converting message for right usage
+                        final int messagePos = Integer.parseInt(message.substring(5, message.length()));
+
+                        // returning to original ui-thread for handling ui-element (textViews, imageViews, etc.)
+                        InformationActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // activate new trigger-point
+                                adapter.revealNewTriggerPoint(messagePos);
+                            }
+                        });
+                    }
 
                     // updating video-progress-SeekBar
                     if(message.toString().contains("time")){
@@ -210,18 +223,6 @@ public class InformationActivity extends AppCompatActivity {
                             }
                         });
                     }
-
-                    // converting message for right usage
-                    final int messagePos = Integer.parseInt(message);
-
-                    // returning to original ui-thread for handling ui-element (textViews, imageViews, etc.)
-                    InformationActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // activate new trigger-point
-                            adapter.activateNewTriggerPoint(messagePos);
-                        }
-                    });
                 }
                 @Override
                 public void onError(String message) { }
@@ -481,6 +482,7 @@ public class InformationActivity extends AppCompatActivity {
         public List<CircleImageView> triggerPointList = new ArrayList<>();      // list of registered trigger-points for handling highlighting
         private List<Integer> prevPositions = new ArrayList<>();                // list for handling trigger-point registration
         public int prevPosition;                                                // previous item for setting back highlighting
+        public int activatedPosition;                                           // if trigger-point-item is activated (colored highlighting)
 
         @Override
         // defining recycler-view item count
@@ -562,8 +564,14 @@ public class InformationActivity extends AppCompatActivity {
         }
 
         private void onItemClicked(int position) {
+            // setting activated position for highlighting
+            activatedPosition = position;
+
             // loading information data for specific, clicked trigger point
             integrateInformation(contentElements.get(position).title, contentElements.get(position).extract, contentElements.get(position).imageBitmap);
+
+            // sending message to first screen (for synchronously activating trigger-point)
+            sRClient.sendMsg("activateItem" + position);
 
             // setting highlighting for current clicked trigger point
             setItemActivationState(position);
@@ -663,18 +671,17 @@ public class InformationActivity extends AppCompatActivity {
             }
         }
 
-        private void activateNewTriggerPoint(int position) {
+        private void revealNewTriggerPoint(int position) {
             // activating new trigger-point for showing real animal-picture
             if ((position >= 0) && (position <= getItemCount()-1)) {
-
                 contentElements.get(position).isPlaceholder = false;
                 triggerPointList.get(position).setImageBitmap(contentElements.get(position).imageBitmap);
+                setNavigationArrowVisibility(activatedPosition);
 
                 if (position == 0) {
                     activateInformationState(InformationViewState.CONTENT);
                     setTriggerPoint(position, 0);
                 }
-                setTriggerPoint(position, +1);
             }
         }
     }
