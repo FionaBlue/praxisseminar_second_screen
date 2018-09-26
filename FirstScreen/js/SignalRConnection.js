@@ -5,7 +5,7 @@
 var WildLiveApp = WildLiveApp || {};
 WildLiveApp.SignalRConnection = function() {
 
-    var that = {}, messageHandler, chat;
+    var that = {}, messageHandler, chat, sessionID = "123456789";
 
     $.connection.hub.url = "http://pk029-audi-2nds.tvapp-server.de/SecondScreen";   // server; "http://localhost:8080/signalr";
     chat = $.connection.secondScreenHub;
@@ -14,7 +14,7 @@ WildLiveApp.SignalRConnection = function() {
         console.log("Now connected");
         
         // generating session connection
-        chat.server.joinSession('123456789');
+        chat.server.joinSession(sessionID);
 
     }).fail(function() {
         // if starting the connection failed
@@ -35,7 +35,7 @@ WildLiveApp.SignalRConnection = function() {
 
     function sendMessageToAndroidDevice(message) {
         // sending message for session id
-        chat.server.sendMessage("123456789", message).done(function() {
+        chat.server.sendMessage(sessionID, message).done(function() {
             console.log('sendMessage done: ' + message);
 
         }).fail(function(error) {
@@ -44,7 +44,7 @@ WildLiveApp.SignalRConnection = function() {
     }
 
     function disconnect() {
-        chat.server.leaveSession('123456789');
+        chat.server.leaveSession(sessionID);
         console.log("Now disconnected");
 
         // switching cast button if connection was disconnected
