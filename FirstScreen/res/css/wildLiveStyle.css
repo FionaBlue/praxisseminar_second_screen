@@ -33,6 +33,26 @@ http://webkrauts.de/artikel/2012/css3-flexbox-abloesung-fuer-float-layouts
     transform: translate(-50%);
 }
 
+/*https://www.w3schools.com/howto/howto_css_loader.asp*/
+.loader {
+    position:fixed;
+    z-index: 100;  
+    top:50%;  
+    left:50%;  
+    margin:-175px 0 0 -175px; 
+    width:350px;
+    height:350px;
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3F51B5;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 #videoFrame {
     top: 0%;
 }

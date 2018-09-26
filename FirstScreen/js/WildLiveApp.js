@@ -34,6 +34,7 @@ var WildLiveApp = (function() {
         function onVideoEnded() {            
             deactivatePrevPage();
             activatePage('#Weltkarte');
+            document.getElementById("loader").classList.add("hidden");
             document.body.style.backgroundImage = "url('res/img/Default_map.jpg')";
         }
     

@@ -65,14 +65,8 @@ WildLiveApp.MessageHandler = function() {
         if(encodedMsg.includes("playVideo")){
             WildLiveApp.onVideoStarted();
             console.log("playVideo " + encodedMsg);
-            videoID = encodedMsg.slice(9);
-            //document.getElementById("player").classList.remove("hidden");
-            //document.getElementById("infoProgress").classList.remove("invisible");
-            //document.getElementById("onBoardingGuide").classList.add("hidden");            
-            youTubePlayer.loadPlayer(videoID);
-            //window.player.loadVideoById(videoID, 0);
-            //window.player.playVideo();
-            
+            videoID = encodedMsg.slice(9);         
+            youTubePlayer.loadPlayer(videoID);            
             
             // binding database functionality and data from firebase by accessing id and player
             databaseHandler.init(videoID, youTubePlayer);
@@ -81,6 +75,10 @@ WildLiveApp.MessageHandler = function() {
         if(encodedMsg.includes("stopVideo")){
             youTubePlayer.stopVideo();
             WildLiveApp.onVideoEnded();
+        }
+        //videoLoader
+        if(encodedMsg.includes("startLoader")){            
+            document.getElementById("loader").classList.remove("hidden");
         }
 
         // -----------------------------------------------------------------
