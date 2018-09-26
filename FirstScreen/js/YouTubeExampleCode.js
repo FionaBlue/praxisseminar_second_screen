@@ -14,7 +14,8 @@ WildLiveApp.YouTubePlayer = function() {
       startAd,
       adDurationInSeconds,
       currentTimerTime,
-      pausedTimerTime;
+      pausedTimerTime,
+      adJingle;
 
   function loadPlayer(videoID) {
     signalRClient = WildLiveApp.getSignalRClient();
@@ -70,12 +71,15 @@ WildLiveApp.YouTubePlayer = function() {
         start = document.querySelector(".templateBinding");
         start.appendChild(tmpElement);
 
+        adJingle = document.createElement('audio');
+        adJingle.src = "res/audio/Scott_Holmes_-_02_-_Hopeful_Journey.ogg";
+        adJingle.play();
+
         adDurationInSeconds = timeInSeconds(adTimes[i][1]);
         startAdvertisement(adDurationInSeconds);
         
         adTimes.shift();
         testAd = adTimes;
-        console.log("testAd " + testAd);
       }
     }
   }
@@ -100,6 +104,9 @@ WildLiveApp.YouTubePlayer = function() {
         adTemplate.parentNode.removeChild(adTemplate);
 
         adState = false;    // set advertisement-state false
+        //https://stackoverflow.com/questions/14834520/html5-audio-stop-function
+        adJingle.pause();
+        adJingle.currentTime = 0;
         player.playVideo();
       }
     }, 1000);
@@ -131,6 +138,7 @@ WildLiveApp.YouTubePlayer = function() {
       signalRClient.sendMessageToAndroidDevice("disable Quiz-answers");
       pausedTimerTime = currentTimerTime;
       clearInterval(startAd);
+      adJingle.pause();
       adState = false;
       adPaused = true;
     }
@@ -140,6 +148,7 @@ WildLiveApp.YouTubePlayer = function() {
     if(adState == false) {
       signalRClient.sendMessageToAndroidDevice("enable Quiz-answers");
       startAdvertisement(pausedTimerTime);
+      adJingle.play();
       adPaused = false;
     }
   }
@@ -161,7 +170,13 @@ WildLiveApp.YouTubePlayer = function() {
     if(currentVolume <= 95){
       player.setVolume(currentVolume + 5);
     }
-    console.log("volumeUp " + currentVolume);
+  }
+  
+  function setAdVolumeUp() {
+    currentAdVolume = adJingle.volume;
+    if(currentAdVolume <= 0.9){
+      adJingle.volume = currentAdVolume + 0.1;
+    }
   }
 
   function setVolumeDown() {
@@ -169,28 +184,33 @@ WildLiveApp.YouTubePlayer = function() {
     if(currentVolume >= 5){
       player.setVolume(currentVolume - 5);
     }
-    console.log("volumeDown " + currentVolume);
+  }
+
+  function setAdVolumeDown() {
+    currentAdVolume = adJingle.volume;
+    if(currentAdVolume >= 0.1){
+      adJingle.volume = currentAdVolume - 0.1;
+    }
   }
 
   function fastForward() {
     currentTime = player.getCurrentTime();
-    console.log("current time " + currentTime);
     newTime = Math.ceil(currentTime) + 10;
     player.seekTo(newTime, true);
-    console.log("forward, seekTo " + newTime);
   }
 
   function rewind() {
     currentTime = player.getCurrentTime();
     newTime = Math.ceil(currentTime) - 10;
     player.seekTo(newTime, true);
-    console.log("backward, seekTo " + newTime);
   }
 
   function stopVideo() {
     player.stopVideo();
   }
 
+  that.setAdVolumeUp = setAdVolumeUp;
+  that.setAdVolumeDown = setAdVolumeDown;
   that.stopVideo = stopVideo;
   that.pauseAd = pauseAd;
   that.playAd = playAd;

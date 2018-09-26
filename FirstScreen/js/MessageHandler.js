@@ -119,7 +119,7 @@ WildLiveApp.MessageHandler = function() {
 
             else if(encodedMsg.includes("volumeUp")){
                 if(encodedMsg.includes("quiz")){
-                    //set volume of advertisement up
+                    youTubePlayer.setAdVolumeUp();
                 } else {
                     youTubePlayer.setVolumeUp();
                 }
@@ -127,7 +127,7 @@ WildLiveApp.MessageHandler = function() {
 
             else if(encodedMsg.includes("volumeDown")){
                 if(encodedMsg.includes("quiz")){
-                    //set volume of advertisement down
+                    youTubePlayer.setAdVolumeDown();
                 } else {
                     youTubePlayer.setVolumeDown();
                 }
