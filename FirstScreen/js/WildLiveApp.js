@@ -35,7 +35,7 @@ var WildLiveApp = (function() {
             deactivatePrevPage();
             activatePage('#Weltkarte');
             document.getElementById("loader").classList.add("hidden");
-            document.body.style.backgroundImage = "url('res/img/Default_map.jpg')";
+            document.body.style.backgroundImage = "url('res/img/Coloured_map.jpg')";
         }
     
         //src: Montagsmaler-project
