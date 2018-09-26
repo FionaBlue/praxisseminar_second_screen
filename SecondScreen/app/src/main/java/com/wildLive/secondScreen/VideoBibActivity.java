@@ -395,6 +395,11 @@ public class VideoBibActivity extends AppCompatActivity {
             videoCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View arg0) {
+
+                    if(srClient != null){
+                        srClient.sendMsg("startLoader");
+                    }
+
                     // switching to next activity on button click
                     Intent intent = new Intent(context, InformationActivity.class);
                     String videoID = new String(videoCard.getTag().toString());

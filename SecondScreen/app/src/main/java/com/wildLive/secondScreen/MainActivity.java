@@ -86,6 +86,9 @@ public class MainActivity extends AppCompatActivity {//implements DialogHandler.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //start checking internet connectivity
+        new InternetConnectionHandler.getInternetConnectionState().execute();
+
         // registering button listener
         //addListenerOnButtons();
     }
