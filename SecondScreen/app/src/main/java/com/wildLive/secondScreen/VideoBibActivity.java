@@ -94,6 +94,11 @@ public class VideoBibActivity extends AppCompatActivity {
         System.out.println("VideoBib Client " + srClient);
     }
 
+    @Override
+    public void onBackPressed(){
+        //do nothing for setting Back Button on Device disabled
+    }
+
     public boolean onCreateOptionsMenu (Menu menu) {
         getMenuInflater().inflate(R.menu.videobib, menu);
         return super.onCreateOptionsMenu(menu);

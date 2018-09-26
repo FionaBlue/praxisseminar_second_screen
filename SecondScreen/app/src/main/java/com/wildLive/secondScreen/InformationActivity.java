@@ -113,6 +113,12 @@ public class InformationActivity extends AppCompatActivity {
         super.onResume();
     }
 
+    @Override
+    public void onBackPressed() {
+        sRClient.sendMsg("stopVideo");
+        super.onBackPressed();
+    }
+
     public boolean onCreateOptionsMenu (Menu menu) {
         getMenuInflater().inflate(R.menu.information, menu);
         return super.onCreateOptionsMenu(menu);
