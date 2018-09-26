@@ -60,7 +60,7 @@ WildLiveApp.MessageHandler = function() {
         else if (encodedMsg == "Default"){
             document.body.style.backgroundImage = "url('res/img/Default_map.jpg')";
         }
-    // -----------------------------------------------------------------
+        // -----------------------------------------------------------------
         //playVideo
         if(encodedMsg.includes("playVideo")){
             WildLiveApp.onVideoStarted();
@@ -83,13 +83,13 @@ WildLiveApp.MessageHandler = function() {
             WildLiveApp.onVideoEnded();
         }
 
-    // -----------------------------------------------------------------
+        // -----------------------------------------------------------------
         //playAdvertisement
         if(encodedMsg.includes("playAdvertisement")){
             youTubePlayer.playAd();
         }
 
-    // -----------------------------------------------------------------
+        // -----------------------------------------------------------------
         //videohandling
         if(encodedMsg.includes("icon")){
             console.log("icon detected " + encodedMsg);
@@ -133,7 +133,7 @@ WildLiveApp.MessageHandler = function() {
                 }
             }
         }
-         // -----------------------------------------------------------------
+        // -----------------------------------------------------------------
         //scorehandling
         if(encodedMsg.includes("score")){
             score = encodedMsg.slice(5);
@@ -143,6 +143,14 @@ WildLiveApp.MessageHandler = function() {
         if(encodedMsg.includes("endguide")){
             document.getElementById("onBoardingGuide").hidden = true;
         }
+
+        // -----------------------------------------------------------------
+        //handling trigger-points for timeline (getting index/position)
+        if (encodedMsg.includes("activateItem")) {
+            var triggerPointIdx = parseInt(encodedMsg.slice(12));
+            databaseHandler.setActivatedItem(triggerPointIdx);
+        }
+
     }
 
     that.init = init;
