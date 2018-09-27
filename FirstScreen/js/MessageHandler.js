@@ -1,6 +1,6 @@
 var WildLiveApp = WildLiveApp || {};
 WildLiveApp.MessageHandler = function() {
-    var that = {}, youTubePlayer, databaseHandler, androidConnection = false, falseBuffer = 0;
+    var that = {}, youTubePlayer, databaseHandler, androidConnection = false, falseBuffer = 0, asyncIsAlreadyLooping = false;
 
     function init() {
         youTubePlayer = new WildLiveApp.YouTubePlayer();
@@ -9,8 +9,8 @@ WildLiveApp.MessageHandler = function() {
         databaseHandler = new WildLiveApp.DatabaseHandler();
     }
 
-    async function checkConnectionToAndroidDevice(){        
-        console.log("true");
+    async function checkConnectionToAndroidDevice(){
+        asyncIsAlreadyLooping = true;
         if(androidConnection == true){
             document.getElementById("castConnectedButton").classList.remove("hidden");
             document.getElementById("castNotConnectedButton").classList.add("hidden");
@@ -34,7 +34,10 @@ WildLiveApp.MessageHandler = function() {
         //CastButton-Handling
         if(encodedMsg.includes("secondScreenConnected")){
             console.log("secondScreenConnected");
-           androidConnection = true;            
+           androidConnection = true;
+           if(asyncIsAlreadyLooping == false){
+               checkConnectionToAndroidDevice();
+           }  
         }
         // -----------------------------------------------------------------
         //Highlighting
@@ -158,6 +161,5 @@ WildLiveApp.MessageHandler = function() {
 
     that.init = init;
     that.handleMessage = handleMessage;
-    that.checkConnectionToAndroidDevice = checkConnectionToAndroidDevice;
     return that;
 };

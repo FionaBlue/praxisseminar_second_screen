@@ -12,9 +12,6 @@ var WildLiveApp = (function() {
             messageHandler.init();
             setMessageHandler(messageHandler);
 
-            //initializing connectionCheck for CastButton
-            messageHandler.checkConnectionToAndroidDevice();
-
             // handling ui display
             activatePage('#Weltkarte');
         }
