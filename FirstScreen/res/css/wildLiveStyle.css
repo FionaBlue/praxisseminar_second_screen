@@ -1,0 +1,194 @@
+/*
+
+Template - Weltkarte
+
+*/
+
+.container {
+    background-color: white;
+    padding: 20px;
+    margin: 20px;
+}
+
+#foxGuide {
+    float: right;
+    width: auto;
+    height: 200px;
+    right: 0%;
+}
+
+/*
+Template - Videoplayer
+
+https://stackoverflow.com/questions/22433616/how-can-i-align-youtube-embedded-video-in-the-center-in-bootstrap
+https://stackoverflow.com/questions/18331716/css-position-with-percent
+https://stackoverflow.com/questions/5703552/css-center-text-horizontally-and-vertically-inside-a-div-block
+http://webkrauts.de/artikel/2012/css3-flexbox-abloesung-fuer-float-layouts
+*/
+
+#player {
+    position: absolute;
+    margin: auto;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+/*https://www.w3schools.com/howto/howto_css_loader.asp*/
+.loader {
+    position:fixed;
+    z-index: 100;  
+    top:50%;  
+    left:50%;  
+    margin:-175px 0 0 -175px; 
+    width:350px;
+    height:350px;
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3F51B5;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#videoFrame {
+    top: 0%;
+}
+
+.playerViewRow {
+    position: absolute;
+    width: 100%
+}
+
+
+/* ------------------------------- timeline elements ------------------------------- */
+#timeline {
+    max-width: 50%;
+    margin-right: 25%;
+    margin-bottom: 1.5%;
+}
+.chevron {
+    max-width: 10%;
+    display: inline;
+}
+.chevron img {
+    height: 40px;
+    width: 40px;
+    padding-bottom: 20px;
+}
+.metadataInfoProgress {
+    max-width: 80%;
+    white-space: nowrap;
+    display: inline-block;
+    overflow: hidden;                   /* actual scroll bar */
+}
+.metaImg {
+    height: 80px;
+    width: 80px;
+    border-radius: 50%;                 /* rounding image */
+    object-fit: cover;                  /* https://css-tricks.com/almanac/properties/o/object-fit/ */
+    object-position: center;            /* centering the image within the element */
+    /* shadows */
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(115,115,115,1);
+    -moz-box-shadow: 0px 1px 2px 0px rgba(115,115,115,1);
+    box-shadow: 0px 1px 2px 0px rgba(115,115,115,1);
+}
+.metaDivider {
+    height: 30px;
+    width: 40px;
+    padding-bottom: 25px;
+}
+.greyScaling {
+    filter: gray;                     /* IE6-9 */
+    -webkit-filter: grayscale(1);       /* Google Chrome, Safari 6+ & Opera 15+ */
+    filter: grayscale(1);               /* Microsoft Edge and Firefox 35+ */
+}
+.hiddenItem {
+    opacity: 0;
+}
+/* --------------------------------------------------------------------------------- */
+
+.invisible {
+    visibility: hidden;
+}
+
+/*
+
+Both Templates
+
+src: https://stackoverflow.com/questions/19925075/fit-website-background-image-to-screen-size
+https://stackoverflow.com/questions/22429003/how-to-right-align-flex-item
+*/
+
+body {
+    background: url("../img/Coloured_map.jpg") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.hidden {
+    display: none;
+}
+
+#additionalData {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    align-items: flex-end;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.castButton {
+    flex-basis: 10%;
+}
+
+.quizScoreStar {
+    float: right;
+}
+
+#quizStar {
+    position: absolute;
+    top: 0%;   
+    width: 10%;
+    height: auto;
+    right: 0%;
+    float: right;
+}
+
+#quizScore {
+    color: mediumslateblue;
+    font-size: 25pt;
+    position: absolute;
+    text-align: center;
+    top: 8%;
+    left: 94%;
+}
+/*
+    Template - Advertisement
+
+    https://stackoverflow.com/questions/1351768/how-to-position-div-in-the-center-of-the-screen
+*/
+
+#AD-Data {
+    text-align: center;
+    background-color: #a8cafe;
+    font-size: 30px;
+    position:fixed;
+    z-index: 100;  
+    top:50%;  
+    left:50%;  
+    margin:-175px 0 0 -175px;  
+    width:350px;
+    height:350px;
+    border-radius: 5%;
+}
+
+#AD-Img {
+    height: 200px;
+    width: auto;
+}
