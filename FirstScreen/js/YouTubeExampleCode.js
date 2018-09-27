@@ -7,7 +7,7 @@ var WildLiveApp = WildLiveApp || {};
 WildLiveApp.YouTubePlayer = function() {
   var that = {},
       signalRClient,
-      testAd = [["1:00", "0:20"],["2:00", "0:20"]],
+      testAd = [["1:00", "0:20"],["2:00", "0:20"],["4:00", "0:20"], ["5:00", "0:20"]],
       timerVar,
       adState = false,
       adPaused = false,

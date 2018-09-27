@@ -1,6 +1,6 @@
 var WildLiveApp = WildLiveApp || {};
 WildLiveApp.MessageHandler = function() {
-    var that = {}, youTubePlayer, databaseHandler, androidConnection = false, androidBuffer = 0;
+    var that = {}, youTubePlayer, databaseHandler, androidConnection = false, falseBuffer = 0;
 
     function init() {
         youTubePlayer = new WildLiveApp.YouTubePlayer();
@@ -9,7 +9,8 @@ WildLiveApp.MessageHandler = function() {
         databaseHandler = new WildLiveApp.DatabaseHandler();
     }
 
-    function checkConnectionToAndroidDevice(){
+    async function checkConnectionToAndroidDevice(){        
+        console.log("true");
         if(androidConnection == true){
             document.getElementById("castConnectedButton").classList.remove("hidden");
             document.getElementById("castNotConnectedButton").classList.add("hidden");
@@ -17,19 +18,23 @@ WildLiveApp.MessageHandler = function() {
             document.getElementById("castConnectedButton").classList.add("hidden");
             document.getElementById("castNotConnectedButton").classList.remove("hidden");
         }
-        androidConnection = false;
+        if(falseBuffer < 3){
+            falseBuffer ++;
+        } else {
+            falseBuffer = 0;
+            androidConnection = false;
+        }
+        var checkConnection = setTimeout(function() {
+            checkConnectionToAndroidDevice();
+        }, 3000);
     }
 
     function handleMessage(encodedMsg){
         // -----------------------------------------------------------------
         //CastButton-Handling
-        if(encodedMsg.includes("castConnected")){
-            if(androidBuffer == 10){
-                androidConnection = true;
-                checkConnectionToAndroidDevice();
-                androidBuffer = 0;
-            }
-            androidBuffer = androidBuffer + 1;            
+        if(encodedMsg.includes("secondScreenConnected")){
+            console.log("secondScreenConnected");
+           androidConnection = true;            
         }
         // -----------------------------------------------------------------
         //Highlighting
@@ -153,5 +158,6 @@ WildLiveApp.MessageHandler = function() {
 
     that.init = init;
     that.handleMessage = handleMessage;
+    that.checkConnectionToAndroidDevice = checkConnectionToAndroidDevice;
     return that;
 };

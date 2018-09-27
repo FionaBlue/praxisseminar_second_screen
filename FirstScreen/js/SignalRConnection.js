@@ -16,6 +16,9 @@ WildLiveApp.SignalRConnection = function() {
         // generating session connection
         chat.server.joinSession(sessionID);
 
+        //start pinging Second Screen
+        pingToAndroidDevice();
+
     }).fail(function() {
         // if starting the connection failed
         console.log("Could not connect");
@@ -31,6 +34,13 @@ WildLiveApp.SignalRConnection = function() {
                 messageHandler.handleMessage(message);
             }
         }
+    }
+    
+    async function pingToAndroidDevice(){
+        sendMessageToAndroidDevice("firstScreenConnected");
+        var ping = setTimeout(function() {
+            pingToAndroidDevice();
+        }, 1000);
     }
 
     function sendMessageToAndroidDevice(message) {
