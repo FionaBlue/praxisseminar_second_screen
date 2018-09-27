@@ -121,6 +121,7 @@ public class InformationActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         sRClient.sendMsg("stopVideo");
+        progressBar.setProgress(0);
         super.onBackPressed();
     }
 
