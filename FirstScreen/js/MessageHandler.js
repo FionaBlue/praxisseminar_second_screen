@@ -33,11 +33,11 @@ WildLiveApp.MessageHandler = function() {
         // -----------------------------------------------------------------
         //CastButton-Handling
         if(encodedMsg.includes("secondScreenConnected")){
-            console.log("secondScreenConnected");
-           androidConnection = true;
-           if(asyncIsAlreadyLooping == false){
-               checkConnectionToAndroidDevice();
-           }  
+            //console.log("secondScreenConnected");
+            androidConnection = true;
+            if(asyncIsAlreadyLooping == false){
+                checkConnectionToAndroidDevice();
+            }  
         }
         // -----------------------------------------------------------------
         //Highlighting
@@ -78,6 +78,8 @@ WildLiveApp.MessageHandler = function() {
             
             // binding database functionality and data from firebase by accessing id and player
             databaseHandler.init(videoID, youTubePlayer);
+
+            WildLiveApp.removePopUpTemplate();
         }
         //stopVideo
         if(encodedMsg.includes("stopVideo")){
@@ -86,7 +88,8 @@ WildLiveApp.MessageHandler = function() {
         }
         //videoLoader
         if(encodedMsg.includes("startLoader")){            
-            document.getElementById("loader").classList.remove("hidden");
+            //document.getElementById("loader").classList.remove("hidden");
+            WildLiveApp.addPopUpTemplate("#loaderContent"); // adding loader pop-up
         }
 
         // -----------------------------------------------------------------
@@ -117,10 +120,28 @@ WildLiveApp.MessageHandler = function() {
 
             else if(encodedMsg.includes("forward")){
                 youTubePlayer.fastForward();
+
+                /*var templateString = document.querySelector("#moveForwardContent").innerHTML;
+                var tmpElement = document.createElement("div");
+                tmpElement.setAttribute("id", "popUp");
+                tmpElement.innerHTML = templateString;
+                var templatePlaceholder = document.querySelector(".templateBinding");
+                templatePlaceholder.appendChild(tmpElement);*/
+
+                /* @TSCHUU: DO NOT FORGET TO REMOVE CHILD AFTERWARDS */
             }
 
             else if(encodedMsg.includes("backward")){
                 youTubePlayer.rewind();
+
+                /*var templateString = document.querySelector("#moveBackwardContent").innerHTML;
+                var tmpElement = document.createElement("div");
+                tmpElement.setAttribute("id", "popUp");
+                tmpElement.innerHTML = templateString;
+                var templatePlaceholder = document.querySelector(".templateBinding");
+                templatePlaceholder.appendChild(tmpElement);*/
+
+                /* @TSCHUU: DO NOT FORGET TO REMOVE CHILD AFTERWARDS */
             }
 
             else if(encodedMsg.includes("volumeUp")){
@@ -128,6 +149,15 @@ WildLiveApp.MessageHandler = function() {
                     youTubePlayer.setAdVolumeUp();
                 } else {
                     youTubePlayer.setVolumeUp();
+
+                    /*var templateString = document.querySelector("#volumeUpContent").innerHTML;
+                    var tmpElement = document.createElement("div");
+                    tmpElement.setAttribute("id", "popUp");
+                    tmpElement.innerHTML = templateString;
+                    var templatePlaceholder = document.querySelector(".templateBinding");
+                    templatePlaceholder.appendChild(tmpElement);*/
+                    
+                    /* @TSCHUU: DO NOT FORGET TO REMOVE CHILD AFTERWARDS */
                 }
             }
 
@@ -136,6 +166,15 @@ WildLiveApp.MessageHandler = function() {
                     youTubePlayer.setAdVolumeDown();
                 } else {
                     youTubePlayer.setVolumeDown();
+
+                    /*var templateString = document.querySelector("#volumeDownContent").innerHTML;
+                    var tmpElement = document.createElement("div");
+                    tmpElement.setAttribute("id", "popUp");
+                    tmpElement.innerHTML = templateString;
+                    var templatePlaceholder = document.querySelector(".templateBinding");
+                    templatePlaceholder.appendChild(tmpElement);*/
+                    
+                    /* @TSCHUU: DO NOT FORGET TO REMOVE CHILD AFTERWARDS */
                 }
             }
         }
@@ -143,11 +182,15 @@ WildLiveApp.MessageHandler = function() {
         //scorehandling
         if(encodedMsg.includes("score")){
             score = encodedMsg.slice(5);
+            document.querySelector(".scoreSection").classList.remove("hidden");
             document.getElementById("quizScore").innerHTML = score;
         }
 
         if(encodedMsg.includes("endguide")){
-            document.getElementById("onBoardingGuide").hidden = true;
+            var adTemplate = document.querySelector("#popUp");
+            adTemplate.parentNode.removeChild(adTemplate);
+            // setting colored map
+            document.body.style.backgroundImage = "url('res/img/Coloured_map.jpg')";
         }
 
         // -----------------------------------------------------------------

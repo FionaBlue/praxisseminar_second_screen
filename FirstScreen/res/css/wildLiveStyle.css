@@ -1,92 +1,167 @@
-/*
-
-Template - Weltkarte
-
-*/
-
-.container {
-    background-color: white;
-    padding: 20px;
-    margin: 20px;
+html {
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
 }
 
-#foxGuide {
-    float: right;
-    width: auto;
-    height: 200px;
-    right: 0%;
+body {
+    background: url("../img/Default_map.jpg") no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
 }
 
-/*
-Template - Videoplayer
+/*https://www.w3schools.com/cssref/tryit.asp?filename=trycss_grid*/
+.firstScreenGrid {
+    display: grid;
+    grid: 15% auto 10% 10% / 12.5% auto 12.5%;
+    
+    text-align: center;
+    justify-content: stretch;
+    align-content: stretch;
+    
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
 
-https://stackoverflow.com/questions/22433616/how-can-i-align-youtube-embedded-video-in-the-center-in-bootstrap
-https://stackoverflow.com/questions/18331716/css-position-with-percent
-https://stackoverflow.com/questions/5703552/css-center-text-horizontally-and-vertically-inside-a-div-block
-http://webkrauts.de/artikel/2012/css3-flexbox-abloesung-fuer-float-layouts
-*/
+.hidden {
+    display: none;
+}
 
+
+/* SCORE */
+/* ------------------------------------------------------------ */
+.scoreSection {
+    grid-column: 3;
+    grid-row: 1;
+    min-height: 100%;
+
+    /* moving score down a bit */
+    -ms-transform: translate(-40px, 60px); /* IE 9 */
+    -webkit-transform: translate(-40px, 60px); /* Safari */
+    transform: translate(-40px, 60px);
+}
+.scoreSection img {
+    height: 100%;
+}
+#quizScore {
+    /* score text positioning */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    /* score style */
+    color: #a8cafe;
+    font-size: 22pt;
+    font-weight: bold;
+}
+
+/* CAST BUTTON */
+/* ------------------------------------------------------------ */
+.castSection {
+    grid-column: 1;
+    grid-row: 4;
+    min-height: 100%;
+    text-align: left;
+}
+.castButton img {
+    margin-left: 10%;
+    height: 65px;
+}
+
+
+
+/* TEMPLATE BINDING */
+/* ============================================================ */
+.templateBinding {
+    grid-area: 2 / 2 / span 2 / span 1;
+    
+    text-align: center;
+    justify-content: stretch;
+    align-content: stretch;
+    
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+
+/* TEMPLATE VIDEO + TIMELINE */
+/* ============================================================ */
+#videoTimeline {
+    display: grid;
+    grid: auto 12% / auto;
+    
+    text-align: center;
+    justify-content: stretch;
+    align-content: stretch;
+    
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+
+/* VIDEO */
+/* ------------------------------------------------------------ */
+.videoSection {
+    grid-column: 1;
+    grid-row: 1;
+    min-height: 100%;
+    
+    /* moving video up a bit */
+    -ms-transform: translate(0, -10px); /* IE 9 */
+    -webkit-transform: translate(-0, -10px); /* Safari */
+    transform: translate(0, -10px);
+}
 #player {
     position: absolute;
     margin: auto;
     left: 50%;
     transform: translate(-50%);
 }
-
-/*https://www.w3schools.com/howto/howto_css_loader.asp*/
-.loader {
-    position:fixed;
-    z-index: 100;  
-    top:50%;  
-    left:50%;  
-    margin:-175px 0 0 -175px; 
-    width:350px;
-    height:350px;
-    border: 16px solid #f3f3f3; /* Light grey */
-    border-top: 16px solid #3F51B5;
-    border-radius: 50%;
-    animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
 #videoFrame {
     top: 0%;
 }
 
-.playerViewRow {
-    position: absolute;
-    width: 100%
-}
-
-
-/* ------------------------------- timeline elements ------------------------------- */
-#timeline {
-    max-width: 50%;
-    margin-right: 25%;
-    margin-bottom: 1.5%;
+/* TIMELINE */
+/* ------------------------------------------------------------ */
+.timelineSection {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 100%;
 }
 .chevron {
     max-width: 10%;
     display: inline;
 }
 .chevron img {
-    height: 40px;
-    width: 40px;
-    padding-bottom: 20px;
+    height: 35px;
+    width: 35px;
+    padding-bottom: 17.5px;
 }
 .metadataInfoProgress {
-    max-width: 80%;
+    max-width: 60%;
     white-space: nowrap;
     display: inline-block;
     overflow: hidden;                   /* actual scroll bar */
 }
 .metaImg {
-    height: 80px;
-    width: 80px;
+    height: 70px;
+    width: 70px;
     border-radius: 50%;                 /* rounding image */
     object-fit: cover;                  /* https://css-tricks.com/almanac/properties/o/object-fit/ */
     object-position: center;            /* centering the image within the element */
@@ -96,9 +171,9 @@ http://webkrauts.de/artikel/2012/css3-flexbox-abloesung-fuer-float-layouts
     box-shadow: 0px 1px 2px 0px rgba(115,115,115,1);
 }
 .metaDivider {
-    height: 30px;
+    height: 35px;
     width: 40px;
-    padding-bottom: 25px;
+    padding-bottom: 17.5px;
 }
 .greyScaling {
     filter: gray;                     /* IE6-9 */
@@ -108,87 +183,115 @@ http://webkrauts.de/artikel/2012/css3-flexbox-abloesung-fuer-float-layouts
 .hiddenItem {
     opacity: 0;
 }
-/* --------------------------------------------------------------------------------- */
 
-.invisible {
-    visibility: hidden;
-}
 
-/*
-
-Both Templates
-
-src: https://stackoverflow.com/questions/19925075/fit-website-background-image-to-screen-size
-https://stackoverflow.com/questions/22429003/how-to-right-align-flex-item
-*/
-
-body {
-    background: url("../img/Coloured_map.jpg") no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-}
-
-.hidden {
-    display: none;
-}
-
-#additionalData {
-    display: flex;
-    position: fixed;
+/* TEMPLATE BINDING (POPUP) */
+/* ============================================================ */
+#popUp {
+    display: grid;
+    grid: 10% 12% auto 15% / 30% auto 30%;
+    
+    /* moving video up a bit */
+    -ms-transform: translate(0, -20px); /* IE 9 */
+    -webkit-transform: translate(-0, -20px); /* Safari */
+    transform: translate(0, -20px);
+    
+    text-align: center;
+    justify-content: stretch;
+    align-content: stretch;
+    
+    position: absolute;
+    top: 0;
     bottom: 0;
-    align-items: flex-end;
-    width: 100%;
-    justify-content: space-between;
+    left: 0;
+    right: 0;
 }
 
-.castButton {
-    flex-basis: 10%;
+/* POPUP */
+/* ------------------------------------------------------------ */
+#popUpHeader {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 100%;
+    
+    /* styling */
+    background-color: #3f6fb9;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    font-size: 20pt;
+    color: white;
+    padding: 3%;
+    -webkit-box-shadow: 0px -4px 12px -6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px -4px 12px -6px rgba(0,0,0,0.75);
+    box-shadow: 0px -4px 12px -6px rgba(0,0,0,0.75);
+}
+#popUpTimer {
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 100%;
+    
+    /* styling */
+    background-color: white;
+    font-size: 30pt;
+    color: #a8cafe;
+    padding: 3%;
+}
+#popUpImageDiv {
+    grid-column: 2;
+    grid-row: 3;
+    min-height: 100%;
+    
+    /* styling */
+    background-color: white;
+}
+#popUpImage {
+    height: 325px;
+}
+#popUpText {
+    grid-column: 2;
+    grid-row: 4;
+    min-height: 100%;
+    
+    /* styling */
+    background-color: white;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    -webkit-box-shadow: 0px 8px 12px -6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 8px 12px -6px rgba(0,0,0,0.75);
+    box-shadow: 0px 8px 12px -6px rgba(0,0,0,0.75);
+    padding-left: 5%;
+    padding-right: 5%;
 }
 
-.quizScoreStar {
-    float: right;
-}
 
-#quizStar {
+/* LOADER */
+/* ------------------------------------------------------------ */
+/*https://www.w3schools.com/howto/howto_css_loader.asp*/
+#loaderDiv {
+    display: grid;
+    grid-area: 3 / 2 / span 1 / span 1;
+    
     position: absolute;
-    top: 0%;   
-    width: 10%;
-    height: auto;
-    right: 0%;
-    float: right;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
-
-#quizScore {
-    color: mediumslateblue;
-    font-size: 25pt;
-    position: absolute;
-    text-align: center;
-    top: 8%;
-    left: 94%;
-}
-/*
-    Template - Advertisement
-
-    https://stackoverflow.com/questions/1351768/how-to-position-div-in-the-center-of-the-screen
-*/
-
-#AD-Data {
-    text-align: center;
-    background-color: #a8cafe;
-    font-size: 30px;
-    position:fixed;
-    z-index: 100;  
-    top:50%;  
-    left:50%;  
-    margin:-175px 0 0 -175px;  
-    width:350px;
-    height:350px;
-    border-radius: 5%;
-}
-
-#AD-Img {
+#loader {
+    grid-column: 2;
+    grid-row: 1;
+    width: 200px;
     height: 200px;
-    width: auto;
+
+    /* styling */
+    border: 16px solid #3F51B5;
+    border-top: 16px solid white;
+    border-radius: 50%;
+
+    /* animation */
+    animation: spin 2s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

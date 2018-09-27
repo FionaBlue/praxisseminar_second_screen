@@ -22,8 +22,8 @@ WildLiveApp.YouTubePlayer = function() {
     
       player = new YT.Player('player', {
         enablejsapi: 1,
-        height: '560',
-        width: '940',
+        height: '460',
+        width: '840',
         videoId: videoID,
         startSeconds: 0,
         playerVars: {
@@ -64,12 +64,16 @@ WildLiveApp.YouTubePlayer = function() {
         signalRClient.sendMessageToAndroidDevice("start Quiz");
         player.pauseVideo();
 
-        templateString = document.querySelector('#Advertisement').innerHTML;       // reading template in index.html
-        tmpElement = document.createElement("div");                 // creating new div for loading template content
-        tmpElement.setAttribute("id", "AD-PopUp");
+        // creating new node (div-element) to be filled with pop-up-id
+        var tmpElement = document.createElement("div");
+        tmpElement.setAttribute("id", "popUp");
+        // filling div with current content (specific popup content)
+        var templateString = document.querySelector("#advertisementContent").innerHTML;
         tmpElement.innerHTML = templateString;
-        start = document.querySelector(".templateBinding");
-        start.appendChild(tmpElement);
+        // adding new pop-up-div to template placeholder
+        var templatePlaceholder = document.querySelector(".templateBinding");
+        templatePlaceholder.appendChild(tmpElement);
+
 
         adJingle = document.createElement('audio');
         adJingle.src = "res/audio/Scott_Holmes_-_02_-_Hopeful_Journey.ogg";
@@ -92,15 +96,15 @@ WildLiveApp.YouTubePlayer = function() {
       var min = Math.floor(currentTimerTime/60);
       var sec = Math.floor(currentTimerTime - min * 60);
       if(sec.toString().length == 1){
-        document.getElementById('AD-Timer').innerHTML = min + ":0" + sec;
+        document.getElementById('popUpTimer').innerHTML = min + ":0" + sec;
       } else {
-        document.getElementById('AD-Timer').innerHTML = min + ":" + sec;
+        document.getElementById('popUpTimer').innerHTML = min + ":" + sec;
       }            
       currentTimerTime = currentTimerTime - 1;
       if(currentTimerTime < 0){
         clearInterval(startAd);
         signalRClient.sendMessageToAndroidDevice("finish Quiz");
-        var adTemplate = document.querySelector("#AD-PopUp");
+        var adTemplate = document.querySelector("#popUp");
         adTemplate.parentNode.removeChild(adTemplate);
 
         adState = false;    // set advertisement-state false
