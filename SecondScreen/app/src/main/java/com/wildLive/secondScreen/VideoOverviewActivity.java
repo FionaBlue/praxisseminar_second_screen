@@ -8,6 +8,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -24,11 +26,35 @@ public class VideoOverviewActivity extends AppCompatActivity {
     ArrayList<ContinentTitleModel> arrayOfContinents = new ArrayList<>();
     ProgressBar progressBar;
 
+    private MenuItem activeCast;
+    private MenuItem inactiveCast;
+
+    private SignalRClient signalRClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // setting view (xml-layout) on creating app
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videooverview);
+
+        WildLive app = (WildLive)getApplication();
+        signalRClient = app.getSRClient();
+
+        if(signalRClient != null) {
+            signalRClient.setMessageListener(new SignalRClient.SignalRCallback<String>() {
+                @Override
+                public void onSuccess(String message) {
+                    if(message.toString().contains("firstScreenConnected")){
+                        signalRClient.isConnectedToFS = true;
+                    }
+                }
+
+                @Override
+                public void onError(String message) {
+
+                }
+            });
+        }
 
         progressBar = findViewById(R.id.load_continents);
 
@@ -38,6 +64,25 @@ public class VideoOverviewActivity extends AppCompatActivity {
                 setContinentOverview(output);
             }
         }).execute();
+    }
+
+    public boolean onCreateOptionsMenu (Menu menu) {
+        getMenuInflater().inflate(R.menu.videooverview, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        activeCast = menu.findItem(R.id.action_cast_connected_overview);
+        inactiveCast = menu.findItem(R.id.action_cast_overview);
+        if(signalRClient.isConnectedToFS == true){
+            activeCast.setVisible(true);
+            inactiveCast.setVisible(false);
+        } else {
+            activeCast.setVisible(false);
+            inactiveCast.setVisible(true);
+        }
+        super.onPrepareOptionsMenu(menu);
+        return true;
     }
 
 

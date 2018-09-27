@@ -1,6 +1,8 @@
 package com.wildLive.secondScreen;
 
+import android.app.Activity;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -28,8 +30,10 @@ public class SignalRClient {
     private static SubscriptionHandler1<String> handlerCon;
     private static SignalRFuture<Void> _awaitConnection;
     private static String hubName = "secondScreenHub";                          // name from hub class in server
-    private static String sessionID = "123456789";                              // id for connecting devices
+    private static String sessionID = "1234567890";                              // id for connecting devices
     boolean isReconnecting = false;                                             // status for checking connection state (and reacting if is "reconnecting" error)
+    public Boolean isConnectedToFS = false;                                     // status for checking internet connection state
+    private int connectionFalseDelay = 0;
 
     // constructor
     public SignalRClient(){
@@ -51,6 +55,7 @@ public class SignalRClient {
 
                     // calling asyncTask for checking if permanent connection status fires "reconnecting" error
                     new ReconnectHandler().execute();
+                    new checkCastConnection().execute();
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -82,7 +87,7 @@ public class SignalRClient {
             return null;
         }
         protected void onPostExecute(Void voids) {
-            sendMsg("castConnected"); //send castConnected Msg as "ping" and for CastButton indication
+            sendMsg("secondScreenConnected"); //send castConnected Msg as "ping" and for CastButton indication
             // waiting for "ping"-delay (for better performance issues)
             int i = 0;
             while (i < 3) { i++; }
@@ -145,6 +150,40 @@ public class SignalRClient {
         } catch(Exception e){
             Log.d(TAG,"SignalR StartConnection Exception " + e);
             e.printStackTrace();
+        }
+    }
+
+    public class checkCastConnection extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            final Activity currentActivity = InternetConnectionHandler.getActivity();
+            if(currentActivity != null) {
+                currentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("INVALIDATE");
+                        currentActivity.invalidateOptionsMenu();
+                    }
+                });
+            }
+            if(connectionFalseDelay < 3){
+                connectionFalseDelay ++;
+            } else {
+                connectionFalseDelay = 0;
+                isConnectedToFS = false;
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Void result){
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    new checkCastConnection().execute();
+                }
+            }, 3000);
         }
     }
 }

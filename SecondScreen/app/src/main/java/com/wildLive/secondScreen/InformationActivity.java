@@ -15,6 +15,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -61,6 +62,10 @@ public class InformationActivity extends AppCompatActivity {
     private ImageView playIcon, pauseIcon, forwardIcon, backwardIcon, volumeUpIcon, volumeDownIcon, advertisementPauseIcon;
     // SeekBar for showing video progress
     private SeekBar videoProgress;
+
+    // Cast-Buttons in Menu
+    private MenuItem activeCast;
+    private MenuItem inactiveCast;
 
     // transferred data (video-length, video-id, signalR-client)
     private String videoLength;                                             // length of currently loaded video (for calculating video progress, see SeekBar)
@@ -124,6 +129,20 @@ public class InformationActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        activeCast = menu.findItem(R.id.action_cast_connected_information);
+        inactiveCast = menu.findItem(R.id.action_cast_information);
+        if(sRClient.isConnectedToFS == true){
+            activeCast.setVisible(true);
+            inactiveCast.setVisible(false);
+        } else {
+            activeCast.setVisible(false);
+            inactiveCast.setVisible(true);
+        }
+        super.onPrepareOptionsMenu(menu);
+        return true;
+    }
+
     private void registerCurrentVideoInformation() {
         // getting selected video-id (registered tag/key) from previous activity via intent-extras
         Bundle extras = getIntent().getExtras();
@@ -141,6 +160,10 @@ public class InformationActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(String message) {
                     //Log.d("LOG_INFOACT", "received :: " + message);
+
+                    if(message.toString().contains("firstScreenConnected")){
+                        sRClient.isConnectedToFS = true;
+                    }
 
                     if (message.toString().contains("index")) {
                         // converting message for right usage

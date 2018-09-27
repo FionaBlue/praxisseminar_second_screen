@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -39,6 +40,9 @@ public class QuizActivity extends AppCompatActivity {
     private ImageView quizVolumeDownButton;
     private SeekBar videoProgress;
 
+    private MenuItem activeCast;
+    private MenuItem inactiveCast;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,20 @@ public class QuizActivity extends AppCompatActivity {
 
         if(srClient != null){
             srClient.sendMsg("score"+String.valueOf(score));
+
+            srClient.setMessageListener(new SignalRClient.SignalRCallback<String>() {
+                @Override
+                public void onSuccess(String message) {
+                    if(message.toString().contains("firstScreenConnected")){
+                        srClient.isConnectedToFS = true;
+                    }
+                }
+
+                @Override
+                public void onError(String message) {
+
+                }
+            });
         }
     }
 
@@ -100,6 +118,20 @@ public class QuizActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu (Menu menu) {
         getMenuInflater().inflate(R.menu.quiz, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        activeCast = menu.findItem(R.id.action_cast_connected_quiz);
+        inactiveCast = menu.findItem(R.id.action_cast_quiz);
+        if(srClient.isConnectedToFS == true){
+            activeCast.setVisible(true);
+            inactiveCast.setVisible(false);
+        } else {
+            activeCast.setVisible(false);
+            inactiveCast.setVisible(true);
+        }
+        super.onPrepareOptionsMenu(menu);
+        return true;
     }
 
     public void initiateElements(){

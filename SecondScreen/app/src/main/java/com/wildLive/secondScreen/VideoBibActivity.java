@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -72,6 +73,9 @@ public class VideoBibActivity extends AppCompatActivity {
     ArrayList<VideoDataModel> arrayOfVideos = new ArrayList<>();
     private SignalRClient srClient = null;
 
+    private MenuItem activeCast;
+    private MenuItem inactiveCast;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // setting view (xml-layout) on creating app
@@ -97,12 +101,40 @@ public class VideoBibActivity extends AppCompatActivity {
 
         WildLive app = (WildLive) getApplication();
         srClient = app.getSRClient();
-        System.out.println("VideoBib Client " + srClient);
+        if(srClient != null) {
+            srClient.setMessageListener(new SignalRClient.SignalRCallback<String>() {
+                @Override
+                public void onSuccess(String message) {
+                    if(message.toString().contains("firstScreenConnected")){
+                        srClient.isConnectedToFS = true;
+                    }
+                }
+
+                @Override
+                public void onError(String message) {
+
+                }
+            });
+        }
     }
 
     public boolean onCreateOptionsMenu (Menu menu) {
         getMenuInflater().inflate(R.menu.videobib, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        activeCast = menu.findItem(R.id.action_cast_connected_videobib);
+        inactiveCast = menu.findItem(R.id.action_cast_videobib);
+        if(srClient.isConnectedToFS == true){
+            activeCast.setVisible(true);
+            inactiveCast.setVisible(false);
+        } else {
+            activeCast.setVisible(false);
+            inactiveCast.setVisible(true);
+        }
+        super.onPrepareOptionsMenu(menu);
+        return true;
     }
 
     private void resetVideoView(){
