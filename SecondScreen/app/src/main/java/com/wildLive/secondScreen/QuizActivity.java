@@ -267,6 +267,7 @@ public class QuizActivity extends AppCompatActivity {
                 else{
                     //Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
                     changeButtonColorWrong(buttonA);
+                    showRightAnswer();
                 }
             }
 
@@ -285,6 +286,7 @@ public class QuizActivity extends AppCompatActivity {
                 else{
                     //Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
                     changeButtonColorWrong(buttonB);
+                    showRightAnswer();
                 }
             }
 
@@ -300,6 +302,7 @@ public class QuizActivity extends AppCompatActivity {
                 }
                 else{
                     changeButtonColorWrong(buttonC);
+                    showRightAnswer();
                     //Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -316,11 +319,24 @@ public class QuizActivity extends AppCompatActivity {
                 }
                 else{
                     changeButtonColorWrong(buttonD);
+                    showRightAnswer();
                     //Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
                 }
             }
 
         });
+    }
+
+    private void showRightAnswer(){
+        if(buttonA.getText().toString().trim().equals(answer.trim())){
+            changeButtonColorRight(buttonA);
+        } else if(buttonB.getText().toString().trim().equals(answer.trim())){
+            changeButtonColorRight(buttonB);
+        } else if(buttonC.getText().toString().trim().equals(answer.trim())){
+            changeButtonColorRight(buttonC);
+        } else if(buttonD.getText().toString().trim().equals(answer.trim())){
+            changeButtonColorRight(buttonD);
+        }
     }
 
     private void incrementQuestion(){
