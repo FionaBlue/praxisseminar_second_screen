@@ -20,6 +20,7 @@ public class SignalRClient {
     // https://msdn.microsoft.com/de-de/library/microsoft.aspnet.signalr.client.hubs.hubconnection(v=vs.100).aspx
     // https://stackoverflow.com/questions/23375043/best-practice-for-reconnecting-signalr-2-0-net-client-to-server-hub
     // https://github.com/SignalR/java-client/issues/61
+    // https://stackoverflow.com/questions/25817303/how-to-put-delay-in-android-async-task
 
     private static final String TAG = "MEK_Plugin_SignalR";                     // tags for logging
 
@@ -162,7 +163,6 @@ public class SignalRClient {
                 currentActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("INVALIDATE");
                         currentActivity.invalidateOptionsMenu();
                     }
                 });
@@ -171,6 +171,11 @@ public class SignalRClient {
                 connectionFalseDelay ++;
             } else {
                 connectionFalseDelay = 0;
+                try {
+                    Thread.sleep(2000);
+                } catch(InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
                 isConnectedToFS = false;
             }
             return null;
