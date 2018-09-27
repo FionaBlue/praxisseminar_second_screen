@@ -5,7 +5,7 @@
 var WildLiveApp = WildLiveApp || {};
 WildLiveApp.SignalRConnection = function() {
 
-    var that = {}, messageHandler, chat, sessionID = "123456789";
+    var that = {}, messageHandler, chat, sessionID = "1234567890";
 
     $.connection.hub.url = "http://pk029-audi-2nds.tvapp-server.de/SecondScreen";   // server; "http://localhost:8080/signalr";
     chat = $.connection.secondScreenHub;
