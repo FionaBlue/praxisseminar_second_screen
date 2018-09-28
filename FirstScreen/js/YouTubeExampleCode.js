@@ -171,29 +171,29 @@ WildLiveApp.YouTubePlayer = function() {
 
   function setVolumeUp() {
     currentVolume = player.getVolume();
-    if(currentVolume <= 95){
-      player.setVolume(currentVolume + 5);
+    if(currentVolume <= 90){
+      player.setVolume(currentVolume + 10);
     }
   }
   
   function setAdVolumeUp() {
     currentAdVolume = adJingle.volume;
-    if(currentAdVolume <= 0.9){
-      adJingle.volume = currentAdVolume + 0.1;
+    if(currentAdVolume <= 0.8){
+      adJingle.volume = currentAdVolume + 0.2;
     }
   }
 
   function setVolumeDown() {
     currentVolume = player.getVolume();
-    if(currentVolume >= 5){
-      player.setVolume(currentVolume - 5);
+    if(currentVolume >= 10){
+      player.setVolume(currentVolume - 10);
     }
   }
 
   function setAdVolumeDown() {
     currentAdVolume = adJingle.volume;
-    if(currentAdVolume >= 0.1){
-      adJingle.volume = currentAdVolume - 0.1;
+    if(currentAdVolume >= 0.2){
+      adJingle.volume = currentAdVolume - 0.2;
     }
   }
 

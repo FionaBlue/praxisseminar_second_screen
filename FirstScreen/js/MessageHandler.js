@@ -124,27 +124,33 @@ WildLiveApp.MessageHandler = function() {
             else if(encodedMsg.includes("forward")){
                 youTubePlayer.fastForward();
 
-                /*var templateString = document.querySelector("#moveForwardContent").innerHTML;
+                var templateString = document.querySelector("#moveForwardContent").innerHTML;
                 var tmpElement = document.createElement("div");
                 tmpElement.setAttribute("id", "popUp");
                 tmpElement.innerHTML = templateString;
                 var templatePlaceholder = document.querySelector(".templateBinding");
-                templatePlaceholder.appendChild(tmpElement);*/
+                templatePlaceholder.appendChild(tmpElement);
 
-                /* @TSCHUU: DO NOT FORGET TO REMOVE CHILD AFTERWARDS */
+                var removePopUp = setTimeout(function() {
+                    var popUpTemplate = document.querySelector("#popUp");
+                    popUpTemplate.parentNode.removeChild(popUpTemplate);
+                }, 1000);
             }
 
             else if(encodedMsg.includes("backward")){
                 youTubePlayer.rewind();
 
-                /*var templateString = document.querySelector("#moveBackwardContent").innerHTML;
+                var templateString = document.querySelector("#moveBackwardContent").innerHTML;
                 var tmpElement = document.createElement("div");
                 tmpElement.setAttribute("id", "popUp");
                 tmpElement.innerHTML = templateString;
                 var templatePlaceholder = document.querySelector(".templateBinding");
-                templatePlaceholder.appendChild(tmpElement);*/
+                templatePlaceholder.appendChild(tmpElement);
 
-                /* @TSCHUU: DO NOT FORGET TO REMOVE CHILD AFTERWARDS */
+                var removePopUp = setTimeout(function() {
+                    var popUpTemplate = document.querySelector("#popUp");
+                    popUpTemplate.parentNode.removeChild(popUpTemplate);
+                }, 1000);
             }
 
             else if(encodedMsg.includes("volumeUp")){
@@ -153,14 +159,17 @@ WildLiveApp.MessageHandler = function() {
                 } else {
                     youTubePlayer.setVolumeUp();
 
-                    /*var templateString = document.querySelector("#volumeUpContent").innerHTML;
+                    var templateString = document.querySelector("#volumeUpContent").innerHTML;
                     var tmpElement = document.createElement("div");
                     tmpElement.setAttribute("id", "popUp");
                     tmpElement.innerHTML = templateString;
                     var templatePlaceholder = document.querySelector(".templateBinding");
-                    templatePlaceholder.appendChild(tmpElement);*/
-                    
-                    /* @TSCHUU: DO NOT FORGET TO REMOVE CHILD AFTERWARDS */
+                    templatePlaceholder.appendChild(tmpElement);
+
+                    var removePopUp = setTimeout(function() {
+                        var popUpTemplate = document.querySelector("#popUp");
+                        popUpTemplate.parentNode.removeChild(popUpTemplate);
+                    }, 1000);
                 }
             }
 
@@ -170,14 +179,17 @@ WildLiveApp.MessageHandler = function() {
                 } else {
                     youTubePlayer.setVolumeDown();
 
-                    /*var templateString = document.querySelector("#volumeDownContent").innerHTML;
+                    var templateString = document.querySelector("#volumeDownContent").innerHTML;
                     var tmpElement = document.createElement("div");
                     tmpElement.setAttribute("id", "popUp");
                     tmpElement.innerHTML = templateString;
                     var templatePlaceholder = document.querySelector(".templateBinding");
-                    templatePlaceholder.appendChild(tmpElement);*/
+                    templatePlaceholder.appendChild(tmpElement);
                     
-                    /* @TSCHUU: DO NOT FORGET TO REMOVE CHILD AFTERWARDS */
+                    var removePopUp = setTimeout(function() {
+                        var popUpTemplate = document.querySelector("#popUp");
+                        popUpTemplate.parentNode.removeChild(popUpTemplate);
+                    }, 1000);
                 }
             }
         }
