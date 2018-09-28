@@ -84,6 +84,10 @@ WildLiveApp.MessageHandler = function() {
 
             WildLiveApp.removePopUpTemplate();
         }
+        //pauseVideo
+        if(encodedMsg.includes("pauseVideo")){
+            youTubePlayer.pauseVideo();
+        }
         //stopVideo
         if(encodedMsg.includes("stopVideo")){
             youTubePlayer.stopVideo();
@@ -201,9 +205,12 @@ WildLiveApp.MessageHandler = function() {
             document.getElementById("quizScore").innerHTML = score;
         }
 
-        if(encodedMsg.includes("endguide")){
-            var adTemplate = document.querySelector("#popUp");
-            adTemplate.parentNode.removeChild(adTemplate);
+        if(encodedMsg.includes("closePopUp")){
+            var popUpTemplate = document.querySelectorAll("#popUp");
+            for(i=0; i<popUpTemplate.length; i++){
+                console.log(popUpTemplate[i]);
+                popUpTemplate[i].parentNode.removeChild(popUpTemplate[i]);
+            }
             // setting colored map
             document.body.style.backgroundImage = "url('res/img/Coloured_map.jpg')";
         }

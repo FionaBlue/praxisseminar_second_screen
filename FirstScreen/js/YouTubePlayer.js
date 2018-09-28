@@ -2,6 +2,7 @@
 //https://support.google.com/youtube/answer/2467968?hl=de
 //https://stackoverflow.com/questions/23443476/some-options-to-youtube-api-embedded-player-not-being-respected
 //https://stackoverflow.com/questions/12256382/youtube-iframe-api-not-triggering-onyoutubeiframeapiready
+//https://stackoverflow.com/questions/27573017/failed-to-execute-postmessage-on-domwindow-https-www-youtube-com-http
 var player;
 var WildLiveApp = WildLiveApp || {};
 WildLiveApp.YouTubePlayer = function() {
@@ -25,6 +26,7 @@ WildLiveApp.YouTubePlayer = function() {
         height: '460',
         width: '840',
         videoId: videoID,
+        host: 'https://www.youtube.com',
         startSeconds: 0,
         playerVars: {
           showinfo: 1,
