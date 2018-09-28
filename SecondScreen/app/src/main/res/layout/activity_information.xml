@@ -33,7 +33,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:layout_weight="0.8"
-                android:padding="15dp"
+                android:padding="10dp"
                 android:orientation="horizontal"/>
 
             <!-- arrow/chevron right -->

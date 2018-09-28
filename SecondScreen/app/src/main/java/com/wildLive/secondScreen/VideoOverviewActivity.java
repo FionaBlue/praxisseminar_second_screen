@@ -2,8 +2,10 @@ package com.wildLive.secondScreen;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -37,10 +39,13 @@ public class VideoOverviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videooverview);
 
-        WildLive app = (WildLive)getApplication();
+        final WildLive app = (WildLive)getApplication();
         signalRClient = app.getSRClient();
 
         if(signalRClient != null) {
+
+            signalRClient.sendMsg("startLoader");
+
             signalRClient.setMessageListener(new SignalRClient.SignalRCallback<String>() {
                 @Override
                 public void onSuccess(String message) {
@@ -60,10 +65,28 @@ public class VideoOverviewActivity extends AppCompatActivity {
 
         VideoRequestHandler.GetPlaylists asyncTask = (VideoRequestHandler.GetPlaylists) new VideoRequestHandler.GetPlaylists(new VideoRequestHandler.GetPlaylists.AsyncResponse(){
         @Override
-        public void processFinish(LinkedHashMap output) {
-                setContinentOverview(output);
+        public void processFinish(final LinkedHashMap output) {
+
+                if(signalRClient != null){
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            setContinentOverview(output);
+                            sendMessagesToFS();
+                        }
+                    }, 2000);
+
+                }
             }
         }).execute();
+    }
+
+    private void sendMessagesToFS(){
+        SharedPreferences sp = getSharedPreferences("quizdata", MODE_PRIVATE);
+        final int score = sp.getInt("score", 0);
+        signalRClient.sendMsg("closePopUp");
+        signalRClient.sendMsg("score" + String.valueOf(score));
     }
 
     public boolean onCreateOptionsMenu (Menu menu) {
@@ -93,7 +116,7 @@ public class VideoOverviewActivity extends AppCompatActivity {
 
     private void setContinentOverview(LinkedHashMap continents){
         List continentList = new ArrayList(continents.keySet());
-        System.out.println("CONTINENTS!!! " + continentList);
+        //System.out.println("CONTINENTS!!! " + continentList);
         for (int i=0; i<continentList.size(); i++){
             String currentContinentTitle = (String) continentList.get(i);
             int currentContinentColor = getContientColor(currentContinentTitle);

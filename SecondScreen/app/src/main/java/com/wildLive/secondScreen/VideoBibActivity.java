@@ -118,6 +118,14 @@ public class VideoBibActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        if(srClient != null){
+            srClient.sendMsg(currentContinent);
+        }
+        super.onResume();
+    }
+
     public boolean onCreateOptionsMenu (Menu menu) {
         getMenuInflater().inflate(R.menu.videobib, menu);
         return super.onCreateOptionsMenu(menu);
@@ -148,6 +156,8 @@ public class VideoBibActivity extends AppCompatActivity {
         //continentTitle.setText((String) getContinentByIndex(map, index));
         //String continentName = (String) continentTitle.getText();
         continentTitle.setText(continent);
+        //set currentContinent
+        currentContinent = continent;
         //setContientColor(continentName);
         setContientColor(continent);
         //String continentID = (String) map.get(continentName);

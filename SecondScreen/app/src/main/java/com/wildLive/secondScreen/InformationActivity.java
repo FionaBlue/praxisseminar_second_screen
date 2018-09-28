@@ -120,6 +120,7 @@ public class InformationActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        sRClient.sendMsg("pauseVideo");
         sRClient.sendMsg("stopVideo");
         progressBar.setProgress(0);
         super.onBackPressed();
@@ -363,6 +364,10 @@ public class InformationActivity extends AppCompatActivity {
                     // no data could be retrieved from database, show specific guide note
                     activateInformationState(InformationViewState.DATALESS);
                     progressBar.setVisibility(View.GONE);       // deactivating progress-loader
+                    //sendVideoId to First Screen to start playing the specific video
+                    if(sRClient != null){
+                        sRClient.sendMsg("playVideo" + videoId);
+                    }
                 }
             }
         });
@@ -410,6 +415,8 @@ public class InformationActivity extends AppCompatActivity {
         // loading responded information in card view elements
         wikiContentTitle.setText(wikiTitle);
         wikiContentExtract.setText(wikiExtract);
+        // set TextView to start of information-text
+        wikiContentExtract.scrollTo(0,0);
         // loading responded image in image view (from retrieved database bitmap)
         wikiContentImage.setImageBitmap(imageBitmap);
     }
@@ -533,6 +540,7 @@ public class InformationActivity extends AppCompatActivity {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public CircleImageView timelineItem;        // substitute for circled item image
             public View timelineItemDivider;            // substitute for dotted divider
+            public TextView timelineItemTimestamp;      // substitute for timestamp
 
             public ViewHolder(@NonNull final View itemView) {
                 super(itemView);
@@ -543,6 +551,9 @@ public class InformationActivity extends AppCompatActivity {
 
                 // defining trigger-point-divider
                 timelineItemDivider = itemView.findViewById(R.id.timelineItemDivider);
+
+                // defining trigger-point-timestamp
+                timelineItemTimestamp = itemView.findViewById(R.id.timelineItemTimestamp);
             }
         }
 
@@ -591,6 +602,9 @@ public class InformationActivity extends AppCompatActivity {
             if (position == contentElements.size()-1) {
                 viewHolder.timelineItemDivider.setVisibility(View.INVISIBLE);
             }
+
+            // setting timestamp time for all trigger point items
+            viewHolder.timelineItemTimestamp.setText(contentElements.get(position).timestamp);
         }
 
         private void onItemClicked(int position) {

@@ -124,16 +124,16 @@ public class MainActivity extends AppCompatActivity {//implements DialogHandler.
             //SignalR is definitley up when the message score is transferred
             //has to be adjusted if the connection gets handled automatically
             //and not via ID entering
-            SharedPreferences sp = getSharedPreferences("quizdata", MODE_PRIVATE);
-            final int score = sp.getInt("score", 0);
+            /*SharedPreferences sp = getSharedPreferences("quizdata", MODE_PRIVATE);
+            final int score = sp.getInt("score", 0);*/
 
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     if (SRClient != null) {
-                        SRClient.sendMsg("score" + String.valueOf(score));
-                        SRClient.sendMsg("endguide");
+                        /*SRClient.sendMsg("score" + String.valueOf(score));
+                        SRClient.sendMsg("endguide");*/
                     }
                 }
             }, 5000);
