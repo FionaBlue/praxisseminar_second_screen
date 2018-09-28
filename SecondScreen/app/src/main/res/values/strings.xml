@@ -2,4 +2,21 @@
     <string name="app_name">WildLive</string>
     <string name="cast_button">CastButton</string>
     <string name="cast_connected_button">CastConnectedButton</string>
+    <string name="no_internet_connection">Keine Internetverbindung</string>
+    <string name="connect_to_internet_text">Bitte verbinde dein Gerät mit dem Internet</string>
+    <string name="ok">OK</string>
+    <string name="no_information_text">Die Aufbereitung des Videos ist noch in Arbeit - leider haben wir dazu aktuell keine Informationen!</string>
+    <string name="wait_for_it_text">Hinter den Platzhaltern verbergen sich spannende Informationen zu Tieren im ausgewählten Video. Folge dem Video-Verlauf um mehr zu erfahren!</string>
+    <string name="read_wikipedia">ARTIKEL LESEN</string>
+    <string name="question_placeholder">Hier sollte eine Frage stehen</string>
+    <string name="a">A</string>
+    <string name="b">B</string>
+    <string name="c">C</string>
+    <string name="d">D</string>
+    <string name="categories">Unsere Kategorien:</string>
+    <string name="skip">Überspringen</string>
+    <string name="next">Weiter</string>
+    <string name="title_here">Title here</string>
+    <string name="description_here">Description here</string>
+    <string name="timestamp_placeholder">00:00:00</string>
 </resources>

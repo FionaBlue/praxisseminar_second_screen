@@ -45,16 +45,6 @@
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
-        <!--<Button
-            android:id="@+id/buttonMainNext"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="0.10"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:textColor="#7F7FFF"
-            android:text="Gerät verbunden" />-->
-
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

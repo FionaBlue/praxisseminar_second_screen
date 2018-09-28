@@ -17,7 +17,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="#7F7FFF"
+                android:background="@color/colorAccent"
                 android:id="@+id/dialogView" />
             <TextView
                 android:layout_width="match_parent"
@@ -26,7 +26,7 @@
                 android:id="@+id/dialogTitle"
                 android:gravity="center"
                 android:textSize="20dp"
-                android:textColor="#ffffff"
+                android:textColor="@color/colorWhite"
                 android:layout_alignBottom="@+id/dialogView"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />
@@ -47,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:textColor="#7F7FFF" />
+                android:textColor="@color/colorAccent" />
         </LinearLayout>
 
         <!-- dialog buttons -->
@@ -64,7 +64,7 @@
                 android:id="@+id/dialogPositiveButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#7F7FFF"/>
+                android:textColor="@color/colorAccent"/>
 
             <Button
                 android:id="@+id/dialogNegativeButton"

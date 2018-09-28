@@ -66,7 +66,7 @@
                             android:text="0"
                             android:textSize="30dp"
                             android:textStyle="bold"
-                            android:textColor="#a9caff"
+                            android:textColor="@color/colorMainBlue"
                             android:textAlignment="center"
                             android:gravity="center"/>
                     </RelativeLayout>
@@ -94,8 +94,8 @@
                 android:maxLines="3"
                 android:minLines="2"
                 android:padding="10dp"
-                android:text="Hier sollte eine Frage stehen"
-                android:textColor="#222"
+                android:text="@string/question_placeholder"
+                android:textColor="@color/colorDarkGrey"
                 android:textStyle="bold"
                 android:textSize="16dp" />
 
@@ -112,7 +112,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_margin="5dp"
-                    android:text="A"
+                    android:text="@string/a"
                     android:background="@drawable/quiz_button_default"/>
 
                 <!-- answer #B -->
@@ -122,7 +122,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_margin="5dp"
-                    android:text="B"
+                    android:text="@string/b"
                     android:background="@drawable/quiz_button_default"/>
 
                 <!-- answer #C -->
@@ -132,7 +132,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_margin="5dp"
-                    android:text="C"
+                    android:text="@string/c"
                     android:background="@drawable/quiz_button_default"/>
 
                 <!-- answer #D -->
@@ -142,7 +142,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_margin="5dp"
-                    android:text="D"
+                    android:text="@string/d"
                     android:background="@drawable/quiz_button_default"/>
             </LinearLayout>
         </LinearLayout>
@@ -152,7 +152,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.10"
-            android:background="#212121"
+            android:background="@color/colorDarkGrey"
             android:orientation="vertical">
 
             <!-- video progress bar -->

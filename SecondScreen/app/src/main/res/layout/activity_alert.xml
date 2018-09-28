@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.4"
             android:textAlignment="center"
-            android:backgroundTint="@color/colorMainBlue"
+            android:backgroundTint="@color/colorPrimary"
             android:layout_gravity="center">
 
             <!-- Title -->
@@ -23,7 +23,7 @@
                 android:id="@+id/alertTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Keine Internetverbindung"
+                android:text="@string/no_internet_connection"
                 android:layout_gravity="center"
                 android:textStyle="bold"
                 android:textSize="20dp"
@@ -44,7 +44,7 @@
                 android:id="@+id/alertText"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Bitte verbinde dein Gerät mit dem Internet"
+                android:text="@string/connect_to_internet_text"
                 android:paddingTop="20dp"
                 android:paddingBottom="60dp"
                 android:textSize="15dp"
@@ -63,7 +63,7 @@
                 android:id="@+id/alertButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="OK"
+                android:text="@string/ok"
                 android:layout_gravity="center_horizontal"
                 android:textSize="30dp"
                 android:layout_marginTop="60dp"

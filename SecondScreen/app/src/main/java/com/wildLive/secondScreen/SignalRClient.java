@@ -31,7 +31,7 @@ public class SignalRClient {
     private static SubscriptionHandler1<String> handlerCon;
     private static SignalRFuture<Void> _awaitConnection;
     private static String hubName = "secondScreenHub";                          // name from hub class in server
-    private static String sessionID = "12345678";                              // id for connecting devices
+    private static String sessionID = "1234567890";                             // id for connecting devices
     boolean isReconnecting = false;                                             // status for checking connection state (and reacting if is "reconnecting" error)
     public Boolean isConnectedToFS = false;                                     // status for checking internet connection state
     private int connectionFalseDelay = 0;
