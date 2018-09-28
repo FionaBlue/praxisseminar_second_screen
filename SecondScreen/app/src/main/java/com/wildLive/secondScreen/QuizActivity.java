@@ -329,13 +329,37 @@ public class QuizActivity extends AppCompatActivity {
 
     private void showRightAnswer(){
         if(buttonA.getText().toString().trim().equals(answer.trim())){
-            changeButtonColorRight(buttonA);
+            buttonA.setBackgroundResource(R.drawable.quiz_button_right);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    buttonA.setBackgroundResource(R.drawable.quiz_button_default);
+                }
+            }, 1000);
         } else if(buttonB.getText().toString().trim().equals(answer.trim())){
-            changeButtonColorRight(buttonB);
+            buttonB.setBackgroundResource(R.drawable.quiz_button_right);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    buttonB.setBackgroundResource(R.drawable.quiz_button_default);
+                }
+            }, 1000);
         } else if(buttonC.getText().toString().trim().equals(answer.trim())){
-            changeButtonColorRight(buttonC);
+            buttonC.setBackgroundResource(R.drawable.quiz_button_right);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    buttonC.setBackgroundResource(R.drawable.quiz_button_default);
+                }
+            }, 1000);
         } else if(buttonD.getText().toString().trim().equals(answer.trim())){
-            changeButtonColorRight(buttonD);
+            buttonD.setBackgroundResource(R.drawable.quiz_button_right);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    buttonD.setBackgroundResource(R.drawable.quiz_button_default);
+                }
+            }, 1000);
         }
     }
 
