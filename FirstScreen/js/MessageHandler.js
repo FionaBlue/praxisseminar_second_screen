@@ -71,6 +71,9 @@ WildLiveApp.MessageHandler = function() {
         // -----------------------------------------------------------------
         //playVideo
         if(encodedMsg.includes("playVideo")){
+
+            //while (youTubePlayer == null) { /*wait*/ } because at this position, the player somethimes is null (!)
+
             WildLiveApp.onVideoStarted();
             console.log("playVideo " + encodedMsg);
             videoID = encodedMsg.slice(9);         

@@ -18,6 +18,11 @@ WildLiveApp.DatabaseHandler = function() {
     }
     
     function getContentFromDatabase(videoId) {
+        // setting back items-array
+        itemsFromDatabase = [];
+        activatedPosition = 0;
+        prevPosition = 0;
+
         // defining reference as structure entry point for database retrieval
         var currentDatabaseVideoRef = database.ref('video/' + videoId + '/trigger_point');
 

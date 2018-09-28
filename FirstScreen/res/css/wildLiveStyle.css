@@ -121,6 +121,7 @@ body {
     grid-column: 1;
     grid-row: 1;
     min-height: 100%;
+    width: 840px;
     
     /* moving video up a bit */
     -ms-transform: translate(0, -10px); /* IE 9 */
@@ -135,6 +136,7 @@ body {
 }
 #videoFrame {
     top: 0%;
+    width: 100%;
 }
 
 /* TIMELINE */
@@ -143,6 +145,8 @@ body {
     grid-column: 1;
     grid-row: 2;
     min-height: 100%;
+    text-align: center;
+    width: 100%;
 }
 .chevron {
     max-width: 10%;
