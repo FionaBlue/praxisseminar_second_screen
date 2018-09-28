@@ -130,13 +130,13 @@ WildLiveApp.MessageHandler = function() {
 
                 var templateString = document.querySelector("#moveForwardContent").innerHTML;
                 var tmpElement = document.createElement("div");
-                tmpElement.setAttribute("id", "popUp");
+                tmpElement.setAttribute("id", "iconPopUp");
                 tmpElement.innerHTML = templateString;
                 var templatePlaceholder = document.querySelector(".templateBinding");
                 templatePlaceholder.appendChild(tmpElement);
 
                 var removePopUp = setTimeout(function() {
-                    var popUpTemplate = document.querySelector("#popUp");
+                    var popUpTemplate = document.querySelector("#iconPopUp");
                     popUpTemplate.parentNode.removeChild(popUpTemplate);
                 }, 1000);
             }
@@ -146,13 +146,13 @@ WildLiveApp.MessageHandler = function() {
 
                 var templateString = document.querySelector("#moveBackwardContent").innerHTML;
                 var tmpElement = document.createElement("div");
-                tmpElement.setAttribute("id", "popUp");
+                tmpElement.setAttribute("id", "iconPopUp");
                 tmpElement.innerHTML = templateString;
                 var templatePlaceholder = document.querySelector(".templateBinding");
                 templatePlaceholder.appendChild(tmpElement);
 
                 var removePopUp = setTimeout(function() {
-                    var popUpTemplate = document.querySelector("#popUp");
+                    var popUpTemplate = document.querySelector("#iconPopUp");
                     popUpTemplate.parentNode.removeChild(popUpTemplate);
                 }, 1000);
             }
@@ -165,13 +165,13 @@ WildLiveApp.MessageHandler = function() {
 
                     var templateString = document.querySelector("#volumeUpContent").innerHTML;
                     var tmpElement = document.createElement("div");
-                    tmpElement.setAttribute("id", "popUp");
+                    tmpElement.setAttribute("id", "iconPopUp");
                     tmpElement.innerHTML = templateString;
                     var templatePlaceholder = document.querySelector(".templateBinding");
                     templatePlaceholder.appendChild(tmpElement);
 
                     var removePopUp = setTimeout(function() {
-                        var popUpTemplate = document.querySelector("#popUp");
+                        var popUpTemplate = document.querySelector("#iconPopUp");
                         popUpTemplate.parentNode.removeChild(popUpTemplate);
                     }, 1000);
                 }
@@ -185,13 +185,13 @@ WildLiveApp.MessageHandler = function() {
 
                     var templateString = document.querySelector("#volumeDownContent").innerHTML;
                     var tmpElement = document.createElement("div");
-                    tmpElement.setAttribute("id", "popUp");
+                    tmpElement.setAttribute("id", "iconPopUp");
                     tmpElement.innerHTML = templateString;
                     var templatePlaceholder = document.querySelector(".templateBinding");
                     templatePlaceholder.appendChild(tmpElement);
                     
                     var removePopUp = setTimeout(function() {
-                        var popUpTemplate = document.querySelector("#popUp");
+                        var popUpTemplate = document.querySelector("#iconPopUp");
                         popUpTemplate.parentNode.removeChild(popUpTemplate);
                     }, 1000);
                 }

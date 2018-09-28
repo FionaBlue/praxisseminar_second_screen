@@ -299,3 +299,62 @@ body {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+
+/* TEMPLATE BINDING (ICON POPUP) */
+/* ============================================================ */
+#iconPopUp {
+    display: grid;
+    grid: 30% auto 10% 30% / 40% auto 40%;
+    
+    /* moving video up a bit */
+    -ms-transform: translate(0, -60px); /* IE 9 */
+    -webkit-transform: translate(-0, -60px); /* Safari */
+    transform: translate(0, -60px);
+    opacity: 0.5;
+    
+    text-align: center;
+    justify-content: stretch;
+    align-content: stretch;
+    
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+/* POPUP */
+/* ------------------------------------------------------------ */
+#iconPopUpImageDiv {
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 100%;
+    padding-top: 5%;
+    
+    /* styling */
+    background-color: white;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    -webkit-box-shadow: 0px -4px 12px -6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px -4px 12px -6px rgba(0,0,0,0.75);
+    box-shadow: 0px -4px 12px -6px rgba(0,0,0,0.75);
+}
+#iconPopUpImage {
+    height: 150px;
+}
+#iconPopUpTimer {
+    grid-column: 2;
+    grid-row: 3;
+    min-height: 100%;
+    
+    /* styling */
+    background-color: white;
+    font-size: 25pt;
+    color: #a8cafe;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    -webkit-box-shadow: 0px 8px 12px -6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 8px 12px -6px rgba(0,0,0,0.75);
+    box-shadow: 0px 8px 12px -6px rgba(0,0,0,0.75);
+}
