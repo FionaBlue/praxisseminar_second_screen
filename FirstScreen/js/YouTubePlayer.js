@@ -29,20 +29,28 @@ WildLiveApp.YouTubePlayer = function() {
         host: 'https://www.youtube.com',
         startSeconds: 0,
         playerVars: {
-          showinfo: 1,
-          controls: 1,
-          rel: 1,
-          disablekb: 1,
-          fs: 1
+          showinfo: 0,
+          controls: 0,
+          rel: 0,
+          disablekb: 0,
+          fs: 0
         },
         events: {
           'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChanged,
         }
       });
     }
     
   function getCurrentVideoTime() {
     return player.getCurrentTime();
+  }
+    
+  function onPlayerStateChanged(event) {
+    // clearing youtube-player iframe when quitting video
+    if (event.data == 5) {
+      event.target.destroy();
+    }
   }
 
   // The API will call this function when the video player is ready.

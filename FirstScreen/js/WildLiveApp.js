@@ -27,27 +27,26 @@ var WildLiveApp = (function() {
         function onVideoStarted() {
             removePopUpTemplate();  // removing loader
             document.body.style.backgroundImage = "url('res/img/Empty_map.jpg')";
-            activateTemplate('#videoTimelineContent');
         }
     
         function onVideoEnded() {
-            deactivatePrevTemplate();
+            deactivateVideoTimelineContentView();
             removePopUpTemplate();  // removing loader
             document.body.style.backgroundImage = "url('res/img/Coloured_map.jpg')";
         }
         
-        function activateTemplate(templateContent) {
-            // loading content (identified by id) from template
-            var templateString = document.querySelector(templateContent).innerHTML;
-            
-            // appending temporary content to local placeholder
-            var templatePlaceholder = document.querySelector(".templateBinding");
-            templatePlaceholder.innerHTML = templateString;
-        }
-        
-        function deactivatePrevTemplate() {
-            deactivateRoot = document.querySelector(".templateBinding");
-            deactivateRoot.innerHTML = "";
+        function deactivateVideoTimelineContentView() {
+            // clearing timeline and setting chevron invisible
+            var chevronLeft = document.querySelector("#chevronLeft");
+            chevronLeft.classList.add("hiddenItem");
+
+            var chevronRight = document.querySelector("#chevronRight");
+            chevronRight.classList.add("hiddenItem");
+
+            var triggerTimeline = document.querySelector("#infoProgress");
+            while (triggerTimeline.firstChild) {
+                triggerTimeline.removeChild(triggerTimeline.firstChild);
+            }
         }
 
         function addPopUpTemplate(templateContent) {

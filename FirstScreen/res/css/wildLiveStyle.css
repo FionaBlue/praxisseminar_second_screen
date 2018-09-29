@@ -79,10 +79,9 @@ body {
 }
 
 
-
-/* TEMPLATE BINDING */
+/* TEMPLATE VIDEO + TIMELINE */
 /* ============================================================ */
-.templateBinding {
+#videoTimelineContent {
     grid-area: 2 / 2 / span 2 / span 1;
     
     text-align: center;
@@ -95,10 +94,6 @@ body {
     left: 0;
     right: 0;
 }
-
-
-/* TEMPLATE VIDEO + TIMELINE */
-/* ============================================================ */
 #videoTimeline {
     display: grid;
     grid: auto 12% / auto;
@@ -191,6 +186,19 @@ body {
 
 /* TEMPLATE BINDING (POPUP) */
 /* ============================================================ */
+.templateBinding {
+    grid-area: 2 / 2 / span 2 / span 1;
+    
+    text-align: center;
+    justify-content: stretch;
+    align-content: stretch;
+    
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
 #popUp {
     display: grid;
     grid: 10% 12% auto 15% / 30% auto 30%;
@@ -311,7 +319,6 @@ body {
     -ms-transform: translate(0, -60px); /* IE 9 */
     -webkit-transform: translate(-0, -60px); /* Safari */
     transform: translate(0, -60px);
-    opacity: 0.5;
     
     text-align: center;
     justify-content: stretch;

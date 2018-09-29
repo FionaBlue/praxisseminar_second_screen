@@ -22,7 +22,24 @@
 
     <body>
         <div class="firstScreenGrid">
-            <!-- current placeholder for template content -->
+            
+            <div id="videoTimelineContent">
+                <div id="videoTimeline">
+                    <!-- video section (youtube video player) -->
+                    <div class="videoSection" id="videoFrame">
+                        <div id="player"></div>
+                    </div>
+
+                    <!-- timeline section (timeline with trigger-point-images) -->
+                    <div class="timelineSection" id="timeline">
+                        <div class="chevron"><img id="chevronLeft" class="hiddenItem" src="res/img/chevron_left.png"></div>
+                        <div class="metadataInfoProgress" id="infoProgress"></div>
+                        <div class="chevron"><img id="chevronRight"  class="hiddenItem" src="res/img/chevron_right.png"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- current placeholder for template content (pop-ups) -->
             <div class="templateBinding">
             </div>
 
@@ -32,9 +49,6 @@
                 <div id="quizScore"></div>
             </div>
 
-            <!-- loader/progress bar -->
-            <!--<div class="loader hidden" id="loader"></div> -->
-
             <!-- device connection section (cast button for user feedback) -->
             <div class="castSection">
                 <!-- cast button for not-connected -->
@@ -43,26 +57,6 @@
                 <div class="castButton hidden" id="castConnectedButton"><img src="res/img/baseline_cast_connected_white_48dp.png"></div>
             </div>
         </div>
-        
-
-
-        <!-- template for video + timeline -->
-        <!-- ***************************************************************** -->
-        <script type="text/template" id="videoTimelineContent">
-            <div id="videoTimeline">
-                <!-- video section (youtube video player) -->
-                <div class="videoSection" id="videoFrame">
-                    <div id="player"></div>
-                </div>
-
-                <!-- timeline section (timeline with trigger-point-images) -->
-                <div class="timelineSection" id="timeline">
-                    <div class="chevron"><img id="chevronLeft" class="hiddenItem" src="res/img/chevron_left.png"></div>
-                    <div class="metadataInfoProgress" id="infoProgress"></div>
-                    <div class="chevron"><img id="chevronRight"  class="hiddenItem" src="res/img/chevron_right.png"></div>
-                </div>
-            </div>
-        </script>
         
         
         <!-- template pop-ups -->

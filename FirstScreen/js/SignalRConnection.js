@@ -46,10 +46,10 @@ WildLiveApp.SignalRConnection = function() {
     function sendMessageToAndroidDevice(message) {
         // sending message for session id
         chat.server.sendMessage(sessionID, message).done(function() {
-            console.log('sendMessage done: ' + message);
+            //console.log('sendMessage done: ' + message);
 
         }).fail(function(error) {
-            console.log( 'sendMessage error: ' + error);
+            //console.log( 'sendMessage error: ' + error);
         });
     }
 

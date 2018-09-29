@@ -81,8 +81,6 @@ WildLiveApp.MessageHandler = function() {
             
             // binding database functionality and data from firebase by accessing id and player
             databaseHandler.init(videoID, youTubePlayer);
-
-            WildLiveApp.removePopUpTemplate();
         }
         //pauseVideo
         if(encodedMsg.includes("pauseVideo")){
