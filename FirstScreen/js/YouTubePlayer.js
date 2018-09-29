@@ -62,7 +62,7 @@ WildLiveApp.YouTubePlayer = function() {
     var currentTime = Math.round(player.getCurrentTime());
     for(var i=0; i<adTimes.length; i++){      
       var adTimeInSeconds = timeInSeconds(adTimes[i][0]);
-      if(adTimeInSeconds <= currentTime && player.getPlayerState() == 1){
+      if(adTimeInSeconds <= currentTime && player.getPlayerState() == 1 && adState == false){
         signalRClient.sendMessageToAndroidDevice("start Quiz");
         player.pauseVideo();
 
@@ -172,43 +172,152 @@ WildLiveApp.YouTubePlayer = function() {
   }
 
   function setVolumeUp() {
-    currentVolume = player.getVolume();
+    var currentVolume = player.getVolume();
     if(currentVolume <= 90){
       player.setVolume(currentVolume + 10);
     }
+    var templateString = document.querySelector("#volumeUpContent").innerHTML;
+    var tmpElement = document.createElement("div");
+    tmpElement.setAttribute("id", "iconPopUp");
+    tmpElement.innerHTML = templateString;
+    var templatePlaceholder = document.querySelector(".templateBinding");
+    templatePlaceholder.appendChild(tmpElement);
+    document.getElementById('iconPopUpTimer').innerHTML = player.getVolume() + "%";
+
+    var removePopUp = setTimeout(function() {
+      var popUpTemplate = document.querySelector("#iconPopUp");
+      popUpTemplate.parentNode.removeChild(popUpTemplate);
+    }, 1000);
   }
   
   function setAdVolumeUp() {
-    currentAdVolume = adJingle.volume;
+    var currentAdVolume = adJingle.volume;
     if(currentAdVolume <= 0.8){
       adJingle.volume = currentAdVolume + 0.2;
     }
+    var templateString = document.querySelector("#volumeUpContent").innerHTML;
+    var tmpElement = document.createElement("div");
+    tmpElement.setAttribute("id", "iconPopUp");
+    tmpElement.innerHTML = templateString;
+    var templatePlaceholder = document.querySelector(".templateBinding");
+    templatePlaceholder.appendChild(tmpElement);
+
+    if(adJingle.volume.toString().charAt(0) == "1"){
+      document.getElementById('iconPopUpTimer').innerHTML = "100%";
+    } else if(adJingle.volume.toString().charAt(2) == "0"){
+      document.getElementById('iconPopUpTimer').innerHTML = "0%";
+    } else {
+      document.getElementById('iconPopUpTimer').innerHTML = adJingle.volume.toString().charAt(2) + "0%";
+    }
+
+    var removePopUp = setTimeout(function() {
+      var popUpTemplate = document.querySelector("#iconPopUp");
+      popUpTemplate.parentNode.removeChild(popUpTemplate);
+    }, 1000);
   }
 
   function setVolumeDown() {
-    currentVolume = player.getVolume();
+    var currentVolume = player.getVolume();
     if(currentVolume >= 10){
       player.setVolume(currentVolume - 10);
     }
+    var templateString = document.querySelector("#volumeDownContent").innerHTML;
+    var tmpElement = document.createElement("div");
+    tmpElement.setAttribute("id", "iconPopUp");
+    tmpElement.innerHTML = templateString;
+    var templatePlaceholder = document.querySelector(".templateBinding");
+    templatePlaceholder.appendChild(tmpElement);
+    document.getElementById('iconPopUpTimer').innerHTML = player.getVolume() + "%";
+
+    var removePopUp = setTimeout(function() {
+      var popUpTemplate = document.querySelector("#iconPopUp");
+      popUpTemplate.parentNode.removeChild(popUpTemplate);
+    }, 1000);
   }
 
   function setAdVolumeDown() {
-    currentAdVolume = adJingle.volume;
+    var currentAdVolume = adJingle.volume;
     if(currentAdVolume >= 0.2){
       adJingle.volume = currentAdVolume - 0.2;
     }
+    var templateString = document.querySelector("#volumeDownContent").innerHTML;
+    var tmpElement = document.createElement("div");
+    tmpElement.setAttribute("id", "iconPopUp");
+    tmpElement.innerHTML = templateString;
+    var templatePlaceholder = document.querySelector(".templateBinding");
+    templatePlaceholder.appendChild(tmpElement);
+
+    if(adJingle.volume.toString().charAt(0) == "1"){
+      document.getElementById('iconPopUpTimer').innerHTML = "100%";
+    } else if(adJingle.volume.toString().charAt(2) == "0"){
+      document.getElementById('iconPopUpTimer').innerHTML = "0%";
+    } else {
+      document.getElementById('iconPopUpTimer').innerHTML = adJingle.volume.toString().charAt(2) + "0%";
+    }    
+
+    var removePopUp = setTimeout(function() {
+      var popUpTemplate = document.querySelector("#iconPopUp");
+      popUpTemplate.parentNode.removeChild(popUpTemplate);
+    }, 1000);
   }
 
   function fastForward() {
-    currentTime = player.getCurrentTime();
-    newTime = Math.ceil(currentTime) + 10;
+    var currentTime = player.getCurrentTime();
+    var newTime = Math.ceil(currentTime) + 10;
     player.seekTo(newTime, true);
+    var templateString = document.querySelector("#moveForwardContent").innerHTML;
+    var tmpElement = document.createElement("div");
+    tmpElement.setAttribute("id", "iconPopUp");
+    tmpElement.innerHTML = templateString;
+    var templatePlaceholder = document.querySelector(".templateBinding");
+    templatePlaceholder.appendChild(tmpElement);
+    document.getElementById('iconPopUpTimer').innerHTML = formatTime(newTime);
+
+    var removePopUp = setTimeout(function() {
+      var popUpTemplate = document.querySelector("#iconPopUp");
+      popUpTemplate.parentNode.removeChild(popUpTemplate);
+    }, 1000);
   }
 
   function rewind() {
-    currentTime = player.getCurrentTime();
-    newTime = Math.ceil(currentTime) - 10;
+    var currentTime = player.getCurrentTime();
+    var newTime = Math.ceil(currentTime) - 10;
     player.seekTo(newTime, true);
+
+    var templateString = document.querySelector("#moveBackwardContent").innerHTML;
+    var tmpElement = document.createElement("div");
+    tmpElement.setAttribute("id", "iconPopUp");
+    tmpElement.innerHTML = templateString;
+    var templatePlaceholder = document.querySelector(".templateBinding");
+    templatePlaceholder.appendChild(tmpElement);
+    document.getElementById('iconPopUpTimer').innerHTML = formatTime(newTime);
+
+    var removePopUp = setTimeout(function() {
+      var popUpTemplate = document.querySelector("#iconPopUp");
+      popUpTemplate.parentNode.removeChild(popUpTemplate);
+    }, 1000);
+  }
+
+  // https://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
+  function formatTime(currTime){
+    var hrs = currTime/3600;
+    hrs = hrs.toString().split(".", 1);
+    var mins = (currTime%3600)/60;
+    mins = mins.toString().split(".", 1);
+    var secs = currTime%60;
+    var formattedTime = "";
+    if(hrs != "0") {
+      formattedTime += hrs + ":";
+      if(mins.length < 2) {
+        formattedTime += "0";
+      }
+    }
+    formattedTime += mins + ":";
+    if(secs.toString().length < 2){
+      formattedTime += "0";
+    }
+    formattedTime += secs;
+    return formattedTime;
   }
 
   function stopVideo() {

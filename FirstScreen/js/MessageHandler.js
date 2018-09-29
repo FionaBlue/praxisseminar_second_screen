@@ -126,35 +126,11 @@ WildLiveApp.MessageHandler = function() {
             }
 
             else if(encodedMsg.includes("forward")){
-                youTubePlayer.fastForward();
-
-                var templateString = document.querySelector("#moveForwardContent").innerHTML;
-                var tmpElement = document.createElement("div");
-                tmpElement.setAttribute("id", "iconPopUp");
-                tmpElement.innerHTML = templateString;
-                var templatePlaceholder = document.querySelector(".templateBinding");
-                templatePlaceholder.appendChild(tmpElement);
-
-                var removePopUp = setTimeout(function() {
-                    var popUpTemplate = document.querySelector("#iconPopUp");
-                    popUpTemplate.parentNode.removeChild(popUpTemplate);
-                }, 1000);
+                youTubePlayer.fastForward();                
             }
 
             else if(encodedMsg.includes("backward")){
                 youTubePlayer.rewind();
-
-                var templateString = document.querySelector("#moveBackwardContent").innerHTML;
-                var tmpElement = document.createElement("div");
-                tmpElement.setAttribute("id", "iconPopUp");
-                tmpElement.innerHTML = templateString;
-                var templatePlaceholder = document.querySelector(".templateBinding");
-                templatePlaceholder.appendChild(tmpElement);
-
-                var removePopUp = setTimeout(function() {
-                    var popUpTemplate = document.querySelector("#iconPopUp");
-                    popUpTemplate.parentNode.removeChild(popUpTemplate);
-                }, 1000);
             }
 
             else if(encodedMsg.includes("volumeUp")){
@@ -162,18 +138,6 @@ WildLiveApp.MessageHandler = function() {
                     youTubePlayer.setAdVolumeUp();
                 } else {
                     youTubePlayer.setVolumeUp();
-
-                    var templateString = document.querySelector("#volumeUpContent").innerHTML;
-                    var tmpElement = document.createElement("div");
-                    tmpElement.setAttribute("id", "iconPopUp");
-                    tmpElement.innerHTML = templateString;
-                    var templatePlaceholder = document.querySelector(".templateBinding");
-                    templatePlaceholder.appendChild(tmpElement);
-
-                    var removePopUp = setTimeout(function() {
-                        var popUpTemplate = document.querySelector("#iconPopUp");
-                        popUpTemplate.parentNode.removeChild(popUpTemplate);
-                    }, 1000);
                 }
             }
 
@@ -182,18 +146,6 @@ WildLiveApp.MessageHandler = function() {
                     youTubePlayer.setAdVolumeDown();
                 } else {
                     youTubePlayer.setVolumeDown();
-
-                    var templateString = document.querySelector("#volumeDownContent").innerHTML;
-                    var tmpElement = document.createElement("div");
-                    tmpElement.setAttribute("id", "iconPopUp");
-                    tmpElement.innerHTML = templateString;
-                    var templatePlaceholder = document.querySelector(".templateBinding");
-                    templatePlaceholder.appendChild(tmpElement);
-                    
-                    var removePopUp = setTimeout(function() {
-                        var popUpTemplate = document.querySelector("#iconPopUp");
-                        popUpTemplate.parentNode.removeChild(popUpTemplate);
-                    }, 1000);
                 }
             }
         }
