@@ -30,6 +30,7 @@ var WildLiveApp = (function() {
             // showing video-progressbar
             document.querySelector(".videoProgressSection").classList.remove("hidden");
             
+            // set empty map as background of video player
             document.body.style.backgroundImage = "url('res/img/Empty_map.jpg')";
         }
     
@@ -40,6 +41,7 @@ var WildLiveApp = (function() {
             // hiding video-progressbar
             document.querySelector(".videoProgressSection").classList.add("hidden");
             
+            // set coloured map as placeholder while waiting for current continent map message from second screen
             document.body.style.backgroundImage = "url('res/img/Coloured_map.jpg')";
         }
         
