@@ -76,6 +76,8 @@ public class VideoBibActivity extends AppCompatActivity {
     private MenuItem activeCast;
     private MenuItem inactiveCast;
 
+    private CategoryColorHandler colorHandler = new CategoryColorHandler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // setting view (xml-layout) on creating app
@@ -164,7 +166,7 @@ public class VideoBibActivity extends AppCompatActivity {
         continentTitle.setText(continent);
         // set currentContinent
         currentContinent = continent;
-        setContientColor(continent);
+        setContinentColor(continent);
         String continentID = (String) map.get(continent);
         arrayOfVideos.clear();
         getContinentVideos(continentID);
@@ -172,74 +174,12 @@ public class VideoBibActivity extends AppCompatActivity {
 
     // sets the continent-matching color
     // for not defined categories there is a default color for flexibility
-    private void setContientColor(String continent) {
+    private void setContinentColor(String continent) {
         CardView continentCard = (CardView) continentTitle.getParent();
-        int continentColor;
-        switch(continent) {
-            case "Arktis":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorArktis)));
-                continentCard.setCardBackgroundColor(continentColor);
-                if(srClient != null){
-                    srClient.sendMsg(continent);
-                }
-                break;
-            case "Antarktis":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAntarktis)));
-                continentCard.setCardBackgroundColor(continentColor);
-                if(srClient != null){
-                    srClient.sendMsg(continent);
-                }
-                break;
-            case "Afrika":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAfrika)));
-                continentCard.setCardBackgroundColor(continentColor);
-                if(srClient != null){
-                    srClient.sendMsg(continent);
-                }
-                break;
-            case "Australien":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAustralien)));
-                continentCard.setCardBackgroundColor(continentColor);
-                if(srClient != null){
-                    srClient.sendMsg(continent);
-                }
-                break;
-            case "Südamerika":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorSüdamerika)));
-                continentCard.setCardBackgroundColor(continentColor);
-                if(srClient != null){
-                    srClient.sendMsg(continent);
-                }
-                break;
-            case "Nordamerika":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorNordamerika)));
-                continentCard.setCardBackgroundColor(continentColor);
-                if(srClient != null){
-                    srClient.sendMsg(continent);
-                }
-                break;
-            case "Europa":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorEuropa)));
-                continentCard.setCardBackgroundColor(continentColor);
-                if(srClient != null){
-                    srClient.sendMsg(continent);
-                }
-                break;
-            case "Asien":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAsien)));
-                continentCard.setCardBackgroundColor(continentColor);
-                if(srClient != null){
-                    srClient.sendMsg(continent);
-                }
-                break;
-
-            default:
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorMainBlue)));
-                continentCard.setCardBackgroundColor(continentColor);
-                if(srClient != null){
-                    srClient.sendMsg("Default");
-                }
-                break;
+        int continentColor = colorHandler.getContinentColor(continent, getApplicationContext());
+        continentCard.setCardBackgroundColor(continentColor);
+        if(srClient != null){
+            srClient.sendMsg(continent);
         }
     }
 
@@ -336,13 +276,13 @@ public class VideoBibActivity extends AppCompatActivity {
                 if (continentIndex - 1 < 0) {                       // if the current continent is the first in the list switch to the last
                     String lastContinent = getContinentByIndex(continents, continents.size() -1);
                     continentTitle.setText(lastContinent);                          // set new continent
-                    setContientColor(lastContinent);                                // set new matching color
+                    setContinentColor(lastContinent);                                // set new matching color
                     resetVideoView();                                               // remove old videos
                     getContinentVideos((String) continents.get(lastContinent));     // set new videos
                 } else {
                     String lastContinent = getContinentByIndex(continents, continentIndex -1);
                     continentTitle.setText(lastContinent);                          // set new continent
-                    setContientColor(lastContinent);                                // set new matching color
+                    setContinentColor(lastContinent);                                // set new matching color
                     resetVideoView();                                               // remove old videos
                     getContinentVideos((String) continents.get(lastContinent));     // set new videos
                 }
@@ -362,13 +302,13 @@ public class VideoBibActivity extends AppCompatActivity {
                 if (continentIndex + 1 > continents.size()-1) {     // if the current continent is the last in the list switch to the first
                     String nextContinent = getContinentByIndex(continents, 0);
                     continentTitle.setText(nextContinent);                          // set new continent
-                    setContientColor(nextContinent);                                // set new matching color
+                    setContinentColor(nextContinent);                                // set new matching color
                     resetVideoView();                                               // remove old videos
                     getContinentVideos((String) continents.get(nextContinent));     // set new videos
                 } else {
                     String nextContinent = getContinentByIndex(continents, continentIndex+1);
                     continentTitle.setText(nextContinent);                          // set new continent
-                    setContientColor(nextContinent);                                // set new matching color
+                    setContinentColor(nextContinent);                                // set new matching color
                     resetVideoView();                                               // remove old videos
                     getContinentVideos((String) continents.get(nextContinent));     // set new videos
                 }

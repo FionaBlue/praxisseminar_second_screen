@@ -3,10 +3,8 @@ package com.wildLive.secondScreen;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -32,6 +30,8 @@ public class VideoOverviewActivity extends AppCompatActivity {
     private MenuItem inactiveCast;
 
     private SignalRClient signalRClient;
+
+    private CategoryColorHandler colorHandler = new CategoryColorHandler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,13 +120,21 @@ public class VideoOverviewActivity extends AppCompatActivity {
         //do nothing for setting Back Button on Device disabled
     }
 
+    // reset map on first screen to coloured when user is going back from VideoBib- to VideoOverviewActivity
+    protected void onResume() {
+        if(signalRClient != null){
+            signalRClient.sendMsg("Coloured");
+        }
+        super.onResume();
+    }
+
     // hands the data from the AsyncTask over to the ContinentOverviewAdapter
     // ends the loading circle
     private void setContinentOverview(LinkedHashMap continents){
         List continentList = new ArrayList(continents.keySet());
         for (int i=0; i<continentList.size(); i++){
-            String currentContinentTitle = (String) continentList.get(i);           // get current title
-            int currentContinentColor = getContientColor(currentContinentTitle);    // get current color
+            String currentContinentTitle = (String) continentList.get(i);                                                  // get current title
+            int currentContinentColor = colorHandler.getContinentColor(currentContinentTitle, getApplicationContext());    // get current color
             // set title and color in new Model
             ContinentTitleModel newContinentTitleModel = new ContinentTitleModel(currentContinentTitle, currentContinentColor);
             // add new Model to ArrayList
@@ -138,42 +146,7 @@ public class VideoOverviewActivity extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);                                                                       // set loading circle gone
     }
 
-    // sets the continent-matching color
-    // for not defined categories there is a default color for flexibility
-    private int getContientColor(String continent) {
-        int continentColor;
-        switch(continent) {
-            case "Arktis":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorArktis)));
-                break;
-            case "Antarktis":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAntarktis)));
-                break;
-            case "Afrika":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAfrika)));
-                break;
-            case "Australien":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAustralien)));
-                break;
-            case "Südamerika":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorSüdamerika)));
-                break;
-            case "Nordamerika":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorNordamerika)));
-                break;
-            case "Europa":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorEuropa)));
-                break;
-            case "Asien":
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorAsien)));
-                break;
 
-            default:
-                continentColor = Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(getApplicationContext(), R.color.colorMainBlue)));
-                break;
-        }
-        return continentColor;
-    }
 
     // **************************************************************************
 
