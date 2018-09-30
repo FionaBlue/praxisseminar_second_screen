@@ -164,7 +164,7 @@ public class VideoBibActivity extends AppCompatActivity {
     // updates continent/category title and calls method for getting the videos of this continent
     private void updateContinentTitle(LinkedHashMap map, String continent) {
         continentTitle.setText(continent);
-        // set currentContinent
+        // set currentContinent for onResume
         currentContinent = continent;
         setContinentColor(continent);
         String continentID = (String) map.get(continent);
@@ -305,6 +305,7 @@ public class VideoBibActivity extends AppCompatActivity {
     }
 
     private void switchToNewContinent(String newContinent){
+        currentContinent = newContinent;                               // set current continent for onResume
         continentTitle.setText(newContinent);                          // set new continent
         setContinentColor(newContinent);                               // set new matching color
         resetVideoView();                                              // remove old videos
