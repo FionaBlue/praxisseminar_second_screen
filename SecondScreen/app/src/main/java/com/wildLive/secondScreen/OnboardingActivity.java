@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
+// This activity handles the onboarding screens via viewpager
 public class OnboardingActivity extends AppCompatActivity {
 
     private ViewPager viewpager;
@@ -44,6 +44,7 @@ public class OnboardingActivity extends AppCompatActivity {
             }
         });
 
+        // Indicates the different slides and changes the texts accordingly
         ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
 
             //Set indicator images and button texts according to the slides
