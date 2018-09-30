@@ -87,7 +87,7 @@ public class VideoBibActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         currentContinent = extras.getString("currentContinent");
-        continentToResume = currentContinent;
+        //continentToResume = currentContinent;
 
         // getting YouTube playlists from WildLive Channel in GetPlaylists AsyncTask
         VideoRequestHandler.GetPlaylists asyncTask = (VideoRequestHandler.GetPlaylists) new VideoRequestHandler.GetPlaylists(new VideoRequestHandler.GetPlaylists.AsyncResponse(){
@@ -127,8 +127,8 @@ public class VideoBibActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         if(srClient != null){
-            srClient.sendMsg(continentToResume);
-            System.out.println("continent to resume " + continentToResume);
+            srClient.sendMsg(currentContinent);
+            System.out.println("continent to resume " + currentContinent);
         }
         super.onResume();
     }
@@ -168,8 +168,8 @@ public class VideoBibActivity extends AppCompatActivity {
         continentTitle.setText(continent);
         // set currentContinent for onResume
         currentContinent = continent;
-        setContinentColor(continent);
-        String continentID = (String) map.get(continent);
+        setContinentColor(currentContinent);
+        String continentID = (String) map.get(currentContinent);
         arrayOfVideos.clear();
         getContinentVideos(continentID);
     }
@@ -410,9 +410,6 @@ public class VideoBibActivity extends AppCompatActivity {
                     intent.putExtra("videoID", videoID);
                     // pass video duration via intent to InformationActivity for showing correct video-duration-progress
                     intent.putExtra("videoLength", videoLength);
-
-                    // set continent for onResume
-                    continentToResume = currentContinent;
 
                     startActivity(intent);
                 }
