@@ -105,7 +105,6 @@ public class DatabaseHandler extends AsyncTask<String, Void, Void> {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                //itemsFromDatabase.add(null);
                 itemsFromDatabase = null;
                 publishProgress();  // finishing async task
             }

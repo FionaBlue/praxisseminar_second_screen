@@ -3,7 +3,6 @@ package com.wildLive.secondScreen;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.util.Log;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import microsoft.aspnet.signalr.client.Action;
@@ -20,20 +19,19 @@ public class SignalRClient {
     // https://msdn.microsoft.com/de-de/library/microsoft.aspnet.signalr.client.hubs.hubconnection(v=vs.100).aspx
     // https://stackoverflow.com/questions/23375043/best-practice-for-reconnecting-signalr-2-0-net-client-to-server-hub
     // https://github.com/SignalR/java-client/issues/61
-
-    private static final String TAG = "MEK_Plugin_SignalR";                     // tags for logging
+    // https://stackoverflow.com/questions/25817303/how-to-put-delay-in-android-async-task
 
     //SignalR Variables
-    private String host = "http://pk029-audi-2nds.tvapp-server.de/SecondScreen";// example server
+    private String host = "http://pk029-audi-2nds.tvapp-server.de/SecondScreen";// given server
     private static HubConnection _connection;
     private static HubProxy _hub = null;
     private static SubscriptionHandler1<String> handlerCon;
     private static SignalRFuture<Void> _awaitConnection;
     private static String hubName = "secondScreenHub";                          // name from hub class in server
-    private static String sessionID = "1234567890";                              // id for connecting devices
+    private static String sessionID = "1234567890";                             // id for connecting devices
     boolean isReconnecting = false;                                             // status for checking connection state (and reacting if is "reconnecting" error)
     public Boolean isConnectedToFS = false;                                     // status for checking internet connection state
-    private int connectionFalseDelay = 0;
+    private int connectionFalseDelay = 0;                                       // delay for setting First Screen connection to false
 
     // constructor
     public SignalRClient(){
@@ -49,7 +47,6 @@ public class SignalRClient {
         _hub.invoke(String.class, "StartSession").done(new Action<String>() {
             @Override
             public void run(String SessionID) {
-                Log.d(TAG, "session id  " + sessionID);
                 try {
                     _hub.invoke("JoinSession", sessionID).get();
 
@@ -57,9 +54,7 @@ public class SignalRClient {
                     new ReconnectHandler().execute();
                     new checkCastConnection().execute();
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
             }
@@ -88,10 +83,6 @@ public class SignalRClient {
         }
         protected void onPostExecute(Void voids) {
             sendMsg("secondScreenConnected"); //send castConnected Msg as "ping" and for CastButton indication
-            // waiting for "ping"-delay (for better performance issues)
-            int i = 0;
-            while (i < 3) { i++; }
-
             new ReconnectHandler().execute();
         }
     }
@@ -140,19 +131,17 @@ public class SignalRClient {
         _awaitConnection = _connection.start(new LongPollingTransport(_connection.getLogger()));
         try {
             _awaitConnection.get(4000, TimeUnit.MILLISECONDS);
-            Log.d(TAG,"Connection done");
         } catch (InterruptedException e) {
-            Log.d(TAG,"SignalR StartConnection Disconnect . . ." + e);
             e.printStackTrace();
         } catch (ExecutionException e) {
-            Log.d(TAG,"SignalR StartConnection Error . . ." + e);
             e.printStackTrace();
         } catch(Exception e){
-            Log.d(TAG,"SignalR StartConnection Exception " + e);
             e.printStackTrace();
         }
     }
 
+    // invalidates the OptionsMenu of current activity to check if First Screen is connected
+    // via isConnectedToFS == true -> updated in message listeners of all Activities after MainActivity
     public class checkCastConnection extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -162,20 +151,28 @@ public class SignalRClient {
                 currentActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("INVALIDATE");
                         currentActivity.invalidateOptionsMenu();
                     }
                 });
             }
+            // falseDelay waits for message listeners to maybe update isConnectedToFS to true
             if(connectionFalseDelay < 3){
                 connectionFalseDelay ++;
             } else {
                 connectionFalseDelay = 0;
+                // sleepDelay waits for invalidateOptionsMenu to conduct
+                // setting isConnectedToFS to false would cause blinking of cast-button
+                try {
+                    Thread.sleep(2000);
+                } catch(InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
                 isConnectedToFS = false;
             }
             return null;
         }
 
+        // loops for checking First Screen connection persistently
         protected void onPostExecute(Void result){
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {

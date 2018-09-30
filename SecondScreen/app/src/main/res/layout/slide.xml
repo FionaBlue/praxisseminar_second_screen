@@ -16,7 +16,7 @@
         android:id="@+id/txttitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Title here"
+        android:text="@string/title_here"
         android:textAlignment="center"
         android:textSize="20dp"
         android:layout_marginTop="40dp"
@@ -26,11 +26,10 @@
         android:id="@+id/txtdescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Description here"
+        android:text="@string/description_here"
         android:textAlignment="center"
         android:textSize="17dp"
         android:textStyle="normal"
         android:layout_marginTop="40dp" />
-
 
 </LinearLayout>

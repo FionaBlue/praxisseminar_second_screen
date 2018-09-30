@@ -11,37 +11,29 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
+// This activity calls the Quiz when an advertisement starts on the First Screen
 public class QuizActivity extends AppCompatActivity {
-    private QuestionLibrary questionLibrary;
-    private Handler handler = new Handler();
+    private QuestionLibrary questionLibrary;                        // library that contains all questions
+    private Handler handler = new Handler();                        // for setting answer-color dynamically and handling answer click
+    public Button buttonA, buttonB, buttonC, buttonD;               // quiz answer buttons
+    private ImageView closeButton;                                  // for closing quiz activity manually
+    private TextView question;                                      // quiz question text
+    private TextView scoretext;                                     // actual reached score
 
-    public Button buttonA;
-    public Button buttonB;
-    public Button buttonC;
-    public Button buttonD;
-    private ImageView closeButton;
-
-    private TextView question;
-    private TextView scoretext;
-
-    private String answer;
-    private int score = 0;
-    private int questionNumber = 0;
+    private String answer;                                          // current answer
+    private int score = 0, questionNumber = 0;                      // initializing score and number of questions
 
     private SignalRClient srClient = null;
-
     static QuizActivity quizActivity;
 
-    public ImageView quizPauseButton;
-    public ImageView quizPlayButton;
-    private ImageView quizVolumeUpButton;
-    private ImageView quizVolumeDownButton;
+    // quiz controls (volume changes and play/pause of video)
+    public ImageView quizPauseButton, quizPlayButton;
+    private ImageView quizVolumeUpButton, quizVolumeDownButton;
     private SeekBar videoProgress;
 
-    private MenuItem activeCast;
-    private MenuItem inactiveCast;
+    // cast buttons
+    private MenuItem activeCast, inactiveCast;
 
 
     @Override
@@ -54,8 +46,6 @@ public class QuizActivity extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences("quizdata", MODE_PRIVATE);
         score = sp.getInt("score", 0);
         questionNumber = sp.getInt("questionNumber", 0);
-
-        //Toast.makeText(QuizActivity.this, "LOADQUIZDATA - Score: "+score+" QuestionNumber: "+questionNumber, Toast.LENGTH_SHORT).show();
 
         WildLive app = (WildLive) getApplication();
         srClient = app.getSRClient();
@@ -92,7 +82,6 @@ public class QuizActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-
         saveQuizData();
     }
 
@@ -104,12 +93,11 @@ public class QuizActivity extends AppCompatActivity {
         videoProgress.setProgress(progress);
     }
 
+    //saves the score into shared preferences on the smartphone
     private void saveQuizData(){
         SharedPreferences sp = getSharedPreferences("quizdata", MODE_PRIVATE);
         SharedPreferences.Editor edit = sp.edit();
         edit.putInt("score",score);
-
-        //Toast.makeText(QuizActivity.this, "SAVEQUIZDATA - Score: "+score+" QuestionNumber: "+questionNumber, Toast.LENGTH_SHORT).show();
 
         edit.putInt("questionNumber",questionNumber);
         edit.apply();
@@ -134,6 +122,7 @@ public class QuizActivity extends AppCompatActivity {
         return true;
     }
 
+    // initiates every element in the layout
     public void initiateElements(){
         buttonA = (Button) findViewById(R.id.buttonA);
         buttonB = (Button) findViewById(R.id.buttonB);
@@ -153,6 +142,7 @@ public class QuizActivity extends AppCompatActivity {
         videoProgress = findViewById(R.id.videoProgress_quiz);
     }
 
+    // disables the buttons to prevent the user clicking on them while not needed
     private void disableButtons(){
         buttonA.setClickable(false);
         buttonB.setClickable(false);
@@ -161,6 +151,7 @@ public class QuizActivity extends AppCompatActivity {
         closeButton.setClickable(false);
     }
 
+    // enables the buttons
     private void enableButtons(){
         buttonA.setClickable(true);
         buttonB.setClickable(true);
@@ -169,6 +160,7 @@ public class QuizActivity extends AppCompatActivity {
         closeButton.setClickable(true);
     }
 
+    //changes the button colour to green and updates sccore if the answer is correct
     public void changeButtonColorRight(final Button button){
         button.setBackgroundResource(R.drawable.quiz_button_right);
         disableButtons();
@@ -189,6 +181,7 @@ public class QuizActivity extends AppCompatActivity {
         }, 1000);
     }
 
+    //changes the button colour to red if the answer is wrong
     public void changeButtonColorWrong(final Button button){
         button.setBackgroundResource(R.drawable.quiz_button_wrong);
         disableButtons();
@@ -202,6 +195,7 @@ public class QuizActivity extends AppCompatActivity {
         }, 1000);
     }
 
+    // sets the click listeners to all buttons
     public void createButtonListeners(){
 
         quizPlayButton.setOnClickListener(new View.OnClickListener() {
@@ -258,15 +252,12 @@ public class QuizActivity extends AppCompatActivity {
         buttonA.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                // your handler code here
                 if (buttonA.getText().toString().trim().equals(answer.trim())){
                     changeButtonColorRight(buttonA);
-                    //optional
-                    //Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    //Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
                     changeButtonColorWrong(buttonA);
+                    showRightAnswer();
                 }
             }
 
@@ -276,15 +267,12 @@ public class QuizActivity extends AppCompatActivity {
         buttonB.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                // your handler code here
                 if (buttonB.getText().toString().trim().equals(answer.trim())){
                     changeButtonColorRight(buttonB);
-                    //optional
-                    //Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    //Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
                     changeButtonColorWrong(buttonB);
+                    showRightAnswer();
                 }
             }
 
@@ -292,15 +280,13 @@ public class QuizActivity extends AppCompatActivity {
         buttonC.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                // your handler code here
                 if (buttonC.getText().toString().trim().equals(answer.trim())){
                     changeButtonColorRight(buttonC);
-                    //optional
-                    //Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
+
                 }
                 else{
                     changeButtonColorWrong(buttonC);
-                    //Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
+                    showRightAnswer();
                 }
             }
 
@@ -308,23 +294,55 @@ public class QuizActivity extends AppCompatActivity {
         buttonD.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                // your handler code here
                 if (buttonD.getText().toString().trim().equals(answer.trim())){
                     changeButtonColorRight(buttonD);
-                    //optional
-                    //Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     changeButtonColorWrong(buttonD);
-                    //Toast.makeText(QuizActivity.this, "wrong", Toast.LENGTH_SHORT).show();
+                    showRightAnswer();
                 }
             }
 
         });
     }
 
-    private void incrementQuestion(){
+    private void showRightAnswer(){
+        if(buttonA.getText().toString().trim().equals(answer.trim())){
+            buttonA.setBackgroundResource(R.drawable.quiz_button_right);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    buttonA.setBackgroundResource(R.drawable.quiz_button_default);
+                }
+            }, 1000);
+        } else if(buttonB.getText().toString().trim().equals(answer.trim())){
+            buttonB.setBackgroundResource(R.drawable.quiz_button_right);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    buttonB.setBackgroundResource(R.drawable.quiz_button_default);
+                }
+            }, 1000);
+        } else if(buttonC.getText().toString().trim().equals(answer.trim())){
+            buttonC.setBackgroundResource(R.drawable.quiz_button_right);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    buttonC.setBackgroundResource(R.drawable.quiz_button_default);
+                }
+            }, 1000);
+        } else if(buttonD.getText().toString().trim().equals(answer.trim())){
+            buttonD.setBackgroundResource(R.drawable.quiz_button_right);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    buttonD.setBackgroundResource(R.drawable.quiz_button_default);
+                }
+            }, 1000);
+        }
+    }
 
+    private void incrementQuestion(){
         if(questionNumber < questionLibrary.getNumberOfQuestions()-1 ) {
 
             questionNumber++;
@@ -335,9 +353,6 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void updateQuestion(){
-
-        //Toast.makeText(QuizActivity.this, "CurrentQuestionNumber: "+questionNumber, Toast.LENGTH_SHORT).show();
-
         question.setText(questionLibrary.getQuestion(questionNumber));
 
         buttonA.setText(questionLibrary.getChoices(questionNumber));

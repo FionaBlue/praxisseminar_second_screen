@@ -12,22 +12,15 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Map;
 
-
 // src: https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
 //      https://stackoverflow.com/questions/11411395/how-to-get-current-foreground-activity-context-in-android/28423385#28423385
 //      https://stackoverflow.com/questions/15874117/how-to-set-delay-in-android
+//      https://en.wikipedia.org/wiki/Google_Public_DNS
+
 public class InternetConnectionHandler {
 
-    public static Boolean connectionToInternet = false;
-
-    public static void setConnectionToInternet(Boolean connection){
-        connectionToInternet = connection;
-    }
-
-    public Boolean getConnectionToInternet(){
-        return connectionToInternet;
-    }
-
+    // for code source see src
+    // modified with a lot try/catch
     public static Activity getActivity() {
         Class activityThreadClass = null;
         try {
@@ -87,38 +80,42 @@ public class InternetConnectionHandler {
         return null;
     }
 
+    // checks if internet connection is available
+    // starts AlertActivity if not (for user-feedback)
+    static class checkInternetConnectionState extends AsyncTask<Void, Void, Boolean> {
 
-        static class getInternetConnectionState extends AsyncTask<Void, Void, Boolean> {
+        private Activity currentActivity;
 
-            private Activity currentActivity;
-
-            @Override
-            protected Boolean doInBackground(Void... voids) {
-                currentActivity = getActivity();
-                try {
-                    Socket socket = new Socket();
-                    socket.connect(new InetSocketAddress("8.8.8.8", 53), 1500);
-                    socket.close();
-                    return true;
-                } catch (IOException e) {
-                    return false;
-                }
-            }
-
-            @Override
-            protected void onPostExecute(Boolean result) {
-                setConnectionToInternet(result);
-                if (result == false && currentActivity != null) {
-                    Intent intent = new Intent(currentActivity, AlertActivity.class);
-                    currentActivity.startActivity(intent);
-                }
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        new getInternetConnectionState().execute();
-                    }
-                }, 3000);
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            // tries to connect with Google public DNS Server to check internet connection
+            try {
+                Socket socket = new Socket();
+                socket.connect(new InetSocketAddress("8.8.8.8", 53), 1500);
+                socket.close();
+                return true;
+            } catch (IOException e) {
+                return false;
             }
         }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            // get current Activity to start AlertActivity
+            currentActivity = getActivity();
+            // starts AlertActivity for user-information when connection is lost
+            if (result == false && currentActivity != null) {
+                Intent intent = new Intent(currentActivity, AlertActivity.class);
+                currentActivity.startActivity(intent);
+            }
+            // restarts check every 3 seconds
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    new checkInternetConnectionState().execute();
+                }
+            }, 3000);
+        }
+    }
 }

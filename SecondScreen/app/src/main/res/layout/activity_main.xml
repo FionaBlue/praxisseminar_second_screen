@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -25,6 +24,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
+                <!-- wildLive icon as entry-point -->
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
@@ -32,6 +32,7 @@
                     android:src="@drawable/logo"
                     android:layout_marginTop="20dp"/>
 
+                <!-- user greeting -->
                 <TextView
                     android:id="@+id/textViewMain"
                     android:layout_width="match_parent"
@@ -44,17 +45,5 @@
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
-
-        <!--<Button
-            android:id="@+id/buttonMainNext"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="0.10"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:textColor="#7F7FFF"
-            android:text="Gerät verbunden" />-->
-
     </LinearLayout>
-
 </android.support.constraint.ConstraintLayout>

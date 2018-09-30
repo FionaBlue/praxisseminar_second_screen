@@ -18,7 +18,7 @@ import org.w3c.dom.Text;
 
 // Source from Aws Rh "How to create a slider using ViewPager"
 // https://www.youtube.com/watch?v=R_AIUy7tFVA
-
+// This activity handles the texts for the onboarding screens
 public class SlideAdapter extends PagerAdapter {
 
     Context context;
@@ -46,7 +46,7 @@ public class SlideAdapter extends PagerAdapter {
 
     //list of descriptions
     public String [] lst_description = {
-            "zu Wildlive, unserer interaktiven SecondScreen Anwendung. \n" +
+            "zu Wildlive, unserer interaktiven Second Screen Anwendung. \n" +
                     "Die folgende Einleitung bietet dir einen Überblick unserer App und ihrer Benutzbarkeit. Viel Spaß!\n",
             "Für die Kommunikation zwischen Smartphone und Laptop wird Internet benötigt. \n" + "Achte daher bitte darauf, WLAN oder Mobile Daten einzuschalten.\n",
             "In der Video Playlist findest du eine Auswahl an tollen Tierdokumentationen, die nach Kontinenten gefiltert sind.\n" + "Wenn dir ein Video gefällt, kannst du es bei Auswahl auf deinem Laptop ansehen.\n",
@@ -72,6 +72,7 @@ public class SlideAdapter extends PagerAdapter {
 
     @NonNull
     @Override
+    // initiates every item in the view pager slides
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.slide, container,false);

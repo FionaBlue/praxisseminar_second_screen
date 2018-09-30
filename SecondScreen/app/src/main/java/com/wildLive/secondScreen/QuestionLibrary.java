@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import java.io.IOException;
 import java.io.InputStream;
 
+// includes all questions from the json file
 public class QuestionLibrary {
 
     Context mContext;

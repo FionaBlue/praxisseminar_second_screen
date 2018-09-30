@@ -12,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -105,7 +104,9 @@ public class InformationActivity extends AppCompatActivity {
     protected void onResume() {
         WildLive app = (WildLive)getApplication();
         playIcon.setVisibility(View.GONE);
-        if(app.getQuizAvailalibity()){
+
+        // handling advert-play (starting quiz)
+        if(app.getQuizAvailalibity()) {
             quizStartButton.setVisibility(View.VISIBLE);
             pauseIcon.setVisibility(View.GONE);
             advertisementPauseIcon.setVisibility(View.VISIBLE);
@@ -120,7 +121,10 @@ public class InformationActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        // handling back-button-press (when quitting activity for getting back to video-selection)
+        sRClient.sendMsg("pauseVideo");
         sRClient.sendMsg("stopVideo");
+        progressBar.setProgress(0);
         super.onBackPressed();
     }
 
@@ -130,8 +134,11 @@ public class InformationActivity extends AppCompatActivity {
     }
 
     public boolean onPrepareOptionsMenu(Menu menu) {
+        // defining cast-buttons
         activeCast = menu.findItem(R.id.action_cast_connected_information);
         inactiveCast = menu.findItem(R.id.action_cast_information);
+
+        // checking if connection to first screen is done, then changing cast button for visual feedback
         if(sRClient.isConnectedToFS == true){
             activeCast.setVisible(true);
             inactiveCast.setVisible(false);
@@ -159,12 +166,13 @@ public class InformationActivity extends AppCompatActivity {
             sRClient.setMessageListener(new SignalRClient.SignalRCallback<String>() {
                 @Override
                 public void onSuccess(String message) {
-                    //Log.d("LOG_INFOACT", "received :: " + message);
 
+                    // for retaining first screen connection
                     if(message.toString().contains("firstScreenConnected")){
                         sRClient.isConnectedToFS = true;
                     }
 
+                    // getting trigger-point index for showing/revealing trigger-points
                     if (message.toString().contains("index")) {
                         // converting message for right usage
                         final int messagePos = Integer.parseInt(message.substring(5, message.length()));
@@ -219,15 +227,17 @@ public class InformationActivity extends AppCompatActivity {
                         });
                     }
 
+                    // disable quiz-answers when advertisement is paused
                     if(message.toString().contains("disable Quiz-answers")){
                         QuizActivity.getInstance().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                // removing clicking-behaviour from quiz-answer-buttons
                                 QuizActivity.getInstance().buttonA.setClickable(false);
                                 QuizActivity.getInstance().buttonB.setClickable(false);
                                 QuizActivity.getInstance().buttonC.setClickable(false);
                                 QuizActivity.getInstance().buttonD.setClickable(false);
-
+                                // visibly disabling quiz-answer-buttons
                                 QuizActivity.getInstance().buttonA.setTextColor(getResources().getColor(R.color.colorLightGrey));
                                 QuizActivity.getInstance().buttonB.setTextColor(getResources().getColor(R.color.colorLightGrey));
                                 QuizActivity.getInstance().buttonC.setTextColor(getResources().getColor(R.color.colorLightGrey));
@@ -236,15 +246,17 @@ public class InformationActivity extends AppCompatActivity {
                         });
                     }
 
+                    // enable quiz-answers when advertisement is resumed
                     if(message.toString().contains("enable Quiz-answers")){
                         QuizActivity.getInstance().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                // adding clicking-behaviour from quiz-answer-buttons
                                 QuizActivity.getInstance().buttonA.setClickable(true);
                                 QuizActivity.getInstance().buttonB.setClickable(true);
                                 QuizActivity.getInstance().buttonC.setClickable(true);
                                 QuizActivity.getInstance().buttonD.setClickable(true);
-
+                                // visibly enabling quiz-answer-buttons
                                 QuizActivity.getInstance().buttonA.setTextColor(getResources().getColor(R.color.colorBlack));
                                 QuizActivity.getInstance().buttonB.setTextColor(getResources().getColor(R.color.colorBlack));
                                 QuizActivity.getInstance().buttonC.setTextColor(getResources().getColor(R.color.colorBlack));
@@ -262,11 +274,15 @@ public class InformationActivity extends AppCompatActivity {
     private int timeInSeconds(String time) {
         int inSeconds = 0;
         String[] timeUnits = time.split(":");
+        // checking details for hours, minutes, seconds and parsing values to seconds
         if(timeUnits.length == 3){
+            // seconds, minutes and hours are given
             inSeconds = Integer.parseInt(timeUnits[0]) * 60 * 60 + Integer.parseInt(timeUnits[1]) * 60 + Integer.parseInt(timeUnits[2]);
         } else if(timeUnits.length == 2) {
+            // seconds and minutes are given
             inSeconds = Integer.parseInt(timeUnits[0]) * 60 + Integer.parseInt(timeUnits[1]);
         } else if(timeUnits.length == 1) {
+            // seconds are given
             inSeconds = Integer.parseInt(timeUnits[0]);
         }
         return inSeconds;
@@ -322,26 +338,29 @@ public class InformationActivity extends AppCompatActivity {
     public void activateInformationState(InformationViewState state) {
         switch (state) {
             case GUIDE:
+                // guide is showing (when no trigger-points are revealed and no content was unlocked)
                 guideCardView.setVisibility(View.VISIBLE);
                 contentCardView.setVisibility(View.GONE);
                 datalessCardView.setVisibility(View.GONE);
-
+                // handling button appearance
                 buttonReadArticle.setVisibility(View.INVISIBLE);
                 timelineRow.setVisibility(View.VISIBLE);
                 break;
             case CONTENT:
+                // content is showing (at least one trigger-point was revealed and specific content was unlocked)
                 contentCardView.setVisibility(View.VISIBLE);
                 guideCardView.setVisibility(View.GONE);
                 datalessCardView.setVisibility(View.GONE);
-
+                // handling button appearance
                 buttonReadArticle.setVisibility(View.VISIBLE);
                 timelineRow.setVisibility(View.VISIBLE);
                 break;
             case DATALESS:
+                // construction guide is showing (no trigger-points could be found because video was not prepared)
                 datalessCardView.setVisibility(View.VISIBLE);
                 contentCardView.setVisibility(View.GONE);
                 guideCardView.setVisibility(View.GONE);
-
+                // handling button appearance
                 buttonReadArticle.setVisibility(View.INVISIBLE);
                 timelineRow.setVisibility(View.INVISIBLE);
                 break;
@@ -362,6 +381,10 @@ public class InformationActivity extends AppCompatActivity {
                     // no data could be retrieved from database, show specific guide note
                     activateInformationState(InformationViewState.DATALESS);
                     progressBar.setVisibility(View.GONE);       // deactivating progress-loader
+                    //sendVideoId to First Screen to start playing the specific video
+                    if(sRClient != null){
+                        sRClient.sendMsg("playVideo" + videoId);
+                    }
                 }
             }
         });
@@ -409,6 +432,8 @@ public class InformationActivity extends AppCompatActivity {
         // loading responded information in card view elements
         wikiContentTitle.setText(wikiTitle);
         wikiContentExtract.setText(wikiExtract);
+        // set TextView to start of information-text
+        wikiContentExtract.scrollTo(0,0);
         // loading responded image in image view (from retrieved database bitmap)
         wikiContentImage.setImageBitmap(imageBitmap);
     }
@@ -532,6 +557,7 @@ public class InformationActivity extends AppCompatActivity {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public CircleImageView timelineItem;        // substitute for circled item image
             public View timelineItemDivider;            // substitute for dotted divider
+            public TextView timelineItemTimestamp;      // substitute for timestamp
 
             public ViewHolder(@NonNull final View itemView) {
                 super(itemView);
@@ -542,6 +568,9 @@ public class InformationActivity extends AppCompatActivity {
 
                 // defining trigger-point-divider
                 timelineItemDivider = itemView.findViewById(R.id.timelineItemDivider);
+
+                // defining trigger-point-timestamp
+                timelineItemTimestamp = itemView.findViewById(R.id.timelineItemTimestamp);
             }
         }
 
@@ -590,6 +619,9 @@ public class InformationActivity extends AppCompatActivity {
             if (position == contentElements.size()-1) {
                 viewHolder.timelineItemDivider.setVisibility(View.INVISIBLE);
             }
+
+            // setting timestamp time for all trigger point items
+            viewHolder.timelineItemTimestamp.setText(contentElements.get(position).timestamp);
         }
 
         private void onItemClicked(int position) {
@@ -621,6 +653,7 @@ public class InformationActivity extends AppCompatActivity {
 
         private int getItemActivationState() {
             int activatedPosition = -1;
+            // scanning content-list for active item
             for (int i = 0; i < getItemCount(); i++) {
                 if (contentElements.get(i).isActive == true) {
                     activatedPosition = i;
@@ -661,6 +694,7 @@ public class InformationActivity extends AppCompatActivity {
 
         private int getItemPlaceholderCount() {
             int placeholderCounter = 0;
+            // scanning content-list for count of placeholders
             for (int i = 0; i < getItemCount(); i++) {
                 if (contentElements.get(i).isPlaceholder == true) {
                     placeholderCounter++;
@@ -707,6 +741,7 @@ public class InformationActivity extends AppCompatActivity {
                 triggerPointList.get(position).setImageBitmap(contentElements.get(position).imageBitmap);
                 setNavigationArrowVisibility(activatedPosition);
 
+                // if one single item was revealed, chevrons should not be handled yet
                 if (position == 0) {
                     activateInformationState(InformationViewState.CONTENT);
                     setTriggerPoint(position, 0);

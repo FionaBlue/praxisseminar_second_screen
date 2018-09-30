@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
+// This activity handles the onboarding screens via viewpager
 public class OnboardingActivity extends AppCompatActivity {
 
     private ViewPager viewpager;
@@ -32,13 +32,24 @@ public class OnboardingActivity extends AppCompatActivity {
         viewpager.setAdapter(slideAdapter);
         onboardingLayout = (LinearLayout)findViewById(R.id.onboardingLayout);
 
+        indicator = (ImageView) onboardingLayout.findViewById(R.id.imgIndicator);
+        btnNext = (TextView) onboardingLayout.findViewById(R.id.intro_btn_next);
+
+        indicator.setImageResource(R.drawable.ic_indicator1);
+        btnNext.setText("Next");
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                viewpager.setCurrentItem(1);
+            }
+        });
+
+        // Indicates the different slides and changes the texts accordingly
         ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
 
             //Set indicator images and button texts according to the slides
             @Override
             public void onPageSelected(int position) {
-                indicator = (ImageView) onboardingLayout.findViewById(R.id.imgIndicator);
-                btnNext = (TextView) onboardingLayout.findViewById(R.id.intro_btn_next);
 
                 if(position == 0){
                     indicator.setImageResource(R.drawable.ic_indicator1);

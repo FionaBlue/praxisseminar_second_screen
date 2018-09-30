@@ -17,18 +17,26 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-public class VideoRequestHandler {
+// src:
+// https://stackoverflow.com/questions/6407324/how-to-display-image-from-url-on-android
+// https://stackoverflow.com/questions/17549042/android-asynctask-passing-a-single-string
 
+class VideoRequestHandler {
+
+    // AsyncResponse is used for getting AsyncTask result-output in executing Activity
+
+    // developer key is needed for YouTube http requests
+    public static String DEVELOPERKEY = "&key=AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI";
 
     // **************************************************************************
-    //https://stackoverflow.com/questions/6407324/how-to-display-image-from-url-on-android
 
     public static class GetImage extends AsyncTask<String, Void, Drawable> {
 
         private String inputURL;
         private AsyncResponse delegate;
+        private InputStream is = null;
 
-        public GetImage(AsyncResponse delegate){
+        GetImage(AsyncResponse delegate){
             this.delegate = delegate;
         }
 
@@ -40,63 +48,67 @@ public class VideoRequestHandler {
             delegate.processFinish(result);
         }
 
-
         @Override
         protected Drawable doInBackground(String... params) {
+
+            // get passed URL
             inputURL = params[0];
-            InputStream is = null;
+
+            // try url-content-request
             try {
                 is = (InputStream) new URL(inputURL).getContent();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e) { e.printStackTrace(); }
+
+            // get drawable from inputStream
             Drawable d = Drawable.createFromStream(is, "Thumbnail");
+
             return d;
         }
     }
 
-
     // **************************************************************************
-    //https://stackoverflow.com/questions/17549042/android-asynctask-passing-a-single-string
 
     public static class GetVideos extends AsyncTask<String, Void, ArrayList> {
-        public AsyncResponse delegate = null;
+
+        AsyncResponse delegate = null;
         private Exception exception;
+
+        // parts of request-URL
         private String PLAYLIST_REQUEST = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50";
-        private String PLAYLIST_PREFIX = "&playlistId=";
-        private String DEVELOPERKEY = "&key=AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI";
+        private String PLAYLIST_ID_PREFIX = "&playlistId=";
 
-        public GetVideos(AsyncResponse delegate){
-            this.delegate = delegate;
-        }
+        private String responseAsString;
+        private JSONObject responseAsJSONObject = null;
+        private JSONArray playlistVideosArray;
 
-        public interface AsyncResponse {
-            void processFinish(ArrayList output);
-        }
+        GetVideos(AsyncResponse delegate){ this.delegate = delegate; }
 
-        protected void onPostExecute (ArrayList result) {
-            delegate.processFinish(result);
-        }
+        public interface AsyncResponse { void processFinish(ArrayList output); }
+
+        protected void onPostExecute (ArrayList result) { delegate.processFinish(result); }
 
         @Override
         protected ArrayList doInBackground(String... params) {
 
-
+            // creates new ArrayList for return
             final ArrayList videoArray = new ArrayList();
 
-            HttpClient httpclient = new DefaultHttpClient();
+            // get passed id
             String playlistID = params[0];
-            HttpGet httpget = new HttpGet(PLAYLIST_REQUEST + PLAYLIST_PREFIX + playlistID + DEVELOPERKEY);
+
+            // initialise http-request
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpGet httpget = new HttpGet(PLAYLIST_REQUEST + PLAYLIST_ID_PREFIX + playlistID + DEVELOPERKEY);
             org.apache.http.HttpResponse response = null;
+
+            // try http-request
             try {
                 response = httpclient.execute(httpget);
             } catch (Exception e) {
                 this.exception = e;
             }
-            String responseAsString;
-            JSONObject responseAsJSONObject = null;
-            JSONArray playlistVideosArray;
 
+            // get and convert response to JSON
             try {
                 responseAsString = EntityUtils.toString(response.getEntity());
                 try {
@@ -107,13 +119,19 @@ public class VideoRequestHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            // get video-id, -description and -title values from JSON
             try {
                 playlistVideosArray = responseAsJSONObject.getJSONArray("items");
                 for (int i=0; i<playlistVideosArray.length(); i++){
+                    // create new VideoInformationModel
                     final VideoInformationModel videoInformationModel = new VideoInformationModel();
+
                     JSONObject video = playlistVideosArray.getJSONObject(i);
                     JSONObject snippet = video.getJSONObject("snippet");
                     JSONObject resourceId = snippet.getJSONObject("resourceId");
+
+                    // add values to VideoInformationModel
                     videoInformationModel.videoID = resourceId.getString("videoId");
                     videoInformationModel.videoLength = "0:00";
                     videoInformationModel.videoDescription = snippet.getString("description");
@@ -126,6 +144,7 @@ public class VideoRequestHandler {
             return videoArray;
         }
 
+        // Model for passing values to executing Activity
         public static class VideoInformationModel {
             String videoTitle;
             String videoDescription;
@@ -139,11 +158,17 @@ public class VideoRequestHandler {
 
     public static class GetPlaylists extends AsyncTask<String, Void, LinkedHashMap> {
 
-        public AsyncResponse delegate = null;
-        private Exception exception;
+        // fixed request with channelID from WildLive YouTube Channel
         private String PLAYLISTS_REQUEST = "https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=UC2ETsCbgegY8iqQFwS9Xi4w&key=AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI&maxResults=50";
 
-        public GetPlaylists(AsyncResponse delegate){
+        AsyncResponse delegate = null;
+        private Exception exception;
+
+        private String responseAsString;
+        private JSONObject responseAsJSONObject = null;
+        private JSONArray playlistsArray;
+
+        GetPlaylists(AsyncResponse delegate){
             this.delegate = delegate;
         }
 
@@ -153,21 +178,22 @@ public class VideoRequestHandler {
 
         protected LinkedHashMap doInBackground(String... string) {
 
+            // creates new LinkedHashMap for return
             LinkedHashMap<String, String> playlistRondell = new LinkedHashMap<String, String>();
 
+            // initialise http request
             HttpClient httpclient = new DefaultHttpClient();
             HttpGet httpget = new HttpGet(PLAYLISTS_REQUEST);
             org.apache.http.HttpResponse response = null;
 
+            // try http-request
             try {
                 response = httpclient.execute(httpget);
             } catch (Exception e) {
                 this.exception = e;
             }
-            String responseAsString;
-            JSONObject responseAsJSONObject = null;
-            JSONArray playlistsArray;
 
+            // get and convert response to JSON
             try {
                 responseAsString = EntityUtils.toString(response.getEntity());
                 try {
@@ -178,9 +204,10 @@ public class VideoRequestHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            // get title and id values from JSON
             try {
                 playlistsArray = responseAsJSONObject.getJSONArray("items");
-
                 for (int i=0; i<playlistsArray.length(); i++){
                     JSONObject playlist = playlistsArray.getJSONObject(i);
                     JSONObject snippet = playlist.getJSONObject("snippet");
@@ -189,6 +216,7 @@ public class VideoRequestHandler {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
             return playlistRondell;
         }
 
@@ -201,17 +229,20 @@ public class VideoRequestHandler {
 
     public static class GetVideoLength extends AsyncTask<String, Void, String> {
 
-        private String DEVELOPERKEY = "&key=AIzaSyBlkMtESdOPSEVaSDGU9z5BhFJ5NbBLBmI";
+        // parts of request-URL
         private String VIDEO_REQUEST = "https://www.googleapis.com/youtube/v3/videos?id=";
         private String VIDEO_REQUEST_CONTENTDETAILS = "&part=contentDetails";
-
         private String inputID;
+
         private AsyncResponse delegate;
         private Exception exception;
 
-        String videoLength = "0:00";
+        private String videoLength = "0:00";
+        private JSONArray videoLengthArray;
+        private String responseAsString;
+        private JSONObject responseAsJSONObject = null;
 
-        public GetVideoLength(AsyncResponse delegate){
+        GetVideoLength(AsyncResponse delegate){
             this.delegate = delegate;
         }
 
@@ -226,18 +257,22 @@ public class VideoRequestHandler {
         @Override
         protected String doInBackground(String... params) {
 
+            // get passed id
             inputID = params[0];
+
+            // initialise http-request
             HttpClient httpclient = new DefaultHttpClient();
             HttpGet httpget = new HttpGet(VIDEO_REQUEST + inputID + VIDEO_REQUEST_CONTENTDETAILS + DEVELOPERKEY);
             org.apache.http.HttpResponse response = null;
+
+            // try http-request
             try {
                 response = httpclient.execute(httpget);
             } catch (Exception e) {
                 this.exception = e;
             }
-            String responseAsString;
-            JSONObject responseAsJSONObject = null;
-            JSONArray videoLengthArray;
+
+            // get and convert response to JSON
             try {
                 responseAsString = EntityUtils.toString(response.getEntity());
                 try {
@@ -248,6 +283,8 @@ public class VideoRequestHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            // get duration value from JSON
             try {
                 videoLengthArray = responseAsJSONObject.getJSONArray("items");
                 for (int i = 0; i < videoLengthArray.length(); i++) {
@@ -257,8 +294,9 @@ public class VideoRequestHandler {
                     videoLength = videoDuration;
                 }
             } catch (JSONException e){
-
+                e.printStackTrace();
             }
+
             return videoLength;
         }
     }
