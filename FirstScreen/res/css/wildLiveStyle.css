@@ -4,8 +4,8 @@ html {
     margin: 0;
 }
 
-body {
-    background: url("../img/Default_map.jpg") no-repeat center center fixed; 
+body { 
+    background: url("../img/Default_map.jpg") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -19,7 +19,7 @@ body {
 /*https://www.w3schools.com/cssref/tryit.asp?filename=trycss_grid*/
 .firstScreenGrid {
     display: grid;
-    grid: 15% auto 10% 10% / 12.5% auto 12.5%;
+    grid: 5% auto 2% 15% 10% / 12.5% auto 12.5%;
     
     text-align: center;
     justify-content: stretch;
@@ -42,22 +42,28 @@ body {
 .scoreSection {
     grid-column: 3;
     grid-row: 1;
-    min-height: 100%;
+    min-height: 300%;
 
     /* moving score down a bit */
     -ms-transform: translate(-40px, 60px); /* IE 9 */
     -webkit-transform: translate(-40px, 60px); /* Safari */
     transform: translate(-40px, 60px);
 }
+#quizScoreText {
+    padding-bottom: 2%;
+    
+    /* styling */
+    color: #a8cafe;
+    font-size: 14pt;
+    letter-spacing: 2px;
+}
 .scoreSection img {
     height: 100%;
 }
 #quizScore {
-    /* score text positioning */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    text-align: center;
+    position: relative;
+    transform: translate(0, -225%);
     
     /* score style */
     color: #a8cafe;
@@ -69,7 +75,7 @@ body {
 /* ------------------------------------------------------------ */
 .castSection {
     grid-column: 1;
-    grid-row: 4;
+    grid-row: 5;
     min-height: 100%;
     text-align: left;
 }
@@ -82,7 +88,7 @@ body {
 /* TEMPLATE VIDEO + TIMELINE */
 /* ============================================================ */
 #videoTimelineContent {
-    grid-area: 2 / 2 / span 2 / span 1;
+    grid-area: 2 / 2 / span 3 / span 1;
     
     text-align: center;
     justify-content: stretch;
@@ -96,7 +102,7 @@ body {
 }
 #videoTimeline {
     display: grid;
-    grid: auto 12% / auto;
+    grid: auto 5% 15% / auto;
     
     text-align: center;
     justify-content: stretch;
@@ -117,31 +123,69 @@ body {
     grid-row: 1;
     min-height: 100%;
     width: 840px;
-    
-    /* moving video up a bit */
-    -ms-transform: translate(0, -10px); /* IE 9 */
-    -webkit-transform: translate(-0, -10px); /* Safari */
-    transform: translate(0, -10px);
+
+    overflow: hidden;
+    position: relative;
 }
-#player {
+#playerDiv {
+    width: 100%;
     position: absolute;
-    margin: auto;
-    left: 50%;
-    transform: translate(-50%);
+    left: 0;
+    bottom: 0;
+    height: 460px;
+    text-align: center;
 }
 #videoFrame {
-    top: 0%;
     width: 100%;
+}
+
+/* VIDEO PROGRESS */
+/* ------------------------------------------------------------ */
+.videoProgressSection {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 100%;
+    width: 100%;
+}
+#videoProgress {
+    width: 840px;
+    padding-top: 2px;
+    padding-bottom: 3px;
+    white-space: nowrap;
+    display: inline-block;
+    overflow: hidden;
+
+    /* styling */
+    background-color: #666666;
+}
+#videoProgressBar {
+    display: inline-block;
+    width: 84%;
+
+    /* styling */
+    background-color: #a8cafe;
+}
+#videoProgressTime {
+    display: inline-block;
+    
+    /* styling */
+    color: #bdbdbd;
+    font-size: 10pt;
 }
 
 /* TIMELINE */
 /* ------------------------------------------------------------ */
 .timelineSection {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 3;
     min-height: 100%;
     text-align: center;
     width: 100%;
+
+    /* moving video up a bit */
+    -ms-transform: translate(0, 15px); /* IE 9 */
+    -webkit-transform: translate(-0, 15px); /* Safari */
+    transform: translate(0, 15px);
 }
 .chevron {
     max-width: 10%;
@@ -150,13 +194,17 @@ body {
 .chevron img {
     height: 35px;
     width: 35px;
-    padding-bottom: 17.5px;
+    padding-bottom: 32px;
 }
 .metadataInfoProgress {
-    max-width: 60%;
+    width: 700px;
     white-space: nowrap;
     display: inline-block;
-    overflow: hidden;                   /* actual scroll bar */
+    overflow: hidden;   /* actual scroll bar */
+}
+.metaInfo {
+    white-space: nowrap;
+    display: inline-block;
 }
 .metaImg {
     height: 70px;
@@ -169,13 +217,21 @@ body {
     -moz-box-shadow: 0px 1px 2px 0px rgba(115,115,115,1);
     box-shadow: 0px 1px 2px 0px rgba(115,115,115,1);
 }
+.metaTimestamp {
+    text-align: center;
+    width: 70px;
+    
+    /* score style */
+    color: #a9a9a9;
+    font-size: 10pt;
+}
 .metaDivider {
     height: 35px;
     width: 40px;
-    padding-bottom: 17.5px;
+    padding-bottom: 32px;
 }
 .greyScaling {
-    filter: gray;                     /* IE6-9 */
+    filter: gray;                       /* IE6-9 */
     -webkit-filter: grayscale(1);       /* Google Chrome, Safari 6+ & Opera 15+ */
     filter: grayscale(1);               /* Microsoft Edge and Firefox 35+ */
 }
@@ -187,7 +243,7 @@ body {
 /* TEMPLATE BINDING (POPUP) */
 /* ============================================================ */
 .templateBinding {
-    grid-area: 2 / 2 / span 2 / span 1;
+    grid-area: 2 / 2 / span 3 / span 1;
     
     text-align: center;
     justify-content: stretch;
@@ -201,6 +257,7 @@ body {
 }
 #popUp {
     display: grid;
+    margin-top: 5%;
     grid: 10% 12% auto 15% / 30% auto 30%;
     
     /* moving video up a bit */
@@ -314,11 +371,7 @@ body {
 #iconPopUp {
     display: grid;
     grid: 30% auto 10% 30% / 40% auto 40%;
-    
-    /* moving video up a bit */
-    -ms-transform: translate(0, -60px); /* IE 9 */
-    -webkit-transform: translate(-0, -60px); /* Safari */
-    transform: translate(0, -60px);
+    margin-bottom: 12%;
     
     text-align: center;
     justify-content: stretch;

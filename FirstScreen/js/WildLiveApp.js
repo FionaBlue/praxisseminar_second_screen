@@ -26,12 +26,20 @@ var WildLiveApp = (function() {
     
         function onVideoStarted() {
             removePopUpTemplate();  // removing loader
+            
+            // showing video-progressbar
+            document.querySelector(".videoProgressSection").classList.remove("hidden");
+            
             document.body.style.backgroundImage = "url('res/img/Empty_map.jpg')";
         }
     
         function onVideoEnded() {
             deactivateVideoTimelineContentView();
             removePopUpTemplate();  // removing loader
+            
+            // hiding video-progressbar
+            document.querySelector(".videoProgressSection").classList.add("hidden");
+            
             document.body.style.backgroundImage = "url('res/img/Coloured_map.jpg')";
         }
         

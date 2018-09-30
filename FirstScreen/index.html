@@ -27,7 +27,15 @@
                 <div id="videoTimeline">
                     <!-- video section (youtube video player) -->
                     <div class="videoSection" id="videoFrame">
-                        <div id="player"></div>
+                        <div id="playerDiv"><div id="player"></div></div>
+                    </div>
+                    
+                    <!-- video progressbar (for youtube video) -->
+                    <div class="videoProgressSection hidden">
+                        <div id="videoProgress">
+                            <div id="videoProgressBar">+++progressbar+++</div>
+                            <div id="videoProgressTime">01:45:22 | 02:50:00</div>
+                        </div>
                     </div>
 
                     <!-- timeline section (timeline with trigger-point-images) -->
@@ -45,6 +53,7 @@
 
             <!-- score section (quiz highscore) -->
             <div class="scoreSection hidden">
+                <div id="quizScoreText">SCORE</div>
                 <img src="res/img/score.png" alt="score">
                 <div id="quizScore"></div>
             </div>

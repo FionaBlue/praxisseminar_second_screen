@@ -44,7 +44,7 @@ WildLiveApp.DatabaseHandler = function() {
                 var timestampSeconds = parseInt(timestampTime[0])*60*60 + parseInt(timestampTime[1])*60 + parseInt(timestampTime[2]);
 
                 // generating new trigger-point-object for each retrieval (for ui-timeline-binding)
-                var triggerPoint = { currentId: currentId, imageUrl: imageUrl, imageFile: imageFile, timestamp: timestampSeconds, title: title, isActive: false, isPlaceholder: true };
+                var triggerPoint = { currentId: currentId, imageUrl: imageUrl, imageFile: imageFile, timestampRaw: timestamp, timestamp: timestampSeconds, title: title, isActive: false, isPlaceholder: true };
                 // adding trigger-point to list for later ui-binding
                 itemsFromDatabase.push(triggerPoint);
 
@@ -65,21 +65,33 @@ WildLiveApp.DatabaseHandler = function() {
         for (var i = 0; i < itemsFromDatabase.length; i++) {
             var databaseItem = itemsFromDatabase[i];
 
-            // creating empty img elements
+            // creating empty meta-info block elements (for image and timestamp)
+            var triggerPointInfoDiv = document.createElement('div');
             var triggerPoint = document.createElement('img');
+            var triggerPointTimestamp = document.createElement('div');
+            // creating empty divider-image
             var triggerPointDivider = document.createElement('img');
 
-            // adding attributes to new img trigger-point-element
+            // adding attributes to meta-info-block-div
+            triggerPointInfoDiv.classList.add('metaInfo');
+            // adding attributes to new image trigger-point-element
             triggerPoint.id = databaseItem.currentId;
             triggerPoint.classList.add('metaImg');
             triggerPoint.src = 'res/img/placeholder.png';
+            // adding attributes to new div trigger-point-timestamp
+            triggerPointTimestamp.classList.add('metaTimestamp');
+            triggerPointTimestamp.innerHTML = databaseItem.timestampRaw;
+            // adding both elements (image and timestamp-div) to meta-info-block-div
+            triggerPointInfoDiv.appendChild(triggerPoint);
+            triggerPointInfoDiv.appendChild(triggerPointTimestamp);
+
 
             // adding attributes to new divider-element
             triggerPointDivider.classList.add('metaDivider');
             triggerPointDivider.src = 'res/img/divider.png';
 
             // appending generated img elements to timeline
-            timeline.appendChild(triggerPoint);
+            timeline.appendChild(triggerPointInfoDiv);
             if (triggerPoint.id != itemsFromDatabase.length-1) {
                 timeline.appendChild(triggerPointDivider);
             }

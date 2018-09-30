@@ -68,6 +68,9 @@ WildLiveApp.MessageHandler = function() {
         else if (encodedMsg == "Default"){
             document.body.style.backgroundImage = "url('res/img/Default_map.jpg')";
         }
+        else if(encodedMsg == "Coloured"){
+            document.body.style.backgroundImage = "url('res/img/Coloured_map.jpg')";
+        }
         // -----------------------------------------------------------------
         //playVideo
         if(encodedMsg.includes("playVideo")){
