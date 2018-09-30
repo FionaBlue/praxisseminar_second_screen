@@ -273,19 +273,13 @@ public class VideoBibActivity extends AppCompatActivity {
 
                 // clicking on the left chevron moves 'Rondell' to previous continent/category in the list
                 Integer continentIndex = (Integer) getContinentIndex(continents, (String) continentTitle.getText());
+                String previousContinent;
                 if (continentIndex - 1 < 0) {                       // if the current continent is the first in the list switch to the last
-                    String lastContinent = getContinentByIndex(continents, continents.size() -1);
-                    continentTitle.setText(lastContinent);                          // set new continent
-                    setContinentColor(lastContinent);                                // set new matching color
-                    resetVideoView();                                               // remove old videos
-                    getContinentVideos((String) continents.get(lastContinent));     // set new videos
+                    previousContinent = getContinentByIndex(continents, continents.size() -1);
                 } else {
-                    String lastContinent = getContinentByIndex(continents, continentIndex -1);
-                    continentTitle.setText(lastContinent);                          // set new continent
-                    setContinentColor(lastContinent);                                // set new matching color
-                    resetVideoView();                                               // remove old videos
-                    getContinentVideos((String) continents.get(lastContinent));     // set new videos
+                    previousContinent = getContinentByIndex(continents, continentIndex -1);
                 }
+                switchToNewContinent(previousContinent);
             }
         });
 
@@ -299,21 +293,22 @@ public class VideoBibActivity extends AppCompatActivity {
 
                 // clicking on the right chevron moves 'Rondell' to next continent/category in the list
                 Integer continentIndex = (Integer) getContinentIndex(continents, (String) continentTitle.getText());
+                String nextContinent;
                 if (continentIndex + 1 > continents.size()-1) {     // if the current continent is the last in the list switch to the first
-                    String nextContinent = getContinentByIndex(continents, 0);
-                    continentTitle.setText(nextContinent);                          // set new continent
-                    setContinentColor(nextContinent);                                // set new matching color
-                    resetVideoView();                                               // remove old videos
-                    getContinentVideos((String) continents.get(nextContinent));     // set new videos
+                    nextContinent = getContinentByIndex(continents, 0);
                 } else {
-                    String nextContinent = getContinentByIndex(continents, continentIndex+1);
-                    continentTitle.setText(nextContinent);                          // set new continent
-                    setContinentColor(nextContinent);                                // set new matching color
-                    resetVideoView();                                               // remove old videos
-                    getContinentVideos((String) continents.get(nextContinent));     // set new videos
+                    nextContinent = getContinentByIndex(continents, continentIndex+1);
                 }
+                switchToNewContinent(nextContinent);
             }
         });
+    }
+
+    private void switchToNewContinent(String newContinent){
+        continentTitle.setText(newContinent);                          // set new continent
+        setContinentColor(newContinent);                               // set new matching color
+        resetVideoView();                                              // remove old videos
+        getContinentVideos((String) continents.get(newContinent));     // set new videos
     }
 
     // get index of specific continent/category
