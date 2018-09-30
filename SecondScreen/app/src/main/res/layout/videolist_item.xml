@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    tools:ignore="ExtraText"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        card_view:cardCornerRadius="10dp"
+        android:padding="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="2.5dp"
+        android:id="@+id/videoItemCard">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <!-- thumbnail -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.45"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <!-- thumbnail -->
+                <com.google.android.youtube.player.YouTubeThumbnailView
+                    android:id="@+id/thumbnailView"
+                    android:layout_width="130dp"
+                    android:layout_height="100dp"
+                    android:visibility="gone"
+                    android:layout_gravity="center"/>
+
+                <!-- progress bar -->
+                <ProgressBar
+                    android:id="@+id/thumbnailLoad"
+                    android:layout_width="130dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"/>
+
+            </LinearLayout>
+
+            <!-- video information -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.55"
+                android:orientation="vertical"
+                android:layout_marginVertical="10dp"
+                android:layout_marginLeft="2.5dp"
+                android:layout_marginRight="5dp">
+
+                <!-- video title -->
+                <TextView
+                    android:id="@+id/titleView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.2"
+                    android:singleLine="true"
+                    android:textStyle="bold"/>
+
+                <!-- video description -->
+                <TextView
+                    android:id="@+id/descriptionView"
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:maxLines="3"
+                    android:layout_weight="0.6"
+                    android:ellipsize="marquee"
+                    android:textColor="@color/colorLightGrey"/>
+
+                <!-- video length -->
+                <TextView
+                    android:id="@+id/lengthView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.2"
+                    android:textColor="@color/colorGrey"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

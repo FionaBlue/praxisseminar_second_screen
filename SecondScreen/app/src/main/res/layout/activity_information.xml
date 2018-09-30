@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- activity layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.15"
+            android:orientation="horizontal"
+            android:id="@+id/timelineRow">
+
+            <!-- arrow/chevron left -->
+            <ImageView
+                android:id="@+id/timelineChevronLeft"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_chevron_left_grey_24dp" />
+
+            <!-- wiki content trigger timeline (video trigger-points), holding horizontal list view items -->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/timeline"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_weight="0.8"
+                android:padding="10dp"
+                android:orientation="horizontal"/>
+
+            <!-- arrow/chevron right -->
+            <ImageView
+                android:id="@+id/timelineChevronRight"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_chevron_right_grey_24dp" />
+        </LinearLayout>
+
+
+        <!-- specific wiki content (card view) -->
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.65"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="15dp"
+            app:cardCornerRadius="15dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <!-- card-view-layout for non-existent-data state (no data for videoId, so recycler-view is not available too) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.85"
+                    android:orientation="vertical"
+                    android:id="@+id/datalessCardView">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.8"
+                        android:src="@drawable/img_onboarding3"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:paddingLeft="30px"
+                        android:paddingRight="30px"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.2"
+                        android:gravity="center_horizontal"
+                        android:text="@string/no_information_text"
+                        android:textStyle="bold"
+                        android:textSize="15sp"/>
+                </LinearLayout>
+
+                <!-- card-view-layout for initial state (no placeholder was revealed) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.85"
+                    android:orientation="vertical"
+                    android:id="@+id/guideCardView">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.8"
+                        android:src="@drawable/img_onboarding4"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:paddingLeft="30px"
+                        android:paddingRight="30px"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.2"
+                        android:gravity="center_horizontal"
+                        android:text="@string/wait_for_it_text"
+                        android:textStyle="bold"
+                        android:textSize="15sp"/>
+                </LinearLayout>
+
+                <!-- card-view-layout for base state (when at least one placeholder was revealed) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.85"
+                    android:orientation="vertical"
+                    android:id="@+id/contentCardView">
+                    <ImageView
+                        android:id="@+id/wikiImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:scaleType="centerCrop"
+                        android:layout_weight="0.30"/>
+
+                    <TextView
+                        android:id="@+id/currentWikiTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:textStyle="bold"
+                        android:paddingTop="15dp"
+                        android:paddingHorizontal="20dp"
+                        android:layout_weight="0.10"
+                        android:textSize="18dp" />
+
+                    <TextView
+                        android:id="@+id/currentWikiExtract"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="15dp"
+                        android:layout_weight="0.44"
+                        android:scrollbars="vertical"
+                        android:textSize="16dp" />
+
+                    <View
+                        android:id="@+id/divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.005"
+                        android:layout_marginHorizontal="15dp"
+                        android:background="?android:attr/listDivider" />
+                </LinearLayout>
+
+                <!-- further buttons (for external link and quiz) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.15"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_height="match_parent"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.2"/>
+
+                    <Button
+                        android:id="@+id/buttonReadArticle"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.4"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:letterSpacing="0.2"
+                        android:text="@string/read_wikipedia"
+                        android:layout_height="wrap_content" />
+
+                    <ImageButton
+                        android:id="@+id/quizStartButton"
+                        android:src="@drawable/quiz_marker"
+                        android:background="@null"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.2"
+                        android:layout_height="match_parent"
+                        android:scaleType="fitEnd"
+                        android:layout_marginBottom="10dp"
+                        android:visibility="invisible"/>
+                </LinearLayout>
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <!-- video controller (play, pause, etc.) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.10"
+            android:background="@color/colorDarkGrey"
+            android:orientation="vertical">
+
+            <!-- video progress bar -->
+            <SeekBar
+                android:id="@+id/videoProgress"
+                style="@style/Widget.AppCompat.SeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:layout_weight="0.1"
+                android:max="100"
+                android:progress="0"
+                android:clickable="false"
+                android:focusableInTouchMode="false"
+                android:focusable="false"/>
+
+            <!-- video control icons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.9">
+
+                <ImageView
+                    android:id="@+id/video_replay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_replay_10_white_24dp"
+                    android:layout_weight="0.2"
+                    android:layout_gravity="center"/>
+                <ImageView
+                    android:id="@+id/video_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_play_arrow_white_24dp"
+                    android:layout_weight="0.2"
+                    android:layout_gravity="center"
+                    android:visibility="gone"/>
+                <ImageView
+                    android:id="@+id/video_pause"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_pause_white_24dp"
+                    android:layout_weight="0.2"
+                    android:layout_gravity="center"/>
+                <ImageView
+                    android:id="@+id/video_pause_Advertisement"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_pause_grey_24dp"
+                    android:layout_weight="0.2"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    android:clickable="false"/>
+                <ImageView
+                    android:id="@+id/video_forward"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_forward_10_white_24dp"
+                    android:layout_weight="0.2"
+                    android:layout_gravity="center"/>
+                <ImageView
+                    android:id="@+id/video_volumeDown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_volume_down_white_24dp"
+                    android:layout_weight="0.2"
+                    android:layout_gravity="center"/>
+                <ImageView
+                    android:id="@+id/video_volumeUp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_volume_up_white_24dp"
+                    android:layout_weight="0.2"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- progress bar that waits for content to be loaded -->
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="100dp"
+            android:layout_gravity="center"
+            android:id="@+id/informationLoader"/>
+
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

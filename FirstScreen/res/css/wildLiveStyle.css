@@ -1,0 +1,427 @@
+html {
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+body { 
+    background: url("../img/Default_map.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+/*https://www.w3schools.com/cssref/tryit.asp?filename=trycss_grid*/
+.firstScreenGrid {
+    display: grid;
+    grid: 5% auto 2% 15% 10% / 12.5% auto 12.5%;
+    
+    text-align: center;
+    justify-content: stretch;
+    align-content: stretch;
+    
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+
+/* SCORE */
+/* ------------------------------------------------------------ */
+.scoreSection {
+    grid-column: 3;
+    grid-row: 1;
+    min-height: 300%;
+
+    /* moving score down a bit */
+    -ms-transform: translate(-40px, 60px); /* IE 9 */
+    -webkit-transform: translate(-40px, 60px); /* Safari */
+    transform: translate(-40px, 60px);
+}
+#quizScoreText {
+    padding-bottom: 2%;
+    
+    /* styling */
+    color: #a8cafe;
+    font-size: 14pt;
+    letter-spacing: 2px;
+}
+.scoreSection img {
+    height: 100%;
+}
+#quizScore {
+    text-align: center;
+    position: relative;
+    transform: translate(0, -225%);
+    
+    /* score style */
+    color: #a8cafe;
+    font-size: 22pt;
+    font-weight: bold;
+}
+
+/* CAST BUTTON */
+/* ------------------------------------------------------------ */
+.castSection {
+    grid-column: 1;
+    grid-row: 5;
+    min-height: 100%;
+    text-align: left;
+}
+.castButton img {
+    margin-left: 10%;
+    height: 65px;
+}
+
+
+/* TEMPLATE VIDEO + TIMELINE */
+/* ============================================================ */
+#videoTimelineContent {
+    grid-area: 2 / 2 / span 3 / span 1;
+    
+    text-align: center;
+    justify-content: stretch;
+    align-content: stretch;
+    
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+#videoTimeline {
+    display: grid;
+    grid: auto 5% 15% / auto;
+    
+    text-align: center;
+    justify-content: stretch;
+    align-content: stretch;
+    
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+
+/* VIDEO */
+/* ------------------------------------------------------------ */
+.videoSection {
+    grid-column: 1;
+    grid-row: 1;
+    min-height: 100%;
+    width: 840px;
+
+    overflow: hidden;
+    position: relative;
+}
+#playerDiv {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 460px;
+    text-align: center;
+}
+#videoFrame {
+    width: 100%;
+}
+
+/* VIDEO PROGRESS */
+/* ------------------------------------------------------------ */
+.videoProgressSection {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 100%;
+    width: 100%;
+}
+#videoProgress {
+    width: 840px;
+    padding-top: 2px;
+    padding-bottom: 3px;
+    white-space: nowrap;
+    display: inline-block;
+    overflow: hidden;
+
+    /* styling */
+    background-color: black;
+}
+#videoProgressBar {
+    display: inline-block;
+    width: 84%;
+    min-height: 10px;
+
+    /* styling */
+    background-color: #36393f;
+    opacity: 80%;
+}
+#videoCurrentProgress {
+    width: 0%;
+    min-height: 10px;
+    background-color: #3f6fb9;
+}
+#videoProgressTime {
+    display: inline-block;
+    
+    /* styling */
+    color: #bdbdbd;
+    font-size: 10pt;
+}
+
+/* TIMELINE */
+/* ------------------------------------------------------------ */
+.timelineSection {
+    grid-column: 1;
+    grid-row: 3;
+    min-height: 100%;
+    text-align: center;
+    width: 100%;
+
+    /* moving video up a bit */
+    -ms-transform: translate(0, 15px); /* IE 9 */
+    -webkit-transform: translate(-0, 15px); /* Safari */
+    transform: translate(0, 15px);
+}
+.chevron {
+    max-width: 10%;
+    display: inline;
+}
+.chevron img {
+    height: 35px;
+    width: 35px;
+    padding-bottom: 32px;
+}
+.metadataInfoProgress {
+    width: 700px;
+    white-space: nowrap;
+    display: inline-block;
+    overflow: hidden;   /* actual scroll bar */
+}
+.metaInfo {
+    white-space: nowrap;
+    display: inline-block;
+}
+.metaImg {
+    height: 70px;
+    width: 70px;
+    border-radius: 50%;                 /* rounding image */
+    object-fit: cover;                  /* https://css-tricks.com/almanac/properties/o/object-fit/ */
+    object-position: center;            /* centering the image within the element */
+    /* shadows */
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(115,115,115,1);
+    -moz-box-shadow: 0px 1px 2px 0px rgba(115,115,115,1);
+    box-shadow: 0px 1px 2px 0px rgba(115,115,115,1);
+}
+.metaTimestamp {
+    text-align: center;
+    width: 70px;
+    
+    /* score style */
+    color: #5b5d60;
+    font-size: 10pt;
+}
+.metaDivider {
+    height: 35px;
+    width: 40px;
+    padding-bottom: 32px;
+}
+.greyScaling {
+    filter: gray;                       /* IE6-9 */
+    -webkit-filter: grayscale(1);       /* Google Chrome, Safari 6+ & Opera 15+ */
+    filter: grayscale(1);               /* Microsoft Edge and Firefox 35+ */
+}
+.hiddenItem {
+    opacity: 0;
+}
+
+
+/* TEMPLATE BINDING (POPUP) */
+/* ============================================================ */
+.templateBinding {
+    grid-area: 2 / 2 / span 3 / span 1;
+    
+    text-align: center;
+    justify-content: stretch;
+    align-content: stretch;
+    
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+#popUp {
+    display: grid;
+    margin-top: 5%;
+    grid: 10% 12% auto 15% / 30% auto 30%;
+    
+    /* moving video up a bit */
+    -ms-transform: translate(0, -20px); /* IE 9 */
+    -webkit-transform: translate(-0, -20px); /* Safari */
+    transform: translate(0, -20px);
+    
+    text-align: center;
+    justify-content: stretch;
+    align-content: stretch;
+    
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+/* POPUP */
+/* ------------------------------------------------------------ */
+#popUpHeader {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 100%;
+    
+    /* styling */
+    background-color: #3f6fb9;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    font-size: 20pt;
+    color: white;
+    padding: 3%;
+    -webkit-box-shadow: 0px -4px 12px -6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px -4px 12px -6px rgba(0,0,0,0.75);
+    box-shadow: 0px -4px 12px -6px rgba(0,0,0,0.75);
+}
+#popUpTimer {
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 100%;
+    
+    /* styling */
+    background-color: white;
+    font-size: 30pt;
+    color: #a8cafe;
+    padding: 3%;
+}
+#popUpImageDiv {
+    grid-column: 2;
+    grid-row: 3;
+    min-height: 100%;
+    
+    /* styling */
+    background-color: white;
+}
+#popUpImage {
+    height: 325px;
+}
+#popUpText {
+    grid-column: 2;
+    grid-row: 4;
+    min-height: 100%;
+    
+    /* styling */
+    background-color: white;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    -webkit-box-shadow: 0px 8px 12px -6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 8px 12px -6px rgba(0,0,0,0.75);
+    box-shadow: 0px 8px 12px -6px rgba(0,0,0,0.75);
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+
+/* LOADER */
+/* ------------------------------------------------------------ */
+/*https://www.w3schools.com/howto/howto_css_loader.asp*/
+#loaderDiv {
+    display: grid;
+    grid-area: 3 / 2 / span 1 / span 1;
+    
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+#loader {
+    grid-column: 2;
+    grid-row: 1;
+    width: 200px;
+    height: 200px;
+
+    /* styling */
+    border: 16px solid #3F51B5;
+    border-top: 16px solid white;
+    border-radius: 50%;
+
+    /* animation */
+    animation: spin 2s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+/* TEMPLATE BINDING (ICON POPUP) */
+/* ============================================================ */
+#iconPopUp {
+    display: grid;
+    grid: 30% auto 10% 30% / 40% auto 40%;
+    margin-bottom: 12%;
+    
+    text-align: center;
+    justify-content: stretch;
+    align-content: stretch;
+    
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+/* POPUP */
+/* ------------------------------------------------------------ */
+#iconPopUpImageDiv {
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 100%;
+    padding-top: 5%;
+    
+    /* styling */
+    background-color: white;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    -webkit-box-shadow: 0px -4px 12px -6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px -4px 12px -6px rgba(0,0,0,0.75);
+    box-shadow: 0px -4px 12px -6px rgba(0,0,0,0.75);
+}
+#iconPopUpImage {
+    height: 150px;
+}
+#iconPopUpTimer {
+    grid-column: 2;
+    grid-row: 3;
+    min-height: 100%;
+    
+    /* styling */
+    background-color: white;
+    font-size: 25pt;
+    color: #a8cafe;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    -webkit-box-shadow: 0px 8px 12px -6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 8px 12px -6px rgba(0,0,0,0.75);
+    box-shadow: 0px 8px 12px -6px rgba(0,0,0,0.75);
+}

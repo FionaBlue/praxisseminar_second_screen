@@ -1,0 +1,178 @@
+﻿[
+  {
+    "question":"Wie hoch ist die Zahl der auf der Erde lebenden unterschiedlichen Tiere?",
+    "answerA":"10 Millionen",
+    "answerB":"20 Millionen",
+    "answerC":"2 Millionen",
+    "answerD":"5 Millionen",
+    "correctAnswer":"20 Millionen"
+  },
+  {
+    "question":"Wieviel Prozent aller Tiere sollen bis heute erst entdeckt wurden sein?",
+    "answerA":"40 %",
+    "answerB":"65 %",
+    "answerC":"10 %",
+    "answerD":"80 %",
+    "correctAnswer":"10 %"
+  },
+  {
+    "question":"Was sind Karnivoren?",
+    "answerA":"Pflanzenfresser",
+    "answerB":"Allesfresser",
+    "answerC":"Fleischfresser",
+    "answerD":"Fallobstfresser",
+    "correctAnswer":"Fleischfresser"
+  },
+  {
+    "question":"Wie vermehren sich Plattwürmer?",
+    "answerA":"Sie legen Eier",
+    "answerB":"Sie teilen sich und entwickeln sich zu zwei neuen Einzellebewesen",
+    "answerC":"Sie gebären lebende Jungen",
+    "answerD":"Durch Photosynthese",
+    "correctAnswer":"Sie teilen sich und entwickeln sich zu zwei neuen Einzellebewesen"
+  },
+  {
+    "question":"Was ist kein Wirbeltier?",
+    "answerA":"Frosch",
+    "answerB":"Eidechse",
+    "answerC":"Riesenkrake",
+    "answerD":"Schlange",
+    "correctAnswer":"Riesenkrake"
+  },
+  {
+    "question":"Welches Tier gehört nicht zu den Nesseltieren?",
+    "answerA":"Tausendfüßler",
+    "answerB":"Seeanemone",
+    "answerC":"Qualle",
+    "answerD":"Koralle",
+    "correctAnswer":"Tausendfüßler"
+  },
+  {
+    "question":"Wie lang werden Gippsland-Regenwürmer?",
+    "answerA":"Ca. 60cm",
+    "answerB":"Ca. 30cm",
+    "answerC":"Ca. 100cm",
+    "answerD":"Ca. 5000cm",
+    "correctAnswer":"Ca. 100cm"
+  },
+  {
+    "question":"Welches Tier hat mit einem Durchmesser von bis zu 40cm die größten Augen?",
+    "answerA":"Riesenkalmar",
+    "answerB":"Walhai",
+    "answerC":"Blauwal",
+    "answerD":"Elefant",
+    "correctAnswer":"Riesenkalmar"
+  },
+  {
+    "question":"Wie nennt man die harte Außenschale der Insekten, die dem Schutz des Körpers dient?",
+    "answerA":"Krill",
+    "answerB":"Membran",
+    "answerC":"Cuticula",
+    "answerD":"Chinin",
+    "correctAnswer":"Cuticula"
+  },
+  {
+    "question":"Welche Fische gibt es wirklich?",
+    "answerA":"Pinguinschnabelfische",
+    "answerB":"Elefantenrüsselfische",
+    "answerC":"Pferdemaulfische",
+    "answerD":"Affenschwanzfische",
+    "correctAnswer":"Elefantenrüsselfische"
+  },
+  {
+    "question":"Wie viele Krokodilsarten gibt es?",
+    "answerA":"22",
+    "answerB":"2",
+    "answerC":"12",
+    "answerD":"4",
+    "correctAnswer":"22"
+  },
+  {
+    "question":"Welches ist das schnellste Tier der Welt?",
+    "answerA":"Wasserspinne",
+    "answerB":"Wanderfalke",
+    "answerC":"Gepard",
+    "answerD":"Rennmaus",
+    "correctAnswer":"Wanderfalke"
+  },
+  {
+    "question":"Was ist das besondere am Langschnabeligel?",
+    "answerA":"Er ist ein eierlegendes Säugetier",
+    "answerB":"Er hat keine Zunge",
+    "answerC":"Er ist von Geburt an blind",
+    "answerD":"Er kann Wärme sehen",
+    "correctAnswer":"Er ist ein eierlegendes Säugetier"
+  },
+  {
+    "question":"Wie schwer wird das riesige Walross?",
+    "answerA":"1000kg",
+    "answerB":"2500kg",
+    "answerC":"500kg",
+    "answerD":"250kg",
+    "correctAnswer":"1000kg"
+  },
+  {
+    "question":"Was ist eine Geißel?",
+    "answerA":"Langer Fortsatz einer Zelle",
+    "answerB":"Parasit",
+    "answerC":"Das vergiftete Opfer der Schwarzen Witwe",
+    "answerD":"Das Männchen der Gottesanbeterin",
+    "correctAnswer":"Langer Fortsatz einer Zelle"
+  },
+  {
+    "question":"Welche Webspinnengattung gibt es nicht?",
+    "answerA":"Graue Witwe",
+    "answerB":"Weiße Witwe",
+    "answerC":"Schwarze Witwe",
+    "answerD":"Braune Witwe",
+    "correctAnswer":"Graue Witwe"
+  },
+  {
+    "question":"Welche Hautfarbe hat ein ausgewachsener Eisbär?",
+    "answerA":"Gelb",
+    "answerB":"Grün",
+    "answerC":"Schwarz",
+    "answerD":"Rosa",
+    "correctAnswer":"Schwarz"
+  },
+  {
+    "question":"Mit welchem dieser Tiere ist das Flusspferd am nächsten verwandt?",
+    "answerA":"Pferde",
+    "answerB":"Wale",
+    "answerC":"Giraffen",
+    "answerD":"Fische",
+    "correctAnswer":"Wale"
+  },
+  {
+    "question":"Welche Igelart gibt es nicht?",
+    "answerA":"Spitzmausigel",
+    "answerB":"Kleinohrigel",
+    "answerC":"Wüstenigel",
+    "answerD":"Strauchigel",
+    "correctAnswer":"Strauchigel"
+  },
+  {
+    "question":"Wann wurden Pferde domestiziert?",
+    "answerA":"ca. 4000 v.Chr.",
+    "answerB":"ca. 2000 v.Chr.",
+    "answerC":"ca. 3000 v.Chr.",
+    "answerD":"ca. 1000 v.Chr.",
+    "correctAnswer":"ca. 3000 v.Chr."
+  },
+  {
+    "question":"Welche Vogelart gibt es wirklich?",
+    "answerA":"Zilpzalp",
+    "answerB":"Tocktock",
+    "answerC":"Schuhui",
+    "answerD":"Tschilp",
+    "correctAnswer":"Zilpzalp"
+  },
+  {
+    "question":"Die meisten Eulenarten können was nicht?",
+    "answerA":"...ihren Kopf bis zu 270° drehen",
+    "answerB":"...beinahe lautlos fliegen",
+    "answerC":"...binokular sehen",
+    "answerD":"...in völliger Dunkelheit sehen",
+    "correctAnswer":"...in völliger Dunkelheit sehen"
+  }
+]

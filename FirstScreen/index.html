@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html lang="de" id="wildlive_welcomescreen">
+
+    <head>
+
+        <title>WildLive Welcomescreen</title>
+
+        <!-- meta data -->
+        <meta charset="utf-8">
+        <meta name="author" content="Ariane Demleitner, Doris Ebenschwanger, Julia Sageder">
+        <meta name="description" content="Firstscreen der Secondscreenanwendung WildLive">
+        <meta name="keywords" content="Firstscreen, Secondscreen, WildLive, Tiere, Tierdokumentation">
+
+        <!-- css style sheets -->
+        <link rel="stylesheet" href="res/css/wildLiveStyle.css">
+        
+        <!-- sources -->
+        <!-- https://developers.google.com/youtube/iframe_api_reference?hl=de -->
+        <!-- https://material.io/tools/icons/?style=baseline -->
+    </head>
+
+    <body>
+        <div class="firstScreenGrid">
+            
+            <div id="videoTimelineContent">
+                <div id="videoTimeline">
+                    <!-- video section (youtube video player) -->
+                    <div class="videoSection" id="videoFrame">
+                        <div id="playerDiv"><div id="player"></div></div>
+                    </div>
+                    
+                    <!-- video progressbar (for youtube video) -->
+                    <div class="videoProgressSection hidden">
+                        <div id="videoProgress">
+                            <div id="videoProgressBar">
+                                <div id="videoCurrentProgress"></div>                                
+                            </div>
+                            <div id="videoProgressTime">00:00:00 / 00:00:00</div>
+                        </div>
+                    </div>
+
+                    <!-- timeline section (timeline with trigger-point-images) -->
+                    <div class="timelineSection" id="timeline">
+                        <div class="chevron"><img id="chevronLeft" class="hiddenItem" src="res/img/chevron_left.png"></div>
+                        <div class="metadataInfoProgress" id="infoProgress"></div>
+                        <div class="chevron"><img id="chevronRight"  class="hiddenItem" src="res/img/chevron_right.png"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- current placeholder for template content (pop-ups) -->
+            <div class="templateBinding">
+            </div>
+
+            <!-- score section (quiz highscore) -->
+            <div class="scoreSection hidden">
+                <div id="quizScoreText">SCORE</div>
+                <img src="res/img/score.png" alt="score">
+                <div id="quizScore"></div>
+            </div>
+
+            <!-- device connection section (cast button for user feedback) -->
+            <div class="castSection">
+                <!-- cast button for not-connected -->
+                <div class="castButton" id="castNotConnectedButton"><img src="res/img/baseline_cast_white_48dp.png"></div>
+                <!-- cast button for connected (initially hidden) -->
+                <div class="castButton hidden" id="castConnectedButton"><img src="res/img/baseline_cast_connected_white_48dp.png"></div>
+            </div>
+        </div>
+        
+        
+        <!-- template pop-ups -->
+        <!-- ***************************************************************** -->
+
+        <!-- template for loader (pop-up) -->
+        <script type="text/template" id="loaderContent">
+            <!--<div id="popUp">-->
+                <div id="popUpHeader">... BITTE WARTEN ...</div>
+                <div id="popUpTimer"></div>
+                <div id="popUpImageDiv"><div id="loaderDiv"><div id="loader"></div></div></div>
+                <div id="popUpText">Der Inhalt wird geladen. <br>Bitte warte einen Moment! </div>
+            <!--</div>-->
+        </script>
+        
+        <!-- template for advertisement (pop-up) -->
+        <script type="text/template" id="advertisementContent">
+            <!--<div id="popUp">-->
+                <div id="popUpHeader">QUIZ TIME</div>
+                <div id="popUpTimer"></div>
+                <div id="popUpImageDiv"><img id="popUpImage" src="res/img/img_onboarding5.png"></div>
+                <div id="popUpText">Hier könnte Ihre Werbung stehen.</div>
+            <!--</div>-->
+        </script>
+        
+        <!-- template for initial onboarding-guide to load app (pop-up) -->
+        <script type="text/template" id="onBoardingContent">
+            <!--<div id="popUp">-->
+                <div id="popUpHeader">APP DOWNLOAD</div>
+                <div id="popUpTimer"></div>
+                <div id="popUpImageDiv"><img id="popUpImage" src="res/img/guide_firstscreen.png"></div>
+                <div id="popUpText">Lade dir jetzt unsere App und werde Teil der abenteuerlichen WildLive-Community! Ich warte dort auf dich!</div>
+            <!--</div>-->
+        </script>
+        
+        <!-- template for volume up changes (pop-up) -->
+        <script type="text/template" id="volumeUpContent">
+            <!--<div id="iconPopUp">-->
+                <div id="iconPopUpImageDiv"><img id="iconPopUpImage" src="res/img/volume_up.png"></div>
+                <div id="iconPopUpTimer"></div>
+            <!--</div>-->
+        </script>
+        
+        <!-- template for volume down changes (pop-up) -->
+        <script type="text/template" id="volumeDownContent">
+            <!--<div id="iconPopUp">-->
+                <div id="iconPopUpImageDiv"><img id="iconPopUpImage" src="res/img/volume_down.png"></div>
+                <div id="iconPopUpTimer"></div>
+            <!--</div>-->
+        </script>
+        
+        <!-- template for move forward (pop-up) -->
+        <script type="text/template" id="moveForwardContent">
+            <!--<div id="iconPopUp">-->
+                <div id="iconPopUpImageDiv"><img id="iconPopUpImage" src="res/img/move_forward.png"></div>
+                <div id="iconPopUpTimer"></div>
+            <!--</div>-->
+        </script>
+        
+        <!-- template for move backward (pop-up) -->
+        <script type="text/template" id="moveBackwardContent">
+            <!--<div id="iconPopUp">-->
+                <div id="iconPopUpImageDiv"><img id="iconPopUpImage" src="res/img/move_backward.png"></div>
+                <div id="iconPopUpTimer"></div>
+            <!--</div>-->
+        </script>
+        <!-- ***************************************************************** -->
+        
+
+
+
+        <!-- initialize firebase -->
+        <script src="https://www.gstatic.com/firebasejs/5.5.0/firebase.js"></script>
+        <script>
+          var config = {
+            apiKey: "AIzaSyDN36F-020U2ACYgdPIncA11S6OYpeYHBA",
+            authDomain: "wildlive-210609.firebaseapp.com",
+            databaseURL: "https://wildlive-210609.firebaseio.com",
+            projectId: "wildlive-210609",
+            storageBucket: "wildlive-210609.appspot.com",
+            messagingSenderId: "130878348195"
+          };
+          firebase.initializeApp(config);
+        </script>
+
+        <script src="http://www.youtube.com/player_api"></script>
+
+        <script src="js/WildLiveApp.js"></script>
+        <script src="js/YouTubePlayer.js"></script>
+        <script src="js/MessageHandler.js"></script>
+        <script src="js/DatabaseHandler.js"></script>
+
+        <!-- binding signalR behaviour (consider this order!) -->
+        <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+        <script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.1.min.js"></script>
+        <script src="http://pk029-audi-2nds.tvapp-server.de/SecondScreen/hubs"></script> <!-- temporary website url -->
+        <script src="js/SignalRConnection.js"></script>            
+
+        <script>
+            WildLiveApp.init();
+        </script>
+    </body>
+
+</html>

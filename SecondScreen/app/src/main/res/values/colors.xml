@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#7F7FFF</color>
+    <color name="colorAntarktis">#d5d5d5</color>
+    <color name="colorArktis">#d08f79</color>
+    <color name="colorAfrika">#5d8966</color>
+    <color name="colorEuropa">#8383c9</color>
+    <color name="colorAsien">#b084a8</color>
+    <color name="colorSüdamerika">#8eac78</color>
+    <color name="colorNordamerika">#6bd1bc</color>
+    <color name="colorAustralien">#baa789</color>
+    <color name="colorMainBlue">#a8cafe</color>
+    <color name="colorMainOrange">#fd9e58</color>
+    <color name="colorWhite">#FFFF</color>
+    <color name="colorGrey">#484b4f</color>
+    <color name="colorLightGrey">#848991</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorDarkGrey">#212121</color>
+</resources>

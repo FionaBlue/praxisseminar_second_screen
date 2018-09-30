@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "130878348195",
+    "firebase_url": "https://wildlive-210609.firebaseio.com",
+    "project_id": "wildlive-210609",
+    "storage_bucket": "wildlive-210609.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130878348195:android:82713fb5df0a4d0d",
+        "android_client_info": {
+          "package_name": "com.wildLive.secondScreen"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "130878348195-l7akvomb1jh8akkqvf2a1lmej4g19d41.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wildLive.secondScreen",
+            "certificate_hash": "0e27e0f2d5a04ea3a9d02a0c9d0e1aa949a10dd2"
+          }
+        },
+        {
+          "client_id": "130878348195-2ptpjogi6evtv56v5isms6khcn0renkt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAboPSQQfsRAnYCnu7aQ3UuNqZhAAL66Rs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "130878348195-2ptpjogi6evtv56v5isms6khcn0renkt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
