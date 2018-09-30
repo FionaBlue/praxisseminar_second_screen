@@ -156,14 +156,21 @@ body {
     overflow: hidden;
 
     /* styling */
-    background-color: #666666;
+    background-color: black;
 }
 #videoProgressBar {
     display: inline-block;
     width: 84%;
+    min-height: 10px;
 
     /* styling */
-    background-color: #a8cafe;
+    background-color: #36393f;
+    opacity: 80%;
+}
+#videoCurrentProgress {
+    width: 0%;
+    min-height: 10px;
+    background-color: #3f6fb9;
 }
 #videoProgressTime {
     display: inline-block;
@@ -222,7 +229,7 @@ body {
     width: 70px;
     
     /* score style */
-    color: #a9a9a9;
+    color: #5b5d60;
     font-size: 10pt;
 }
 .metaDivider {

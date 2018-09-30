@@ -16,7 +16,8 @@ WildLiveApp.YouTubePlayer = function() {
       adDurationInSeconds,
       currentTimerTime,
       pausedTimerTime,
-      adJingle;
+      adJingle,
+      videoProgress;
 
   function loadPlayer(videoID) {
     signalRClient = WildLiveApp.getSignalRClient();
@@ -45,6 +46,17 @@ WildLiveApp.YouTubePlayer = function() {
   function getCurrentVideoTime() {
     return player.getCurrentTime();
   }
+
+  function updateProgressBar(currVideoTime, videoDuration) {
+    console.log("currProg");
+    var elem = document.getElementById("videoCurrentProgress");   
+    var width = 0;
+    var stride = 100/(videoDuration/currVideoTime);
+    width = Math.round(stride);
+    if (width < 100) {
+      elem.style.width = width + '%'; 
+    }
+  }
     
   function onPlayerStateChanged(event) {
     // clearing youtube-player iframe when quitting video
@@ -56,8 +68,20 @@ WildLiveApp.YouTubePlayer = function() {
   // The API will call this function when the video player is ready.
   function onPlayerReady(event) {
     event.target.playVideo();
-    sendVideoProgressToAndroidDevice();
+    sendVideoProgressToAndroidDevice();    
+    startVideoProgress();
     startAdTimer(testAd);
+  }
+
+  function startVideoProgress(){
+    var progressTime = document.getElementById('videoProgressTime');
+    var currentVideoTime = player.getCurrentTime();
+    var videoDuration = player.getDuration();
+    progressTime.innerHTML = formatTime(currentVideoTime) + " / " + formatTime(videoDuration);
+    updateProgressBar(currentVideoTime, videoDuration);
+    videoProgress = setTimeout(function() {
+      startVideoProgress();
+    }, 1000);
   }
 
   function startAdTimer(adTimes) {
@@ -313,23 +337,31 @@ WildLiveApp.YouTubePlayer = function() {
     var mins = (currTime%3600)/60;
     mins = mins.toString().split(".", 1);
     var secs = currTime%60;
+    secs = secs.toString().split(".", 1);
     var formattedTime = "";
-    if(hrs != "0") {
-      formattedTime += hrs + ":";
-      if(mins.length < 2) {
-        formattedTime += "0";
-      }
+    if(hrs.toString().length < 2) {
+      formattedTime += "0" + hrs + ":";
+    } else {
+      formattedTime+= hrs + ":";
     }
-    formattedTime += mins + ":";
+    console.log("M" + mins.length + mins);
+    if(mins.toString().length < 2) {
+      formattedTime += "0" + mins + ":";
+    } else {
+      formattedTime += mins + ":";
+    }
+    console.log("S" + secs.length + secs);
     if(secs.toString().length < 2){
-      formattedTime += "0";
+      formattedTime += "0" + secs;;
+    } else {
+      formattedTime += secs;
     }
-    formattedTime += secs;
     return formattedTime;
   }
 
   function stopVideo() {
     player.stopVideo();
+    clearInterval(videoProgress);
   }
 
   that.setAdVolumeUp = setAdVolumeUp;
