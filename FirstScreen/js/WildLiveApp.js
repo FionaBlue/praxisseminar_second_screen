@@ -12,11 +12,8 @@ var WildLiveApp = (function() {
             messageHandler.init();
             setMessageHandler(messageHandler);
 
-            //initializing connectionCheck for CastButton
-            messageHandler.checkConnectionToAndroidDevice();
-
-            // handling ui display
-            activatePage('#Weltkarte');
+            // adding onboarding-guide pop-up
+            addPopUpTemplate("#onBoardingContent");
         }
 
         // setting and getting base instance for signalR component (using ref for specific component)
@@ -28,36 +25,67 @@ var WildLiveApp = (function() {
         function getMessageHandler() { return messageHandler; }
     
         function onVideoStarted() {
-            deactivatePrevPage();
-            activatePage('#VideoPlayer');
-            document.body.style.backgroundImage = "url('res/img/img_background_stars.jpg')";
+            removePopUpTemplate();  // removing loader
+            
+            // showing video-progressbar
+            document.querySelector(".videoProgressSection").classList.remove("hidden");
+            
+            // set empty map as background of video player
+            document.body.style.backgroundImage = "url('res/img/Empty_map.jpg')";
         }
     
-        function onVideoEnded() {            
-            deactivatePrevPage();
-            activatePage('#Weltkarte');
-            document.getElementById("loader").classList.add("hidden");
+        function onVideoEnded() {
+            deactivateVideoTimelineContentView();
+            removePopUpTemplate();  // removing loader
+            
+            // hiding video-progressbar
+            document.querySelector(".videoProgressSection").classList.add("hidden");
+            
+            // set coloured map as placeholder while waiting for current continent map message from second screen
             document.body.style.backgroundImage = "url('res/img/Coloured_map.jpg')";
         }
-    
-        //src: Montagsmaler-project
-        function activatePage(page) {
-            templateString = document.querySelector(page).innerHTML;       // reading template in index.html
-            tmpElement = document.createElement("div");                    // creating new div for loading template content
-            tmpElement.innerHTML = templateString;
-            start = document.querySelector(".templateBinding");
-            start.appendChild(tmpElement);
-          }
         
-        function deactivatePrevPage() {
-            deactivateRoot = document.querySelector(".templateBinding");
-            deactivateRoot.innerHTML = "";
+        function deactivateVideoTimelineContentView() {
+            // clearing timeline and setting chevron invisible
+            var chevronLeft = document.querySelector("#chevronLeft");
+            chevronLeft.classList.add("hiddenItem");
+
+            var chevronRight = document.querySelector("#chevronRight");
+            chevronRight.classList.add("hiddenItem");
+
+            var triggerTimeline = document.querySelector("#infoProgress");
+            while (triggerTimeline.firstChild) {
+                triggerTimeline.removeChild(triggerTimeline.firstChild);
+            }
+        }
+
+        function addPopUpTemplate(templateContent) {
+            // creating new node (div-element) to be filled with pop-up-id
+            var tmpElement = document.createElement("div");
+            tmpElement.setAttribute("id", "popUp");
+
+            // filling div with current content (specific popup content)
+            var templateString = document.querySelector(templateContent).innerHTML;
+            tmpElement.innerHTML = templateString;
+
+            // adding new pop-up-div to template placeholder
+            var templatePlaceholder = document.querySelector(".templateBinding");
+            templatePlaceholder.appendChild(tmpElement);
+        }
+
+        function removePopUpTemplate() {
+            var popUpTemplate = document.querySelector("#popUp");
+            if (popUpTemplate != null) {
+                popUpTemplate.parentNode.removeChild(popUpTemplate);
+            }
         }
     
         that.onVideoEnded = onVideoEnded;
         that.onVideoStarted = onVideoStarted;
         that.getSignalRClient = getSignalRClient;
         that.getMessageHandler = getMessageHandler;
+        that.addPopUpTemplate = addPopUpTemplate;
+        that.removePopUpTemplate = removePopUpTemplate;
         that.init = init;
         return that;
     }());

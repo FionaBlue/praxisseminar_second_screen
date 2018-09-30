@@ -11,7 +11,6 @@ WildLiveApp.SignalRConnection = function() {
     chat = $.connection.secondScreenHub;
     // starting connection to server
     $.connection.hub.start().done(function () {
-        console.log("Now connected");
         
         // generating session connection
         chat.server.joinSession(sessionID);
@@ -21,7 +20,6 @@ WildLiveApp.SignalRConnection = function() {
 
     }).fail(function() {
         // if starting the connection failed
-        console.log("Could not connect");
     });
 
     function registerMessageReceiver() {
@@ -29,13 +27,14 @@ WildLiveApp.SignalRConnection = function() {
         chat.client.receiveMessage = function (message) {
 
             // only handling message if message is not empty
-            if (message != "") {
+            if (message != "" || message == null) {
                 messageHandler = WildLiveApp.getMessageHandler();
                 messageHandler.handleMessage(message);
             }
         }
     }
     
+    // steadily sending messages to second screen (cast-buttons)
     async function pingToAndroidDevice(){
         sendMessageToAndroidDevice("firstScreenConnected");
         var ping = setTimeout(function() {
@@ -46,16 +45,16 @@ WildLiveApp.SignalRConnection = function() {
     function sendMessageToAndroidDevice(message) {
         // sending message for session id
         chat.server.sendMessage(sessionID, message).done(function() {
-            console.log('sendMessage done: ' + message);
+            //console.log('sendMessage done: ' + message);
 
         }).fail(function(error) {
-            console.log( 'sendMessage error: ' + error);
+            //console.log( 'sendMessage error: ' + error);
         });
     }
 
+    // function not necessary for prototype concept but maybe for future work
     function disconnect() {
         chat.server.leaveSession(sessionID);
-        console.log("Now disconnected");
 
         // switching cast button if connection was disconnected
         document.getElementById("castNotConnectedButton").classList.remove("hidden");

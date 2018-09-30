@@ -18,6 +18,11 @@ WildLiveApp.DatabaseHandler = function() {
     }
     
     function getContentFromDatabase(videoId) {
+        // setting back items-array
+        itemsFromDatabase = [];
+        activatedPosition = 0;
+        prevPosition = 0;
+
         // defining reference as structure entry point for database retrieval
         var currentDatabaseVideoRef = database.ref('video/' + videoId + '/trigger_point');
 
@@ -39,7 +44,7 @@ WildLiveApp.DatabaseHandler = function() {
                 var timestampSeconds = parseInt(timestampTime[0])*60*60 + parseInt(timestampTime[1])*60 + parseInt(timestampTime[2]);
 
                 // generating new trigger-point-object for each retrieval (for ui-timeline-binding)
-                var triggerPoint = { currentId: currentId, imageUrl: imageUrl, imageFile: imageFile, timestamp: timestampSeconds, title: title, isActive: false, isPlaceholder: true };
+                var triggerPoint = { currentId: currentId, imageUrl: imageUrl, imageFile: imageFile, timestampRaw: timestamp, timestamp: timestampSeconds, title: title, isActive: false, isPlaceholder: true };
                 // adding trigger-point to list for later ui-binding
                 itemsFromDatabase.push(triggerPoint);
 
@@ -55,32 +60,38 @@ WildLiveApp.DatabaseHandler = function() {
     function addContentToTimeline(itemsFromDatabase) {
         // getting timeline by id
         var timeline = document.getElementById('infoProgress');
-        
-        // hiding chevrons from the start
-        var arrowLeft = document.getElementById('chevronLeft');
-        var arrowRight = document.getElementById('chevronRight');
-        arrowLeft.className = "hiddenItem";
-        arrowRight.className = "hiddenItem";
 
         // getting each timeline item
         for (var i = 0; i < itemsFromDatabase.length; i++) {
             var databaseItem = itemsFromDatabase[i];
 
-            // creating empty img elements
+            // creating empty meta-info block elements (for image and timestamp)
+            var triggerPointInfoDiv = document.createElement('div');
             var triggerPoint = document.createElement('img');
+            var triggerPointTimestamp = document.createElement('div');
+            // creating empty divider-image
             var triggerPointDivider = document.createElement('img');
 
-            // adding attributes to new img trigger-point-element
+            // adding attributes to meta-info-block-div
+            triggerPointInfoDiv.classList.add('metaInfo');
+            // adding attributes to new image trigger-point-element
             triggerPoint.id = databaseItem.currentId;
-            triggerPoint.className = 'metaImg';
+            triggerPoint.classList.add('metaImg');
             triggerPoint.src = 'res/img/placeholder.png';
+            // adding attributes to new div trigger-point-timestamp
+            triggerPointTimestamp.classList.add('metaTimestamp');
+            triggerPointTimestamp.innerHTML = databaseItem.timestampRaw;
+            // adding both elements (image and timestamp-div) to meta-info-block-div
+            triggerPointInfoDiv.appendChild(triggerPoint);
+            triggerPointInfoDiv.appendChild(triggerPointTimestamp);
+
 
             // adding attributes to new divider-element
-            triggerPointDivider.className = 'metaDivider';
+            triggerPointDivider.classList.add('metaDivider');
             triggerPointDivider.src = 'res/img/divider.png';
 
             // appending generated img elements to timeline
-            timeline.appendChild(triggerPoint);
+            timeline.appendChild(triggerPointInfoDiv);
             if (triggerPoint.id != itemsFromDatabase.length-1) {
                 timeline.appendChild(triggerPointDivider);
             }
@@ -179,26 +190,26 @@ WildLiveApp.DatabaseHandler = function() {
 
         if (placeholderCount == itemsFromDatabase.length) {
             // checking if all placeholders are visible
-             arrowLeft.className = "hiddenItem";
-            arrowRight.className = "hiddenItem";
+            arrowLeft.classList.add("hiddenItem");
+            arrowRight.classList.add("hiddenItem");
         } else if (placeholderCount < itemsFromDatabase.length) {
             if (placeholderCount == itemsFromDatabase.length-1) {
                 // checking if single placeholder was revealed
-                arrowLeft.className = "hiddenItem";
-                arrowRight.className = "hiddenItem";
+                arrowLeft.classList.add("hiddenItem");
+                arrowRight.classList.add("hiddenItem");
             } else if (placeholderCount < itemsFromDatabase.length-1) {
                 if (position == (itemsFromDatabase.length-placeholderCount)-1) {
                     // checking if more than 1 placeholder was revealed and last available position was clicked
-                    arrowLeft.className = "";
-                    arrowRight.className = "hiddenItem";
+                    arrowLeft.classList.remove("hiddenItem");
+                    arrowRight.classList.add("hiddenItem");
                 } else if (position == 0) {
                     // checking if more than 1 placeholder was revealed and first available position was clicked
-                    arrowLeft.className = "hiddenItem";
-                    arrowRight.className = "";
+                    arrowLeft.classList.add("hiddenItem");
+                    arrowRight.classList.remove("hiddenItem");
                 } else {
                     // checking if more than 1 placeholder was revealed and any other available position was clicked
-                    arrowLeft.className = "";
-                    arrowRight.className = "";
+                    arrowLeft.classList.remove("hiddenItem");
+                    arrowRight.classList.remove("hiddenItem");
                 }
             }
         }
