@@ -11,38 +11,29 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 // This activity calls the Quiz when an advertisement starts on the First Screen
 public class QuizActivity extends AppCompatActivity {
-    private QuestionLibrary questionLibrary;
-    private Handler handler = new Handler();
+    private QuestionLibrary questionLibrary;                        // library that contains all questions
+    private Handler handler = new Handler();                        // for setting answer-color dynamically and handling answer click
+    public Button buttonA, buttonB, buttonC, buttonD;               // quiz answer buttons
+    private ImageView closeButton;                                  // for closing quiz activity manually
+    private TextView question;                                      // quiz question text
+    private TextView scoretext;                                     // actual reached score
 
-    public Button buttonA;
-    public Button buttonB;
-    public Button buttonC;
-    public Button buttonD;
-    private ImageView closeButton;
-
-    private TextView question;
-    private TextView scoretext;
-
-    private String answer;
-    private int score = 0;
-    private int questionNumber = 0;
+    private String answer;                                          // current answer
+    private int score = 0, questionNumber = 0;                      // initializing score and number of questions
 
     private SignalRClient srClient = null;
-
     static QuizActivity quizActivity;
 
-    public ImageView quizPauseButton;
-    public ImageView quizPlayButton;
-    private ImageView quizVolumeUpButton;
-    private ImageView quizVolumeDownButton;
+    // quiz controls (volume changes and play/pause of video)
+    public ImageView quizPauseButton, quizPlayButton;
+    private ImageView quizVolumeUpButton, quizVolumeDownButton;
     private SeekBar videoProgress;
 
-    private MenuItem activeCast;
-    private MenuItem inactiveCast;
+    // cast buttons
+    private MenuItem activeCast, inactiveCast;
 
 
     @Override

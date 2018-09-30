@@ -3,12 +3,12 @@ package com.wildLive.secondScreen;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 
 // AlertActivity shows user-feedback when no internet connection is available, see InternetConnectionHandler
 public class AlertActivity extends Activity {
 
-    private Button okButton;
+    private ImageView okButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

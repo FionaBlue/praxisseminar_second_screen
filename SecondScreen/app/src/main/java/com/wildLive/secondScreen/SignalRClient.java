@@ -3,7 +3,6 @@ package com.wildLive.secondScreen;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.util.Log;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import microsoft.aspnet.signalr.client.Action;
@@ -22,10 +21,8 @@ public class SignalRClient {
     // https://github.com/SignalR/java-client/issues/61
     // https://stackoverflow.com/questions/25817303/how-to-put-delay-in-android-async-task
 
-    private static final String TAG = "MEK_Plugin_SignalR";                     // tags for logging
-
     //SignalR Variables
-    private String host = "http://pk029-audi-2nds.tvapp-server.de/SecondScreen";// example server
+    private String host = "http://pk029-audi-2nds.tvapp-server.de/SecondScreen";// given server
     private static HubConnection _connection;
     private static HubProxy _hub = null;
     private static SubscriptionHandler1<String> handlerCon;
@@ -50,7 +47,6 @@ public class SignalRClient {
         _hub.invoke(String.class, "StartSession").done(new Action<String>() {
             @Override
             public void run(String SessionID) {
-                Log.d(TAG, "session id  " + sessionID);
                 try {
                     _hub.invoke("JoinSession", sessionID).get();
 
@@ -135,15 +131,11 @@ public class SignalRClient {
         _awaitConnection = _connection.start(new LongPollingTransport(_connection.getLogger()));
         try {
             _awaitConnection.get(4000, TimeUnit.MILLISECONDS);
-            Log.d(TAG,"Connection done");
         } catch (InterruptedException e) {
-            Log.d(TAG,"SignalR StartConnection Disconnect . . ." + e);
             e.printStackTrace();
         } catch (ExecutionException e) {
-            Log.d(TAG,"SignalR StartConnection Error . . ." + e);
             e.printStackTrace();
         } catch(Exception e){
-            Log.d(TAG,"SignalR StartConnection Exception " + e);
             e.printStackTrace();
         }
     }

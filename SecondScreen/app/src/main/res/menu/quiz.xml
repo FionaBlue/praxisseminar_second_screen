@@ -4,12 +4,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     tools:context=".QuizActivity">
 
+    <!-- cast button for non-connection -->
     <item
         android:id="@+id/action_cast_quiz"
         android:icon="@drawable/ic_cast_white_24dp"
         android:title="@string/cast_button"
         app:showAsAction="always"/>
 
+    <!-- cast button for connection -->
     <item
         android:id="@+id/action_cast_connected_quiz"
         android:icon="@drawable/ic_cast_connected_white_24dp"

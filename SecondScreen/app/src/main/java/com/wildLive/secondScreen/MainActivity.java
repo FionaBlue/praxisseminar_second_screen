@@ -9,6 +9,7 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity {
 
     private SignalRClient SRClient = null;                  // instance of signalR client behaviour
+    // cast buttons
     private MenuItem activeCast;
     private MenuItem inactiveCast;
 

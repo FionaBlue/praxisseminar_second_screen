@@ -21,6 +21,7 @@
         </menu>
     </item>
 
+    <!-- cast button for connection -->
     <item
         android:id="@+id/action_cast_connected_main"
         android:icon="@drawable/ic_cast_connected_white_24dp"

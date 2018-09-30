@@ -3,7 +3,7 @@
     <string name="cast_button">CastButton</string>
     <string name="cast_connected_button">CastConnectedButton</string>
     <string name="no_internet_connection">Keine Internetverbindung</string>
-    <string name="connect_to_internet_text">Bitte verbinde dein Gerät mit dem Internet</string>
+    <string name="connect_to_internet_text">Bitte verbinde dein Gerät mit dem Internet.</string>
     <string name="ok">OK</string>
     <string name="no_information_text">Die Aufbereitung des Videos ist noch in Arbeit - leider haben wir dazu aktuell keine Informationen!</string>
     <string name="wait_for_it_text">Hinter den Platzhaltern verbergen sich spannende Informationen zu Tieren im ausgewählten Video. Folge dem Video-Verlauf um mehr zu erfahren!</string>

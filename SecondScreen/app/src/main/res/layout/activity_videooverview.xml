@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- category header -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,12 +17,14 @@
         android:textStyle="bold"
         android:textAlignment="center"/>
 
+    <!-- for loading list of continents/categories -->
     <ProgressBar
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="90dp"
         android:id="@+id/load_continents"/>
 
+    <!-- list of continents/categories -->
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

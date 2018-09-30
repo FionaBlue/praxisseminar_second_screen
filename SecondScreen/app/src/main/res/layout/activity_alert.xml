@@ -1,76 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <!-- Header -->
+    <android.support.v7.widget.CardView
         android:layout_width="300dp"
         android:layout_height="200dp"
-        android:orientation="vertical"
-        android:textAlignment="center">
+        app:cardCornerRadius="15dp">
 
-        <!-- Header -->
-        <android.support.v7.widget.CardView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.4"
-            android:textAlignment="center"
-            android:backgroundTint="@color/colorPrimary"
-            android:layout_gravity="center">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/colorWhite">
 
-            <!-- Title -->
+            <!-- header title -->
             <TextView
                 android:id="@+id/alertTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.30"
                 android:text="@string/no_internet_connection"
-                android:layout_gravity="center"
-                android:textStyle="bold"
                 android:textSize="20dp"
-                android:textColor="@color/colorWhite"/>
+                android:background="@color/colorPrimary"
+                android:textColor="@color/colorWhite" />
 
-        </android.support.v7.widget.CardView>
-
-        <!-- Body -->
-        <android.support.v7.widget.CardView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.6"
-            android:textAlignment="center"
-            android:backgroundTint="@color/colorWhite">
-
-            <!-- Text -->
+            <!-- feedback text (connect with internet) -->
             <TextView
                 android:id="@+id/alertText"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.20"
                 android:text="@string/connect_to_internet_text"
-                android:paddingTop="20dp"
-                android:paddingBottom="60dp"
                 android:textSize="15dp"
-                android:paddingLeft="6dp"
+                android:paddingHorizontal="8dp"
+                android:gravity="center"
+                android:textColor="@color/colorBlack"
                 android:layout_gravity="center_horizontal"/>
 
             <!-- OK-Button-->
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/score"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="60dp"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.50"
+                android:layout_marginBottom="20dp"
+                android:gravity="center">
 
-            <Button
-                android:id="@+id/alertButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/ok"
-                android:layout_gravity="center_horizontal"
-                android:textSize="30dp"
-                android:layout_marginTop="60dp"
-                style="@style/Widget.AppCompat.Button.Borderless"/>
+                <ImageView
+                    android:id="@+id/alertButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/score"/>
 
-        </android.support.v7.widget.CardView>
-
-    </LinearLayout>
-
-</RelativeLayout>
+                <TextView
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/ok"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorMainBlue"
+                    android:textSize="26dp"/>
+            </RelativeLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>
