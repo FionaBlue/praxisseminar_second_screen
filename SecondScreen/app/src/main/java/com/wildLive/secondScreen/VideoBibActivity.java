@@ -66,7 +66,7 @@ public class VideoBibActivity extends AppCompatActivity {
     private TextView continentTitle;
     private LinkedHashMap continents;
 
-    private String currentContinent;
+    private String currentContinent, continentToResume;
 
     private ProgressBar progressBar;
 
@@ -87,6 +87,7 @@ public class VideoBibActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         currentContinent = extras.getString("currentContinent");
+        continentToResume = currentContinent;
 
         // getting YouTube playlists from WildLive Channel in GetPlaylists AsyncTask
         VideoRequestHandler.GetPlaylists asyncTask = (VideoRequestHandler.GetPlaylists) new VideoRequestHandler.GetPlaylists(new VideoRequestHandler.GetPlaylists.AsyncResponse(){
@@ -126,7 +127,8 @@ public class VideoBibActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         if(srClient != null){
-            srClient.sendMsg(currentContinent);
+            srClient.sendMsg(continentToResume);
+            System.out.println("continent to resume " + continentToResume);
         }
         super.onResume();
     }
@@ -408,6 +410,9 @@ public class VideoBibActivity extends AppCompatActivity {
                     intent.putExtra("videoID", videoID);
                     // pass video duration via intent to InformationActivity for showing correct video-duration-progress
                     intent.putExtra("videoLength", videoLength);
+
+                    // set continent for onResume
+                    continentToResume = currentContinent;
 
                     startActivity(intent);
                 }
