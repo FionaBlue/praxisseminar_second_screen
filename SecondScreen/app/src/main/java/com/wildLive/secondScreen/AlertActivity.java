@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+// AlertActivity shows user-feedback when no internet connection is available, see InternetConnectionHandler
 public class AlertActivity extends Activity {
 
     private Button okButton;

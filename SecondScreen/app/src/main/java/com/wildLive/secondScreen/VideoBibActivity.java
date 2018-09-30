@@ -48,17 +48,17 @@ public class VideoBibActivity extends AppCompatActivity {
 
     // src:
     // ********
-    //http://android-coding.blogspot.com/2013/04/display-youtubethumbnailview-of-youtube.html
-    //https://stackoverflow.com/questions/37253796/youtube-playlist-to-listview-in-android-studio#
-    //https://stackoverflow.com/questions/34371461/how-to-load-youtube-thumbnails-in-a-recyclerview-using-youtube-api
-    //https://stackoverflow.com/questions/32409964/get-color-resource-as-string/32410035
-    //https://stackoverflow.com/questions/18708955/invisible-components-still-take-up-space
-    //https://stackoverflow.com/questions/5237101/is-it-possible-to-get-element-from-hashmap-by-its-position/5237147
-    //http://www.tutorialspoint.com/java/java_linkedhashmap_class.htm
-    //https://gist.github.com/tejainece/d32cba84b747c0b2e7df
-    //https://stackoverflow.com/questions/10387290/how-to-get-position-of-key-value-in-linkedhashmap-using-its-key
-    //https://guides.codepath.com/android/Using-an-ArrayAdapter-with-ListView
-    //https://stackoverflow.com/questions/35606368/java-lang-illegalstateexception-not-connected-call-connect-youtube-api
+    // http://android-coding.blogspot.com/2013/04/display-youtubethumbnailview-of-youtube.html
+    // https://stackoverflow.com/questions/37253796/youtube-playlist-to-listview-in-android-studio#
+    // https://stackoverflow.com/questions/34371461/how-to-load-youtube-thumbnails-in-a-recyclerview-using-youtube-api
+    // https://stackoverflow.com/questions/32409964/get-color-resource-as-string/32410035
+    // https://stackoverflow.com/questions/18708955/invisible-components-still-take-up-space
+    // https://stackoverflow.com/questions/5237101/is-it-possible-to-get-element-from-hashmap-by-its-position/5237147
+    // http://www.tutorialspoint.com/java/java_linkedhashmap_class.htm
+    // https://gist.github.com/tejainece/d32cba84b747c0b2e7df
+    // https://stackoverflow.com/questions/10387290/how-to-get-position-of-key-value-in-linkedhashmap-using-its-key
+    // https://guides.codepath.com/android/Using-an-ArrayAdapter-with-ListView
+    // https://stackoverflow.com/questions/35606368/java-lang-illegalstateexception-not-connected-call-connect-youtube-api
 
     private ImageView chevron_right;
     private ImageView chevron_left;
@@ -86,12 +86,11 @@ public class VideoBibActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         currentContinent = extras.getString("currentContinent");
 
-        //getting YouTube playlists from WildLive Channel in GetPlaylists AsyncTask
+        // getting YouTube playlists from WildLive Channel in GetPlaylists AsyncTask
         VideoRequestHandler.GetPlaylists asyncTask = (VideoRequestHandler.GetPlaylists) new VideoRequestHandler.GetPlaylists(new VideoRequestHandler.GetPlaylists.AsyncResponse(){
             @Override
             public void processFinish(LinkedHashMap playlists){ //receiving the result fired from async task
                 continentTitle = (TextView)findViewById(R.id.continent);
-                //updateContinentTitle(playlists, 0);
                 updateContinentTitle(playlists, currentContinent);
                 continents = playlists;
                 //initializing listeners but now for bug prevention
@@ -99,9 +98,12 @@ public class VideoBibActivity extends AppCompatActivity {
             }
         }).execute();
 
+        // get current instance of SignalR Client from Application
         WildLive app = (WildLive) getApplication();
         srClient = app.getSRClient();
         if(srClient != null) {
+
+            // set message listener for retaining first screen connection
             srClient.setMessageListener(new SignalRClient.SignalRCallback<String>() {
                 @Override
                 public void onSuccess(String message) {
@@ -118,6 +120,7 @@ public class VideoBibActivity extends AppCompatActivity {
         }
     }
 
+    // reset map on first screen to current continent when user is going back from Information- to VideoBibActivity
     @Override
     protected void onResume() {
         if(srClient != null){
@@ -131,6 +134,8 @@ public class VideoBibActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    // handles cast-button visibility-states
+    // is called regularly in asyncTask checkCastConnection in SignalRClient
     public boolean onPrepareOptionsMenu(Menu menu) {
         activeCast = menu.findItem(R.id.action_cast_connected_videobib);
         inactiveCast = menu.findItem(R.id.action_cast_videobib);
@@ -145,6 +150,8 @@ public class VideoBibActivity extends AppCompatActivity {
         return true;
     }
 
+    // clears videos in view for loading the new videos from new category/continent
+    // sets progressBar visible for loading-user-feedback
     private void resetVideoView(){
         arrayOfVideos.clear();
         ArrayList emptyArray = new ArrayList();
@@ -152,22 +159,20 @@ public class VideoBibActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    private void updateContinentTitle(LinkedHashMap map, String continent) { //Integer index) {
-        //continentTitle.setText((String) getContinentByIndex(map, index));
-        //String continentName = (String) continentTitle.getText();
+    // updates continent/category title and calls method for getting the videos of this continent
+    private void updateContinentTitle(LinkedHashMap map, String continent) {
         continentTitle.setText(continent);
-        //set currentContinent
+        // set currentContinent
         currentContinent = continent;
-        //setContientColor(continentName);
         setContientColor(continent);
-        //String continentID = (String) map.get(continentName);
         String continentID = (String) map.get(continent);
         arrayOfVideos.clear();
         getContinentVideos(continentID);
     }
 
+    // sets the continent-matching color
+    // for not defined categories there is a default color for flexibility
     private void setContientColor(String continent) {
-        System.out.println("Continent " + continent);
         CardView continentCard = (CardView) continentTitle.getParent();
         int continentColor;
         switch(continent) {
@@ -238,30 +243,32 @@ public class VideoBibActivity extends AppCompatActivity {
         }
     }
 
-    //gets PlayListItems and the video durations from Videos in two extra AsyncTasks from YouTube
+    // gets PlayListItems (video-id, -description, -title) and video durations  from YouTube in two extra AsyncTasks
     private void getContinentVideos(String continent) {
         VideoRequestHandler.GetVideos videoAsyncTask = (VideoRequestHandler.GetVideos) new VideoRequestHandler.GetVideos(new VideoRequestHandler.GetVideos.AsyncResponse(){
             @Override
             public void processFinish(final ArrayList videoList){
                 for(int i = 0; i < videoList.size(); i++) {
                     final VideoRequestHandler.GetVideos.VideoInformationModel currentVideo = (VideoRequestHandler.GetVideos.VideoInformationModel) videoList.get(i);
+                    // start new videoLength-asyncTasks here
+                    // needed because video-duration is only available in specific url request
                     VideoRequestHandler.GetVideoLength videoLenghtAsyncTask = (VideoRequestHandler.GetVideoLength) new VideoRequestHandler.GetVideoLength(new VideoRequestHandler.GetVideoLength.AsyncResponse(){
                         @Override
                         public void processFinish(String videoLength){
                             currentVideo.videoLength = parseDuration(videoLength);
-                            resetVideoView();
-                            setVideoList(videoList);
+                            resetVideoView();           // clears view
+                            setVideoList(videoList);    // loads view with new duration value
                         }
                     }).execute(currentVideo.videoID);
                 }
-                //sets chevrons clickable but now for bug prevention
+                // set chevrons clickable but now for bug prevention
                 chevron_right.setClickable(true);
                 chevron_left.setClickable(true);
             }
         }).execute(continent);
     }
 
-    //parses the duration ISO8601 format from YouTube
+    // parses the duration ISO8601 format from YouTube
     private String parseDuration(String vLength){
         String parsedLength = "";
         for(int i = 2; i<vLength.length()-1;i++){
@@ -271,7 +278,7 @@ public class VideoBibActivity extends AppCompatActivity {
                 parsedLength += ":";
             }
         }
-        //supplements missing zeros from ISO8601 format
+        // supplements missing zeros from ISO8601 format
         if(parsedLength.length()%2 == 0){
             if(parsedLength.length() == 4 && parsedLength.indexOf(":") == 2){
                 parsedLength = parsedLength.substring(0, parsedLength.length()-1) + "0" + parsedLength.substring(parsedLength.length()-1, parsedLength.length());
@@ -290,29 +297,33 @@ public class VideoBibActivity extends AppCompatActivity {
         return parsedLength;
     }
 
-    //hands the data from the AsyncTasks over to the VideoListAdapter
-    //ends the loading circle
+    // hands the data from the AsyncTasks over to the VideoListAdapter
+    // ends the loading circle
     private void setVideoList(ArrayList videoInformation){
         for (int i=0; i<videoInformation.size(); i++){
+            // hand over current VideoInformationModel from ArrayList (see GetVideos AsyncTask)
             VideoRequestHandler.GetVideos.VideoInformationModel currentInfoModel = (VideoRequestHandler.GetVideos.VideoInformationModel) videoInformation.get(i);
+            // create new VideoDataModel from current VideoInformationModel
             VideoDataModel newVideoData = new VideoDataModel(currentInfoModel.videoTitle, currentInfoModel.videoID, currentInfoModel.videoLength, currentInfoModel.videoDescription);
+            // add new VideoDataModel to arrayOfVideos-ArrayList for VideoListAdapter
             arrayOfVideos.add(newVideoData);
         }
-        VideoListAdapter videoListAdapter = new VideoListAdapter(this, arrayOfVideos);
-        ListView videoListView = (ListView) findViewById(R.id.videoList);
-        videoListView.setAdapter(videoListAdapter);
-        progressBar.setVisibility(View.GONE);
+        VideoListAdapter videoListAdapter = new VideoListAdapter(this, arrayOfVideos);   // create new Adapter
+        ListView videoListView = (ListView) findViewById(R.id.videoList);                       // set ListView from VideoBib-xml
+        videoListView.setAdapter(videoListAdapter);                                             // set Adapter to ListView
+        progressBar.setVisibility(View.GONE);                                                   // set loading circle gone
     }
 
+    // get continent/category by index from LinkedHashMap
     private String getContinentByIndex(LinkedHashMap map, int index){
         Set entrySet = map.entrySet();
         Map.Entry theEntry = (Map.Entry) entrySet.toArray()[index];
         return (String) theEntry.getKey();
     }
 
-    //implements logic for 'Rondell' functionality
+    // implements logic for 'Rondell' functionality
     private void addListenerOnChevrons() {
-        //adds listener to left chevron
+        // add listener to left chevron
         chevron_left = (ImageView)findViewById(R.id.category_chevron_left);
         chevron_left.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -320,24 +331,25 @@ public class VideoBibActivity extends AppCompatActivity {
                 chevron_left.setClickable(false);
                 chevron_right.setClickable(false);
 
+                // clicking on the left chevron moves 'Rondell' to previous continent/category in the list
                 Integer continentIndex = (Integer) getContinentIndex(continents, (String) continentTitle.getText());
-                if (continentIndex - 1 < 0) {
+                if (continentIndex - 1 < 0) {                       // if the current continent is the first in the list switch to the last
                     String lastContinent = getContinentByIndex(continents, continents.size() -1);
-                    continentTitle.setText(lastContinent);
-                    setContientColor(lastContinent);
-                    resetVideoView();
-                    getContinentVideos((String) continents.get(lastContinent));
+                    continentTitle.setText(lastContinent);                          // set new continent
+                    setContientColor(lastContinent);                                // set new matching color
+                    resetVideoView();                                               // remove old videos
+                    getContinentVideos((String) continents.get(lastContinent));     // set new videos
                 } else {
                     String lastContinent = getContinentByIndex(continents, continentIndex -1);
-                    continentTitle.setText(lastContinent);
-                    setContientColor(lastContinent);
-                    resetVideoView();
-                    getContinentVideos((String) continents.get(lastContinent));
+                    continentTitle.setText(lastContinent);                          // set new continent
+                    setContientColor(lastContinent);                                // set new matching color
+                    resetVideoView();                                               // remove old videos
+                    getContinentVideos((String) continents.get(lastContinent));     // set new videos
                 }
             }
         });
 
-        //adds listener to right chevron
+        // add listener to right chevron
         chevron_right = (ImageView)findViewById(R.id.category_chevron_right);
         chevron_right.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -345,24 +357,26 @@ public class VideoBibActivity extends AppCompatActivity {
                 chevron_left.setClickable(false);
                 chevron_right.setClickable(false);
 
+                // clicking on the right chevron moves 'Rondell' to next continent/category in the list
                 Integer continentIndex = (Integer) getContinentIndex(continents, (String) continentTitle.getText());
-                if (continentIndex + 1 > continents.size()-1) {
+                if (continentIndex + 1 > continents.size()-1) {     // if the current continent is the last in the list switch to the first
                     String nextContinent = getContinentByIndex(continents, 0);
-                    continentTitle.setText(nextContinent);
-                    setContientColor(nextContinent);
-                    resetVideoView();
-                    getContinentVideos((String) continents.get(nextContinent));
+                    continentTitle.setText(nextContinent);                          // set new continent
+                    setContientColor(nextContinent);                                // set new matching color
+                    resetVideoView();                                               // remove old videos
+                    getContinentVideos((String) continents.get(nextContinent));     // set new videos
                 } else {
                     String nextContinent = getContinentByIndex(continents, continentIndex+1);
-                    continentTitle.setText(nextContinent);
-                    setContientColor(nextContinent);
-                    resetVideoView();
-                    getContinentVideos((String) continents.get(nextContinent));
+                    continentTitle.setText(nextContinent);                          // set new continent
+                    setContientColor(nextContinent);                                // set new matching color
+                    resetVideoView();                                               // remove old videos
+                    getContinentVideos((String) continents.get(nextContinent));     // set new videos
                 }
             }
         });
     }
 
+    // get index of specific continent/category
     private Integer getContinentIndex(LinkedHashMap map, String continent) {
         Integer index;
         index = new ArrayList<String>(map.keySet()).indexOf(continent);
@@ -373,8 +387,8 @@ public class VideoBibActivity extends AppCompatActivity {
 
     public class VideoListAdapter extends ArrayAdapter<VideoDataModel> {
 
-        private String PRE_REQUEST = "https://i.ytimg.com/vi/";
-        private String POST_REQUEST = "/mqdefault.jpg";
+        private String PRE_REQUEST = "https://i.ytimg.com/vi/";     // pre-part of request for thumbnail-images
+        private String POST_REQUEST = "/mqdefault.jpg";             // post-part of request for thumbnail-images
 
         private class VideoViewHolder {
             TextView videoTitle;
@@ -385,6 +399,7 @@ public class VideoBibActivity extends AppCompatActivity {
             CardView videoCard;
         }
 
+        // constructor
         VideoListAdapter(Context context, ArrayList<VideoDataModel> videoDataModels) {
             super(context, R.layout.videolist_item, videoDataModels);
         }
@@ -397,36 +412,39 @@ public class VideoBibActivity extends AppCompatActivity {
                 videoViewHolder = new VideoViewHolder();
                 convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.videolist_item, parent, false);
 
+                // sets xml-views to videoViewHolder
                 videoViewHolder.videoTitle = (TextView) convertView.findViewById(R.id.titleView);
                 videoViewHolder.videoLength = (TextView) convertView.findViewById(R.id.lengthView);
                 videoViewHolder.videoDescription = (TextView) convertView.findViewById(R.id.descriptionView);
                 videoViewHolder.videoThumbnail = (YouTubeThumbnailView) convertView.findViewById(R.id.thumbnailView);
                 videoViewHolder.videoLoad = (ProgressBar) convertView.findViewById(R.id.thumbnailLoad);
                 videoViewHolder.videoCard = (CardView) convertView.findViewById(R.id.videoItemCard);
+
                 convertView.setTag(videoViewHolder);
             } else {
                 videoViewHolder = (VideoViewHolder) convertView.getTag();
             }
 
-            //set video-information texts
-            videoViewHolder.videoTitle.setText(videoDataModel.videoTitle);
-            videoViewHolder.videoLength.setText(videoDataModel.videoLength);
+            // set video-information texts
+            videoViewHolder.videoTitle.setText(videoDataModel.videoTitle);                  // set video title
+            videoViewHolder.videoLength.setText(videoDataModel.videoLength);                // set video duration
+            // if description is empty, set no-description-placeholder
             if(videoDataModel.videoDescription.equals("")){
-                videoViewHolder.videoDescription.setText("Keine Beschreibung verfügbar");
+                videoViewHolder.videoDescription.setText(R.string.no_description_placeholder);
             } else {
-                videoViewHolder.videoDescription.setText(videoDataModel.videoDescription);
+                videoViewHolder.videoDescription.setText(videoDataModel.videoDescription);  // set video description
             }
 
-            //add listener to video-item-card for switching to information activity
+            // add listener to video-item-card for switching to information activity
             videoViewHolder.videoCard.setTag(videoDataModel.videoID);
             addListenerOnCards(videoViewHolder.videoCard, videoViewHolder.videoLength.getText().toString());
 
-            //getting thumbnail-images via asynctask
+            // getting thumbnail-images via asyncTask
             String urlRequest = PRE_REQUEST + videoDataModel.videoID + POST_REQUEST;
             VideoRequestHandler.GetImage imageAsyncTask = (VideoRequestHandler.GetImage) new VideoRequestHandler.GetImage(new VideoRequestHandler.GetImage.AsyncResponse(){
                 @Override
                 public void processFinish(Drawable output) {
-                    videoViewHolder.videoThumbnail.setImageDrawable(output);
+                    videoViewHolder.videoThumbnail.setImageDrawable(output);                // set video thumbnail-image
                     videoViewHolder.videoLoad.setVisibility(View.GONE);
                     videoViewHolder.videoThumbnail.setVisibility(View.VISIBLE);
                 }
@@ -435,6 +453,7 @@ public class VideoBibActivity extends AppCompatActivity {
             return convertView;
         }
 
+        // add listener on cards to switch to InformationActivity
         private void addListenerOnCards(final CardView videoCard, final String videoLength) {
             final Context context = getApplicationContext();
             // registering button and button-behaviour by on-click
@@ -442,15 +461,18 @@ public class VideoBibActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View arg0) {
 
+                    // start loader on First Screen for loading-user-feedback
                     if(srClient != null){
                         srClient.sendMsg("startLoader");
                     }
 
-                    // switching to next activity on button click
                     Intent intent = new Intent(context, InformationActivity.class);
+                    // pass videoId via intent to InformationActivity for getting right video-metainformation
                     String videoID = new String(videoCard.getTag().toString());
                     intent.putExtra("videoID", videoID);
+                    // pass video duration via intent to InformationActivity for showing correct video-duration-progress
                     intent.putExtra("videoLength", videoLength);
+
                     startActivity(intent);
                 }
             });
@@ -459,7 +481,7 @@ public class VideoBibActivity extends AppCompatActivity {
 
     // **************************************************************************
 
-    //VideoDataModel for VideoViewHolder
+    // VideoDataModel for VideoListAdapter
     public class VideoDataModel {
         String videoTitle;
         String videoID;

@@ -39,13 +39,16 @@ public class VideoOverviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videooverview);
 
+        // get current instance of SignalR Client from Application
         final WildLive app = (WildLive)getApplication();
         signalRClient = app.getSRClient();
 
         if(signalRClient != null) {
 
+            // start loader on First Screen for user-feedback
             signalRClient.sendMsg("startLoader");
 
+            // set message listener for retaining first screen connection
             signalRClient.setMessageListener(new SignalRClient.SignalRCallback<String>() {
                 @Override
                 public void onSuccess(String message) {
@@ -61,12 +64,13 @@ public class VideoOverviewActivity extends AppCompatActivity {
             });
         }
 
+        // start progressBar for user-feedback
         progressBar = findViewById(R.id.load_continents);
 
+        // get continent/category titles from AsyncTask
         VideoRequestHandler.GetPlaylists asyncTask = (VideoRequestHandler.GetPlaylists) new VideoRequestHandler.GetPlaylists(new VideoRequestHandler.GetPlaylists.AsyncResponse(){
         @Override
         public void processFinish(final LinkedHashMap output) {
-
                 if(signalRClient != null){
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -76,12 +80,13 @@ public class VideoOverviewActivity extends AppCompatActivity {
                             sendMessagesToFS();
                         }
                     }, 2000);
-
                 }
             }
         }).execute();
     }
 
+    // update First Screen with private score
+    // remove First Screen PopUps (Guide and Loader)
     private void sendMessagesToFS(){
         SharedPreferences sp = getSharedPreferences("quizdata", MODE_PRIVATE);
         final int score = sp.getInt("score", 0);
@@ -94,6 +99,8 @@ public class VideoOverviewActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    // handles cast-button visibility-states
+    // is called regularly in asyncTask checkCastConnection in SignalRClient
     public boolean onPrepareOptionsMenu(Menu menu) {
         activeCast = menu.findItem(R.id.action_cast_connected_overview);
         inactiveCast = menu.findItem(R.id.action_cast_overview);
@@ -108,27 +115,31 @@ public class VideoOverviewActivity extends AppCompatActivity {
         return true;
     }
 
-
     @Override
     public void onBackPressed(){
         //do nothing for setting Back Button on Device disabled
     }
 
+    // hands the data from the AsyncTask over to the ContinentOverviewAdapter
+    // ends the loading circle
     private void setContinentOverview(LinkedHashMap continents){
         List continentList = new ArrayList(continents.keySet());
-        //System.out.println("CONTINENTS!!! " + continentList);
         for (int i=0; i<continentList.size(); i++){
-            String currentContinentTitle = (String) continentList.get(i);
-            int currentContinentColor = getContientColor(currentContinentTitle);
+            String currentContinentTitle = (String) continentList.get(i);           // get current title
+            int currentContinentColor = getContientColor(currentContinentTitle);    // get current color
+            // set title and color in new Model
             ContinentTitleModel newContinentTitleModel = new ContinentTitleModel(currentContinentTitle, currentContinentColor);
+            // add new Model to ArrayList
             arrayOfContinents.add(newContinentTitleModel);
         }
-        ContinentOverviewAdapter overviewAdapter = new ContinentOverviewAdapter(this, arrayOfContinents);
-        ListView continentOverview = findViewById(R.id.overviewList);
-        continentOverview.setAdapter(overviewAdapter);
-        progressBar.setVisibility(View.GONE);
+        ContinentOverviewAdapter overviewAdapter = new ContinentOverviewAdapter(this, arrayOfContinents);    // create new Adapter
+        ListView continentOverview = findViewById(R.id.overviewList);                                               // set ListView from VideoOverview-xml
+        continentOverview.setAdapter(overviewAdapter);                                                              // set Adapter to ListView
+        progressBar.setVisibility(View.GONE);                                                                       // set loading circle gone
     }
 
+    // sets the continent-matching color
+    // for not defined categories there is a default color for flexibility
     private int getContientColor(String continent) {
         int continentColor;
         switch(continent) {
@@ -164,6 +175,7 @@ public class VideoOverviewActivity extends AppCompatActivity {
         return continentColor;
     }
 
+    // **************************************************************************
 
     public class ContinentOverviewAdapter extends ArrayAdapter<ContinentTitleModel> {
 
@@ -172,6 +184,7 @@ public class VideoOverviewActivity extends AppCompatActivity {
             CardView continentCard;
         }
 
+        // constructor
         ContinentOverviewAdapter(Context context, ArrayList<ContinentTitleModel> continentTitleModels) {
             super(context, R.layout.overview_item, continentTitleModels);
         }
@@ -183,6 +196,7 @@ public class VideoOverviewActivity extends AppCompatActivity {
                 continentViewHolder = new ContinentViewHolder();
                 convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.overview_item, parent, false);
 
+                // sets xml-views to videoViewHolder
                 continentViewHolder.continentTitle = convertView.findViewById(R.id.overviewItemTitle);
                 continentViewHolder.continentCard = convertView.findViewById(R.id.overviewItemCard);
 
@@ -190,29 +204,32 @@ public class VideoOverviewActivity extends AppCompatActivity {
             } else {
                 continentViewHolder = (ContinentViewHolder) convertView.getTag();
             }
-            continentViewHolder.continentTitle.setText(continentTitleModel.continentTitle);
 
-
-            continentViewHolder.continentCard.setCardBackgroundColor(continentTitleModel.continentColor);
+            continentViewHolder.continentTitle.setText(continentTitleModel.continentTitle);                 // set title
+            continentViewHolder.continentCard.setCardBackgroundColor(continentTitleModel.continentColor);   // set color
 
             addListenerOnCards(continentViewHolder.continentCard, continentTitleModel.continentTitle.toString());
 
             return convertView;
         }
 
+        // add listener on cards to switch to VideoBibActivity
         private void addListenerOnCards(CardView card, final String continent){
             card.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getApplicationContext(), VideoBibActivity.class);
+                    // pass current continent/category via intent for setting correct view
                     intent.putExtra("currentContinent", continent);
                     startActivity(intent);
                 }
             });
         }
-
     }
 
+    // **************************************************************************
+
+    // ContentTitleModel for ContinentOverviewAdapter
     public class ContinentTitleModel{
         String continentTitle;
         int continentColor;
@@ -222,6 +239,4 @@ public class VideoOverviewActivity extends AppCompatActivity {
             this.continentColor = continentColor;
         }
     }
-
-
 }

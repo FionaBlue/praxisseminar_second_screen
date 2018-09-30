@@ -12,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -161,8 +160,8 @@ public class InformationActivity extends AppCompatActivity {
             sRClient.setMessageListener(new SignalRClient.SignalRCallback<String>() {
                 @Override
                 public void onSuccess(String message) {
-                    //Log.d("LOG_INFOACT", "received :: " + message);
 
+                    // for retaining first screen connection
                     if(message.toString().contains("firstScreenConnected")){
                         sRClient.isConnectedToFS = true;
                     }
@@ -221,6 +220,7 @@ public class InformationActivity extends AppCompatActivity {
                         });
                     }
 
+                    // disable quiz-answers when advertisement is paused
                     if(message.toString().contains("disable Quiz-answers")){
                         QuizActivity.getInstance().runOnUiThread(new Runnable() {
                             @Override
@@ -238,6 +238,7 @@ public class InformationActivity extends AppCompatActivity {
                         });
                     }
 
+                    // enable quiz-answers when advertisement is resumed
                     if(message.toString().contains("enable Quiz-answers")){
                         QuizActivity.getInstance().runOnUiThread(new Runnable() {
                             @Override

@@ -34,7 +34,7 @@ public class SignalRClient {
     private static String sessionID = "1234567890";                             // id for connecting devices
     boolean isReconnecting = false;                                             // status for checking connection state (and reacting if is "reconnecting" error)
     public Boolean isConnectedToFS = false;                                     // status for checking internet connection state
-    private int connectionFalseDelay = 0;
+    private int connectionFalseDelay = 0;                                       // delay for setting First Screen connection to false
 
     // constructor
     public SignalRClient(){
@@ -58,9 +58,7 @@ public class SignalRClient {
                     new ReconnectHandler().execute();
                     new checkCastConnection().execute();
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
             }
@@ -89,10 +87,6 @@ public class SignalRClient {
         }
         protected void onPostExecute(Void voids) {
             sendMsg("secondScreenConnected"); //send castConnected Msg as "ping" and for CastButton indication
-            // waiting for "ping"-delay (for better performance issues)
-            /*int i = 0;
-            while (i < 3) { i++; }*/
-
             new ReconnectHandler().execute();
         }
     }
@@ -154,6 +148,8 @@ public class SignalRClient {
         }
     }
 
+    // invalidates the OptionsMenu of current activity to check if First Screen is connected
+    // via isConnectedToFS == true -> updated in message listeners of all Activities after MainActivity
     public class checkCastConnection extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -167,10 +163,13 @@ public class SignalRClient {
                     }
                 });
             }
+            // falseDelay waits for message listeners to maybe update isConnectedToFS to true
             if(connectionFalseDelay < 3){
                 connectionFalseDelay ++;
             } else {
                 connectionFalseDelay = 0;
+                // sleepDelay waits for invalidateOptionsMenu to conduct
+                // setting isConnectedToFS to false would cause blinking of cast-button
                 try {
                     Thread.sleep(2000);
                 } catch(InterruptedException ex) {
@@ -181,6 +180,7 @@ public class SignalRClient {
             return null;
         }
 
+        // loops for checking First Screen connection persistently
         protected void onPostExecute(Void result){
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
