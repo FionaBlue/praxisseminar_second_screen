@@ -161,7 +161,6 @@ WildLiveApp.MessageHandler = function() {
         if(encodedMsg.includes("closePopUp")){
             var popUpTemplate = document.querySelectorAll("#popUp");
             for(i=0; i<popUpTemplate.length; i++){
-                console.log(popUpTemplate[i]);
                 popUpTemplate[i].parentNode.removeChild(popUpTemplate[i]);
             }
             // setting colored map

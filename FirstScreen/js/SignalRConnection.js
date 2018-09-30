@@ -27,7 +27,7 @@ WildLiveApp.SignalRConnection = function() {
         chat.client.receiveMessage = function (message) {
 
             // only handling message if message is not empty
-            if (message != "") {
+            if (message != "" || message == null) {
                 messageHandler = WildLiveApp.getMessageHandler();
                 messageHandler.handleMessage(message);
             }
